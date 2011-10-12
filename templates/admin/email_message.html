@@ -1,0 +1,36 @@
+{% extends "admin/change_form.html" %}
+
+{% block title %}Email {{user.schoolname}} | Las Cumbres Observatory Global Telesope Network{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block content %}
+<div id="content-main">
+   <h1>Message Preview</h1>
+	<form class="aligned" method="POST" action="">
+	   <input type="hidden" name="uid" value="{{user.schoolid}}">
+		<div class="form-row">
+		<label for="to">To:</label>
+		<input type="text" name="to" value="{{user.schoolname}}" size=50 readonly>
+		</div>
+		
+		<div class="form-row">
+		<label for="subj">Subject</label>
+		<input type="text" name="subj" value="{{user.teachername}} :: {{message.subject}}" size=50 class="astrodata" readonly>
+		</div>
+		
+		<div class="form-row">
+		<label for="body">Message text:</label>
+		<textarea name="body" cols=70 rows=30 class="astrodata" readonly>{{message.message}}
+		</textarea>
+		</div>
+		
+		<div class="submit-row">
+			<input class="default" name="send" value="Send" type="submit">
+		</div>
+		<input type="hidden" name="messid" value="{{messid}}" />
+	</form>
+</div>
+{% endblock %}

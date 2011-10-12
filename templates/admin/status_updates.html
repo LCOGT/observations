@@ -1,0 +1,15 @@
+{% load extra_options %}
+<div class="module">
+      <h2>Telescope Status messages <a class="addlink" href="{% url admin:wis_statusupdate_add %}">Add</a></h2>
+<table class="bluetable">
+
+
+   <tbody>
+   {% for u in updates %}
+	<tr class="{% cycle 'row1' 'row2' %}">
+   <td>{{ u.created|date:"H:i" }}<br/>{{ u.created|date:"j M y" }}</td><td>{{u.telid|highlight_scope_short|safe}}</td><td class="message">{{ u.message}}</td>
+   </tr>
+   {% endfor %}
+   </tbody>
+</table>
+</div>

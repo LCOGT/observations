@@ -1,0 +1,40 @@
+{% load extra_options %}
+<fieldset class="module aligned">
+      <h2>Information for {{slotid}}</h2>
+      <div class="form-row">
+         <div>
+           <label>Start:</label> {{choices.start|date_full_format}}<input type="hidden" value="{{choices.start}}" id="id_start" name="start" />
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>End:</label> {{choices.end|date_full_format}}
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>Telescope:</label> {{choices.telid|highlight_scope|safe}}
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>TAG:</label> {{choices.tag}}
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>Booked date:</label> {{choices.bookeddate|date_full_format}}
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>Cancelled date:</label> {{choices.cancelleddate|date_full_format}}
+        </div>
+      </div>
+      <div class="form-row">
+         <div>
+           <label>Enabled:</label> {{choices.enabled}}
+        </div>
+      </div>
+</table>
+</fieldset>

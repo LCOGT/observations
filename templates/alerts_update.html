@@ -1,0 +1,24 @@
+{% load extra_options %}
+
+  {% for a in alerts %}
+	<tr>
+		<td><span time="{{start|date:"YmdHis"}}" stamp="{{start|date:"H:i, d M y"}}" class="alerttime">{{a.alertdatetime|time_format}}</span></td>
+		{% ifequal a.telescopeid 1 %}
+		<td>
+		{{a.alertmessage|alert_status|safe}}</td><td></td><td></td>
+		{% endifequal %}
+		
+		{% ifequal a.telescopeid 2 %}
+		<td></td><td>{{a.alertmessage|alert_status|safe}}</td><td></td>
+		{% endifequal %}
+		
+		{% ifequal a.telescopeid -1 %}
+		<td colspan=2></td>
+		<td>{{a.alertmessage|alert_status|safe}}</td>
+		{% endifequal %}
+	
+	</tr>
+	{% empty %}
+	<tr><span time="{{start|date:"YmdHis"}}" stamp="{{start|date:"H:i, d M y"}}" class="alerttime"></span></tr>
+	{% endfor %}
+
