@@ -883,14 +883,14 @@ def input_params(request):
 	mimetype = "text/html"
 
 	# If the user has requested a particular mime type we'll use that
-	if request.META['CONTENT_TYPE'] == 'application/json':
-		doctype = 'json'
-	elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
-		doctype = 'kml'
-	elif request.META['CONTENT_TYPE'] == 'application/xml':
-		doctype = 'rss'
-	elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
-		doctype = 'rdf'
+	#if request.META['CONTENT_TYPE'] == 'application/json':
+	#	doctype = 'json'
+	#elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
+	#	doctype = 'kml'
+	#elif request.META['CONTENT_TYPE'] == 'application/xml':
+	#	doctype = 'rss'
+	#elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
+	#	doctype = 'rdf'
 
 	if doctype == 'json':
 		callback = request.GET.get('callback','')
