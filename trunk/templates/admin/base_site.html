@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block extrastyle %}<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}admin/css/base.css" />{% endblock %}
+{% block title %}{{ title }} | {% trans 'Las Cumbres Observatory Global Telesope Network' %}{% endblock %}
+
+{% block branding %}
+<div id="logo">
+    <img src="{{ MEDIA_URL }}admin/img/lcogt_logo.png" alt="Las Cumbres Observatory">
+</div>
+<div id="site-name">
+    <strong>
+    Real-time control interface
+    <em>User admin</em>
+    </strong>
+</div>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block nav-global %}
+{% include "admin/menu.html" %}
+{% endblock %}

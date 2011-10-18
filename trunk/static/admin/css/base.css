@@ -1,0 +1,146 @@
+/*
+    Information on customizing the Django admin CSS:
+    http://docs.djangoproject.com/en/dev/obsolete/admin-css/
+*/
+#header,
+#branding h1  { color: #555; }
+#header { background: #fff; }
+#header h1 {
+	padding-left: 0;
+	margin-left: 15px;
+	text-shadow: -2px 2px 2px #bbb;
+}
+
+#header a:link, #header a:visited {
+color:#FF7F00;
+}
+
+#header .object-tools  a:link, #header .object-tools a:visited{
+    color:#fff;
+    text-decoration:none;
+}
+
+.module h2, .module caption {
+	/* Replace section header gradient if you want. */
+	background: #8d8d8d repeat-x scroll left top; 
+}
+
+#logo-title
+{
+  float:left;
+}
+#logo{
+      float:left;
+}
+#site-name
+{
+  font-size: 1.5em;
+  line-height: 1em;
+  margin: 10px;
+}
+
+#site-name em
+{
+  display: block;
+  font-size: 0.65em;
+  font-style: normal;
+  font-weight: normal;
+}
+
+#branding
+{
+    padding:10px 0 0 10px;
+}
+
+.green {
+    color:#063;
+}
+
+.red {
+    color:#933;
+}
+
+.orange{
+    color:#f90;
+}
+
+.regCol {
+    margin-right:40em !important;
+}
+
+.regCol #content-related{
+    margin-right:-39em;
+    width: 38em;
+}
+
+/*** Front page ****/
+.colMS #content-related {
+    margin-right:-30em;
+    width:29em;
+}
+
+/*** Tables ***/
+
+.astrodata {
+border:1px solid #ff9900;
+background-color:#fff;
+}
+
+.astrodata th {
+	font-size:14px;
+}
+
+.astrodata td {
+border:1px solid #ddd;
+padding:4px 4px 4px 4px;
+}
+
+#bookings table{
+    width:100%;
+}
+
+.dashboard .module table td.message{
+    white-space:normal;
+}
+
+/****/
+
+.aligned label {
+ display: block;
+ padding: 3px 10px 0 0;
+ float: left;
+ width: 8em;
+}
+
+.form-row {
+    overflow: hidden;
+    padding: 8px 12px;
+    font-size: 11px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-row img, .form-row input {
+    vertical-align: middle;
+}
+
+/** Header colours and styles **/
+
+.search caption,
+.search h2 {
+    background-color:#69c;
+}
+
+.front caption,
+.front h2 {
+    background-color:#c33;
+}
+
+.report caption,
+.report h2 {
+    background-color:#ff8;
+    color:#777;
+}
+
+.object-tools {
+    padding-right:200px;
+}
