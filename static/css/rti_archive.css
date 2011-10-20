@@ -89,6 +89,7 @@ ul.rti-fits-list {
 }
 
 #rti-archive-form fieldset { border: 0px; padding: 0px; margin: 0px;}
+#rti-archive-form fieldset legend { padding: 0px; margin: 0px;}
 #rti-archive-form legend {
 	display:block;
 	font-weight: bold;
