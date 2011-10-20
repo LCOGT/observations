@@ -2,7 +2,7 @@
 {% load faulkes_extras %}
 
 {% block script-content %}
-	<script type="text/javascript" src="/faulkes/media/js/rti_archive_lookup.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_lookup.js"></script>
 {% endblock %}
 
 {%block header %}{{ obs.skyobjectname }}{%endblock%}
