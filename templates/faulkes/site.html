@@ -14,7 +14,6 @@
 		planetarium.draw();
 		planetarium.az_step = -0.1;
 		planetarium.moveIt();
-{% if n > 1 %}
 		$.getJSON('{{ link }}.json?callback=?',function(data) {
 			var obs = data.observation;
 			for(var i = 0; i < obs.length ; i++){
@@ -23,7 +22,6 @@
 			}
 			planetarium.draw();
 		});
-{% endif %}
 	};
 	
 	function relative_time(parsed_date) {

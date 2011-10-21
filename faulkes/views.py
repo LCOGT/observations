@@ -216,7 +216,7 @@ def view_group(request,mode):
 		n = obs.count()
 		obs = build_observations(obs)
 		input['title'] = "Recent Observations from LCOGT"
-		input['link'] = 'recent'
+		input['link'] = get_baseurl(request)+'recent'
 		input['live'] = 300
 		input['description'] = 'Recent observations from the Las Cumbres Observatory Global Telescope'
 	elif(mode=="popular"):
@@ -227,7 +227,7 @@ def view_group(request,mode):
 			obs.append(o.imagearchive)
 		obs = build_observations(obs)
 		input['title'] = "All-time Most Viewed Observations at LCOGT"
-		input['link'] = 'popular'
+		input['link'] = get_baseurl(request)+'popular'
 		input['description'] = 'Most popular observations from the Las Cumbres Observatory Global Telescope'
 	elif(mode=="trending"):
 		obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_page]
@@ -237,7 +237,7 @@ def view_group(request,mode):
 			obs.append(o.imagearchive)
 		obs = build_observations(obs)
 		input['title'] = "Trending Observations at LCOGT"
-		input['link'] = 'trending'	
+		input['link'] = get_baseurl(request)+'trending'	
 		input['description'] = 'Trending observations from the Las Cumbres Observatory Global Telescope'
 
 
@@ -349,7 +349,7 @@ def search(request):
 
 	input['observations'] = n
 	input['title'] = "Search Results"
-	input['link'] = 'search'
+	input['link'] = get_baseurl(request)+'search'
 	input['linkquery'] = input['query']
 	input['description'] = 'Search results (LCOGT)'
 	input['perpage'] = n_per_page
@@ -395,7 +395,7 @@ def view_site(request,code):
 
 	input['observations'] = n
 	input['title'] = site.name
-	input['link'] = site.code
+	input['link'] = get_baseurl(request)+site.code
 	input['description'] = 'Observations from telescopes at '+site.name+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -441,7 +441,7 @@ def view_telescope(request,code,tel):
 
 	input['observations'] = n
 	input['title'] = telescope.name
-	input['link'] = site.code+'/'+telescope.code
+	input['link'] = get_baseurl(request)+site.code+'/'+telescope.code
 	input['description'] = 'Observations from '+telescope.name+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -483,7 +483,7 @@ def view_user(request,userid):
 
 	input['observations'] = n
 	input['title'] = u.schoolname
-	input['link'] = 'user/'+userid
+	input['link'] = get_baseurl(request)+'user/'+userid
 	input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -530,7 +530,7 @@ def view_username(request,username):
 
 	input['observations'] = n
 	input['title'] = u.schoolname
-	input['link'] = 'user/'+username
+	input['link'] = get_baseurl(request)+'user/'+username
 	input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -601,7 +601,7 @@ def view_category(request,category):
 
 	input['observations'] = n
 	input['title'] = 'Category: '+categories[avm-1]['name']
-	input['link'] = 'category/'+categories[avm-1]['link']
+	input['link'] = get_baseurl(request)+'category/'+categories[avm-1]['link']
 	input['description'] = 'Category: '+categories[avm-1]['name']+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -651,7 +651,7 @@ def view_avm(request,avm):
 
 	input['observations'] = n
 	input['title'] = 'Category: '+category
-	input['link'] = 'category/'+avm
+	input['link'] = get_baseurl(request)+'category/'+avm
 	input['description'] = 'Category: '+category+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -696,7 +696,7 @@ def view_map(request):
 
 	input['observations'] = 0
 	input['title'] = 'Heat Map'
-	input['link'] = 'map'
+	input['link'] = get_baseurl(request)+'map'
 	input['description'] = 'Observations in the past month (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -1110,7 +1110,7 @@ def view_json(request,obs,config):
 	if 'pager' in config:
 		if 'next' in config['pager'] or 'previous' in config['pager']:
 			response["page"] = {}
-			print config
+			#print config
 			if 'prev' in config['pager'] and config['pager']['prev']!='':
 				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['prev'])
 			if 'next' in config['pager'] and config['pager']['next']!='':
