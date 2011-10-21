@@ -258,7 +258,6 @@ VirtualSky.prototype.createSky = function(){
 			url: this.planets,
 			context: _object,
 			success: function(data){
-				console.log(data)
 				this.planets = data.planets;
 				this.draw();
 			}
