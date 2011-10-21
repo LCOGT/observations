@@ -1063,7 +1063,7 @@ def build_observations_json(obs,request):
 			"image" : {
 				"_about" : o['fullimage_url'],
 				"label" : "Image",
-				"fits" : o['fitsfiles'],
+				#"fits" : o['fitsfiles'],
 				"thumb" : o['thumbnail']
 			},
 			"ra" : o['raval'], 
