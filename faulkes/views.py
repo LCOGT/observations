@@ -245,7 +245,7 @@ def view_group(request,mode):
 	input['perpage'] = n_per_page
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -362,7 +362,7 @@ def search(request):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -407,7 +407,7 @@ def view_site(request,code):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -453,7 +453,7 @@ def view_telescope(request,code,tel):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -504,7 +504,7 @@ def view_user(request,userid):
 		mostrecent = relativetime(obs[0]['whentaken'])
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -551,7 +551,7 @@ def view_username(request,username):
 		mostrecent = relativetime(obs[0]['whentaken'])
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -616,7 +616,7 @@ def view_category(request,category):
 	
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -667,7 +667,7 @@ def view_avm(request,avm):
 
 	
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -708,7 +708,7 @@ def view_map(request):
 		dcs.append(o.decval)
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -822,7 +822,7 @@ def view_observation(request,code,tel,obs):
 
 	if input['doctype'] == "json":
 		print obs
-		return view_json(request,build_observations_json(obs),input)
+		return view_json(request,build_observations_json(obs,request),input)
 	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
 
 
@@ -1031,10 +1031,17 @@ def build_pager(request,n):
 			eobs = n
 		return { 'next':next,'prev':prev,'html':output,'start': sobs,'end':eobs}
 
+def get_baseurl(request):
+	try:
+		return 'http://'+request.get_host()+'/observations/'
+	except:
+		return "http://lcogt.net/observations/"
+	
 
-def build_observations_json(obs):
+def build_observations_json(obs,request):
 
-	baseurl = "http://localhost:8000/";
+	baseurl = get_baseurl(request)
+	
 	if len(obs) > 1:
 		observations = []
 	elif len(obs) == 0:
@@ -1047,10 +1054,10 @@ def build_observations_json(obs):
 
 		o['fitsfiles'] = "";
 		ob = {
-			"_about" : o['link_obs'],
+			"_about" : baseurl+o['link_obs'],
 			"label" : o['skyobjectname'],
 			"observer" : {
-				"_about" : o['link_user'],
+				"_about" : baseurl+o['link_user'],
 				"label" : re.sub(r"\"",'',o['schoolname'])
 			},
 			"image" : {
@@ -1063,7 +1070,7 @@ def build_observations_json(obs):
 			"dec" : o['decval'],
 			"filter" : re.sub(r"\"",'',o['filter']),
 			"instr" : {
-				"_about" : o['link_tel'],
+				"_about" : baseurl+o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
 			},
 			#"views" : o['views'],
@@ -1097,15 +1104,15 @@ def view_json(request,obs,config):
 	if 'description' in config:
 		response["desc"] = config['description']
 	if 'link' in config:
-		response["link"] = config['link']
+		response["link"] = get_baseurl(request)+config['link']
 	if 'title' in config:
 		response["title"] = config['title']
 	if 'pager' in config:
 		if 'next' in config['pager'] or 'previous' in config['pager']:
 			response["page"] = {}
 			print config
-			if 'previous' in config['pager'] and config['pager']['previous']!='':
-				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['previous'])
+			if 'prev' in config['pager'] and config['pager']['prev']!='':
+				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['prev'])
 			if 'next' in config['pager'] and config['pager']['next']!='':
 				response["page"]["next"] = response["link"]+".json?"+str(config['pager']['next'])
 	if 'observations' in config:

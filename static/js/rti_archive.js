@@ -63,8 +63,8 @@ function imageLoadError(el){
 			$(this).bind('error',function() {
 				this.src = "http://lcogt.net/files/no-image_120.png";
 				this.alt = "Image unavailable";
-					this.onerror = "";
-					return true;
+				this.onerror = "";
+				return true;
 			})
 	});
 }
