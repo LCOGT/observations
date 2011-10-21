@@ -1211,12 +1211,11 @@ def relativetime(value):
 	elif delta.seconds > (86400):
 		return '1 day ago'
 	elif delta.seconds > (5400):
-		h = round(delta.seconds / 3600)
-		return 'about %s hours ago' % h
+		return 'about %s hours ago' % int(delta.seconds / 3600)
 	elif delta.seconds > (2700):
 		return 'about an hour ago'
 	elif delta.seconds > (120):
-		return 'about %s minutes ago' % round(delta.seconds/60)
+		return 'about %s minutes ago' % int(delta.seconds/60)
 	elif delta.seconds > (60):
 		return 'about a minute ago'
 	else:
