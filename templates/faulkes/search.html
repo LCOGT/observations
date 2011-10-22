@@ -5,9 +5,11 @@
 {% block title %}{% if n > 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ form.query }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
+<!--
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.core.min.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.widget.min.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.datepicker.min.js"></script>
+-->
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_search.js"></script>
 	<script>
 	<!--
