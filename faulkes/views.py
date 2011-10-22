@@ -775,7 +775,7 @@ def view_observation(request,code,tel,obs):
 
 	obs[0]['views'] = views
 
-	if(obstats[0].avmcode!="0"):
+	if(obstats[0].avmcode!="0" and obstats[0].avmcode!="0.0"):
 		cats = obstats[0].avmcode.split(';')
 		if len(cats) > 0:
 			cats = cats[-1]
