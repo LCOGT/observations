@@ -326,6 +326,7 @@ div.searchboxbig .searchbtn { padding: 5px 8px 5px 8px; }
 
 img.observation-image {
 	width: 560px;
+	z-index: 1;
 }
 
 img.observation-image:hover {
