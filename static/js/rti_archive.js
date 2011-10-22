@@ -6,8 +6,6 @@ var obs_img = '';
 
 $(document).ready(function(){
 
-	//$('#lcogt-bar').fadeTo(5000,0.2).bind('mouseenter',function(e){ $(this).fadeTo(300,1); }).bind('mouseleave',function(e){ $(this).fadeTo(300,0.2); });
-	
 	// Check for failure to load images and use a dummy image
 	if($('img.observation-image').length > 0) imageLoadError('img.observation-image');
 	if($('.thumbnail img').length > 0) imageLoadError('.thumbnail img');
