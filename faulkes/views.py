@@ -173,6 +173,10 @@ categorylookup = { '1': 'Planets',
 				'5.4.8':'Dust Lanes',
 				'5.4.9':'Center Cores',
 				'5.5':'Galaxies (Grouping)',
+				'5.5.1':'Pair of Galaxies',
+				'5.5.2':'Multiple Galaxies',
+				'5.5.3':'Cluster of Galaxies',
+				'5.5.4':'Galaxy Supercluster',
 				}
 categories = [
 			{ 'link': "planets", 'name': 'Planets', 'avm':1 },
@@ -296,8 +300,8 @@ def search(request):
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
 
-		print "All"
-		print obs.count()
+		#print "All"
+		#print obs.count()
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -336,11 +340,11 @@ def search(request):
 					dec2 = math.radians(o.decval)
 					dRA = (ra1-ra2)
 					cosd = math.fabs(math.sin(dec1)*math.sin(dec2) + math.cos(dec1)*math.cos(dec2)*math.cos(dRA))
-					print i
+					#print i
 					if cosd > cosr:
 						keepers.append(o.imageid)
 
-			print keepers
+			#print keepers
 			obs = obs.filter(imageid__in=keepers)
 
 		obs = obs.order_by('-whentaken')
@@ -690,7 +694,7 @@ def view_map(request):
 	dt = datetime.utcnow() - timedelta(30)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
-	print dt.strftime("%Y%m%d%H%M%S")
+	#print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
 		
 
@@ -755,20 +759,23 @@ def view_observation(request,code,tel,obs):
 		obj = re.sub(r" ",'\+',obs[0]['object'])
 		req = urllib2.Request(url='http://www.strudel.org.uk/lookUP/xml/?name=%s' % obj)
 		# Allow 6 seconds for timeout
-		f = urllib2.urlopen(req,None,6)
-		xml = f.read()
-		m = re.search('avmcode="([^\"]*)"',xml)
-		n = re.search('service href="([^\"]*)"',xml)
-		if(m):
-			try:
-				obstats[0].avmcode = m.group(1)
-			except ObjectDoesNotExist:
+		try:
+			f = urllib2.urlopen(req,None,6)
+			xml = f.read()
+			m = re.search('avmcode="([^\"]*)"',xml)
+			n = re.search('service href="([^\"]*)"',xml)
+			if(m):
+				try:
+					obstats[0].avmcode = m.group(1)
+				except ObjectDoesNotExist:
+					obstats[0].avmcode = "0.0"
+			else:
 				obstats[0].avmcode = "0.0"
-		else:
-			obstats[0].avmcode = "0.0"
-		if(n):
-			obstats[0].moreurl = n.group(1)
-		obstats[0].save()
+			if(n):
+				obstats[0].moreurl = n.group(1)
+			obstats[0].save()
+		except:
+			f = "blank"
 
 
 	u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
@@ -810,18 +817,21 @@ def view_observation(request,code,tel,obs):
 			req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
 
 			# Allow 6 seconds for timeout
-			f = urllib2.urlopen(req,None,6)
-			xml = f.read()
-			jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
-			fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
-
-			if jpg:
-				filters[rid]['img'] = jpg.group(1)
-			if fit:
-				filters[rid]['fits'] = fit.group(1)
+			try:
+				f = urllib2.urlopen(req,None,6)
+				xml = f.read()
+				jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
+				fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+	
+				if jpg:
+					filters[rid]['img'] = jpg.group(1)
+				if fit:
+					filters[rid]['fits'] = fit.group(1)
+			except:
+				f = "blank"
 
 	if input['doctype'] == "json":
-		print obs
+		#print obs
 		return view_json(request,build_observations_json(obs,request),input)
 	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
 
@@ -899,6 +909,7 @@ def input_params(request):
 		mimetype = 'application/json'
 	elif doctype == 'kml':
 		mimetype = 'application/vnd.google-earth.kml+xml'
+		mimetype = 'text/xml'
 	elif doctype == 'rss':
 		mimetype = 'application/xml'
 	elif doctype == 'rdf':
