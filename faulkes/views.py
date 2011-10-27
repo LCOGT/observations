@@ -296,8 +296,8 @@ def search(request):
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
 
-		print "All"
-		print obs.count()
+		#print "All"
+		#print obs.count()
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -336,11 +336,11 @@ def search(request):
 					dec2 = math.radians(o.decval)
 					dRA = (ra1-ra2)
 					cosd = math.fabs(math.sin(dec1)*math.sin(dec2) + math.cos(dec1)*math.cos(dec2)*math.cos(dRA))
-					print i
+					#print i
 					if cosd > cosr:
 						keepers.append(o.imageid)
 
-			print keepers
+			#print keepers
 			obs = obs.filter(imageid__in=keepers)
 
 		obs = obs.order_by('-whentaken')
@@ -510,7 +510,6 @@ def view_user(request,userid):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		print input['link']
 		data = {'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
@@ -691,7 +690,7 @@ def view_map(request):
 	dt = datetime.utcnow() - timedelta(90)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
-	print dt.strftime("%Y%m%d%H%M%S")
+	#print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
 		
 
@@ -822,7 +821,7 @@ def view_observation(request,code,tel,obs):
 				filters[rid]['fits'] = fit.group(1)
 
 	if input['doctype'] == "json":
-		print obs
+		#print obs
 		return view_json(request,build_observations_json(obs),input)
 	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
 
@@ -1104,7 +1103,7 @@ def view_json(request,obs,config):
 	if 'pager' in config:
 		if 'next' in config['pager'] or 'previous' in config['pager']:
 			response["page"] = {}
-			print config
+			#print config
 			if 'previous' in config['pager'] and config['pager']['previous']!='':
 				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['previous'])
 			if 'next' in config['pager'] and config['pager']['next']!='':
