@@ -32,12 +32,12 @@
 
 
 {% block search %}{% if n > 0 %}<div class="searchbox">
-									<form action='/observations/search/' method='GET'>
+									<form action='{% url rtiadminsite.faulkes.views.index %}search/' method='GET'>
 										<input type='text' name='query' class='searchbox' title='e.g. NGC 2011' /><input type='submit' value='Search' class='searchbtn' />
 										<br /><span style='font-size:0.8em;'>[<a href="{% url rtiadminsite.faulkes.views.index %}search">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url rtiadminsite.faulkes.views.index %}{{input.link}}/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href="{% url rtiadminsite.faulkes.views.index %}search/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
 {% endif %}
 								</div>{% else %}{% endif %}{% endblock %}
 

@@ -173,10 +173,6 @@ categorylookup = { '1': 'Planets',
 				'5.4.8':'Dust Lanes',
 				'5.4.9':'Center Cores',
 				'5.5':'Galaxies (Grouping)',
-				'5.5.1':'Pair of Galaxies',
-				'5.5.2':'Multiple Galaxies',
-				'5.5.3':'Cluster of Galaxies',
-				'5.5.4':'Galaxy Supercluster',
 				}
 categories = [
 			{ 'link': "planets", 'name': 'Planets', 'avm':1 },
@@ -220,7 +216,7 @@ def view_group(request,mode):
 		n = obs.count()
 		obs = build_observations(obs)
 		input['title'] = "Recent Observations from LCOGT"
-		input['link'] = get_baseurl(request)+'recent'
+		input['link'] = 'recent'
 		input['live'] = 300
 		input['description'] = 'Recent observations from the Las Cumbres Observatory Global Telescope'
 	elif(mode=="popular"):
@@ -231,7 +227,7 @@ def view_group(request,mode):
 			obs.append(o.imagearchive)
 		obs = build_observations(obs)
 		input['title'] = "All-time Most Viewed Observations at LCOGT"
-		input['link'] = get_baseurl(request)+'popular'
+		input['link'] = 'popular'
 		input['description'] = 'Most popular observations from the Las Cumbres Observatory Global Telescope'
 	elif(mode=="trending"):
 		obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_page]
@@ -241,7 +237,7 @@ def view_group(request,mode):
 			obs.append(o.imagearchive)
 		obs = build_observations(obs)
 		input['title'] = "Trending Observations at LCOGT"
-		input['link'] = get_baseurl(request)+'trending'	
+		input['link'] = 'trending'	
 		input['description'] = 'Trending observations from the Las Cumbres Observatory Global Telescope'
 
 
@@ -249,7 +245,7 @@ def view_group(request,mode):
 	input['perpage'] = n_per_page
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -300,8 +296,8 @@ def search(request):
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
 
-		#print "All"
-		#print obs.count()
+		print "All"
+		print obs.count()
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -340,11 +336,11 @@ def search(request):
 					dec2 = math.radians(o.decval)
 					dRA = (ra1-ra2)
 					cosd = math.fabs(math.sin(dec1)*math.sin(dec2) + math.cos(dec1)*math.cos(dec2)*math.cos(dRA))
-					#print i
+					print i
 					if cosd > cosr:
 						keepers.append(o.imageid)
 
-			#print keepers
+			print keepers
 			obs = obs.filter(imageid__in=keepers)
 
 		obs = obs.order_by('-whentaken')
@@ -353,7 +349,7 @@ def search(request):
 
 	input['observations'] = n
 	input['title'] = "Search Results"
-	input['link'] = get_baseurl(request)+'search'
+	input['link'] = 'search'
 	input['linkquery'] = input['query']
 	input['description'] = 'Search results (LCOGT)'
 	input['perpage'] = n_per_page
@@ -366,7 +362,7 @@ def search(request):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -399,7 +395,7 @@ def view_site(request,code):
 
 	input['observations'] = n
 	input['title'] = site.name
-	input['link'] = get_baseurl(request)+site.code
+	input['link'] = site.code
 	input['description'] = 'Observations from telescopes at '+site.name+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -411,7 +407,7 @@ def view_site(request,code):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -445,7 +441,7 @@ def view_telescope(request,code,tel):
 
 	input['observations'] = n
 	input['title'] = telescope.name
-	input['link'] = get_baseurl(request)+site.code+'/'+telescope.code
+	input['link'] = site.code+'/'+telescope.code
 	input['description'] = 'Observations from '+telescope.name+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -457,7 +453,7 @@ def view_telescope(request,code,tel):
 
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -487,7 +483,7 @@ def view_user(request,userid):
 
 	input['observations'] = n
 	input['title'] = u.schoolname
-	input['link'] = get_baseurl(request)+'user/'+userid
+	input['link'] = 'user/'+userid
 	input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -508,12 +504,13 @@ def view_user(request,userid):
 		mostrecent = relativetime(obs[0]['whentaken'])
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
+		print input['link']
 		data = {'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
@@ -534,7 +531,7 @@ def view_username(request,username):
 
 	input['observations'] = n
 	input['title'] = u.schoolname
-	input['link'] = get_baseurl(request)+'user/'+username
+	input['link'] = 'user/'+username
 	input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -555,7 +552,7 @@ def view_username(request,username):
 		mostrecent = relativetime(obs[0]['whentaken'])
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -605,7 +602,7 @@ def view_category(request,category):
 
 	input['observations'] = n
 	input['title'] = 'Category: '+categories[avm-1]['name']
-	input['link'] = get_baseurl(request)+'category/'+categories[avm-1]['link']
+	input['link'] = 'category/'+categories[avm-1]['link']
 	input['description'] = 'Category: '+categories[avm-1]['name']+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -620,7 +617,7 @@ def view_category(request,category):
 	
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -655,7 +652,7 @@ def view_avm(request,avm):
 
 	input['observations'] = n
 	input['title'] = 'Category: '+category
-	input['link'] = get_baseurl(request)+'category/'+avm
+	input['link'] = 'category/'+avm
 	input['description'] = 'Category: '+category+' (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -671,7 +668,7 @@ def view_avm(request,avm):
 
 	
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -691,16 +688,16 @@ def view_map(request):
 	sites = Site.objects.all()
 	telescopes = Telescope.objects.all()
 
-	dt = datetime.utcnow() - timedelta(30)
+	dt = datetime.utcnow() - timedelta(90)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
-	#print dt.strftime("%Y%m%d%H%M%S")
+	print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
 		
 
 	input['observations'] = 0
 	input['title'] = 'Heat Map'
-	input['link'] = get_baseurl(request)+'map'
+	input['link'] = 'map'
 	input['description'] = 'Observations in the past month (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
@@ -712,7 +709,7 @@ def view_map(request):
 		dcs.append(o.decval)
 
 	if input['doctype'] == "json":
-		return view_json(request,build_observations_json(obs,request),input)
+		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
 		return view_kml(request,obs,input)
 	elif input['doctype'] == "rss":
@@ -759,30 +756,27 @@ def view_observation(request,code,tel,obs):
 		obj = re.sub(r" ",'\+',obs[0]['object'])
 		req = urllib2.Request(url='http://www.strudel.org.uk/lookUP/xml/?name=%s' % obj)
 		# Allow 6 seconds for timeout
-		try:
-			f = urllib2.urlopen(req,None,6)
-			xml = f.read()
-			m = re.search('avmcode="([^\"]*)"',xml)
-			n = re.search('service href="([^\"]*)"',xml)
-			if(m):
-				try:
-					obstats[0].avmcode = m.group(1)
-				except ObjectDoesNotExist:
-					obstats[0].avmcode = "0.0"
-			else:
+		f = urllib2.urlopen(req,None,6)
+		xml = f.read()
+		m = re.search('avmcode="([^\"]*)"',xml)
+		n = re.search('service href="([^\"]*)"',xml)
+		if(m):
+			try:
+				obstats[0].avmcode = m.group(1)
+			except ObjectDoesNotExist:
 				obstats[0].avmcode = "0.0"
-			if(n):
-				obstats[0].moreurl = n.group(1)
-			obstats[0].save()
-		except:
-			f = "blank"
+		else:
+			obstats[0].avmcode = "0.0"
+		if(n):
+			obstats[0].moreurl = n.group(1)
+		obstats[0].save()
 
 
 	u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
 
 	obs[0]['views'] = views
 
-	if(obstats[0].avmcode!="0" and obstats[0].avmcode!="0.0"):
+	if(obstats[0].avmcode!="0"):
 		cats = obstats[0].avmcode.split(';')
 		if len(cats) > 0:
 			cats = cats[-1]
@@ -817,22 +811,19 @@ def view_observation(request,code,tel,obs):
 			req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
 
 			# Allow 6 seconds for timeout
-			try:
-				f = urllib2.urlopen(req,None,6)
-				xml = f.read()
-				jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
-				fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
-	
-				if jpg:
-					filters[rid]['img'] = jpg.group(1)
-				if fit:
-					filters[rid]['fits'] = fit.group(1)
-			except:
-				f = "blank"
+			f = urllib2.urlopen(req,None,6)
+			xml = f.read()
+			jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
+			fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+
+			if jpg:
+				filters[rid]['img'] = jpg.group(1)
+			if fit:
+				filters[rid]['fits'] = fit.group(1)
 
 	if input['doctype'] == "json":
-		#print obs
-		return view_json(request,build_observations_json(obs,request),input)
+		print obs
+		return view_json(request,build_observations_json(obs),input)
 	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
 
 
@@ -893,14 +884,14 @@ def input_params(request):
 	mimetype = "text/html"
 
 	# If the user has requested a particular mime type we'll use that
-	#if request.META['CONTENT_TYPE'] == 'application/json':
-	#	doctype = 'json'
-	#elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
-	#	doctype = 'kml'
-	#elif request.META['CONTENT_TYPE'] == 'application/xml':
-	#	doctype = 'rss'
-	#elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
-	#	doctype = 'rdf'
+	if request.META['CONTENT_TYPE'] == 'application/json':
+		doctype = 'json'
+	elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
+		doctype = 'kml'
+	elif request.META['CONTENT_TYPE'] == 'application/xml':
+		doctype = 'rss'
+	elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
+		doctype = 'rdf'
 
 	if doctype == 'json':
 		callback = request.GET.get('callback','')
@@ -909,7 +900,6 @@ def input_params(request):
 		mimetype = 'application/json'
 	elif doctype == 'kml':
 		mimetype = 'application/vnd.google-earth.kml+xml'
-		mimetype = 'text/xml'
 	elif doctype == 'rss':
 		mimetype = 'application/xml'
 	elif doctype == 'rdf':
@@ -1042,17 +1032,10 @@ def build_pager(request,n):
 			eobs = n
 		return { 'next':next,'prev':prev,'html':output,'start': sobs,'end':eobs}
 
-def get_baseurl(request):
-	try:
-		return 'http://'+request.get_host()+'/observations/'
-	except:
-		return "http://lcogt.net/observations/"
-	
 
-def build_observations_json(obs,request):
+def build_observations_json(obs):
 
-	baseurl = get_baseurl(request)
-	
+	baseurl = "http://localhost:8000/";
 	if len(obs) > 1:
 		observations = []
 	elif len(obs) == 0:
@@ -1065,23 +1048,23 @@ def build_observations_json(obs,request):
 
 		o['fitsfiles'] = "";
 		ob = {
-			"_about" : baseurl+o['link_obs'],
+			"_about" : o['link_obs'],
 			"label" : o['skyobjectname'],
 			"observer" : {
-				"_about" : baseurl+o['link_user'],
+				"_about" : o['link_user'],
 				"label" : re.sub(r"\"",'',o['schoolname'])
 			},
 			"image" : {
 				"_about" : o['fullimage_url'],
 				"label" : "Image",
-				#"fits" : o['fitsfiles'],
+				"fits" : o['fitsfiles'],
 				"thumb" : o['thumbnail']
 			},
 			"ra" : o['raval'], 
 			"dec" : o['decval'],
 			"filter" : re.sub(r"\"",'',o['filter']),
 			"instr" : {
-				"_about" : baseurl+o['link_tel'],
+				"_about" : o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
 			},
 			#"views" : o['views'],
@@ -1115,15 +1098,15 @@ def view_json(request,obs,config):
 	if 'description' in config:
 		response["desc"] = config['description']
 	if 'link' in config:
-		response["link"] = get_baseurl(request)+config['link']
+		response["link"] = config['link']
 	if 'title' in config:
 		response["title"] = config['title']
 	if 'pager' in config:
 		if 'next' in config['pager'] or 'previous' in config['pager']:
 			response["page"] = {}
-			#print config
-			if 'prev' in config['pager'] and config['pager']['prev']!='':
-				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['prev'])
+			print config
+			if 'previous' in config['pager'] and config['pager']['previous']!='':
+				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['previous'])
 			if 'next' in config['pager'] and config['pager']['next']!='':
 				response["page"]["next"] = response["link"]+".json?"+str(config['pager']['next'])
 	if 'observations' in config:
@@ -1229,11 +1212,12 @@ def relativetime(value):
 	elif delta.seconds > (86400):
 		return '1 day ago'
 	elif delta.seconds > (5400):
-		return 'about %s hours ago' % int(delta.seconds / 3600)
+		h = round(delta.seconds / 3600)
+		return 'about %s hours ago' % h
 	elif delta.seconds > (2700):
 		return 'about an hour ago'
 	elif delta.seconds > (120):
-		return 'about %s minutes ago' % int(delta.seconds/60)
+		return 'about %s minutes ago' % round(delta.seconds/60)
 	elif delta.seconds > (60):
 		return 'about a minute ago'
 	else:

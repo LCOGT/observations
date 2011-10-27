@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="{{ MEDIA_URL }}css/rti_archive_slideshow.css" type="text/css" media="screen" />
 	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/zen/lcogt/favicon.ico" type="image/x-icon" />
 	<script>
-		$(document).ready(function() { slides = new Slideshow({json:'{% url rtiadminsite.faulkes.views.index %}{{link}}.json{% if input.linkquery %}?{{input.linkquery}}{% endif %}'}); })
+		$(document).ready(function() { slides = new Slideshow({json:'{{link}}.json{% if input.linkquery %}?{{input.linkquery}}{% endif %}'}); })
 	</script>
 </head>
 <body>
