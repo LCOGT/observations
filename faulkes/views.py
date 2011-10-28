@@ -21,6 +21,7 @@ import urllib2
 
 n_per_line = 6
 n_per_page = 30
+base_url = "http://lcogt.net/observations/"
 categorylookup = { '1': 'Planets',
 				'1.1':'Planets (Type)',
 				'1.1.1':'Terrestrial Planets',
@@ -1033,7 +1034,6 @@ def build_pager(request,n):
 
 
 def build_observations_json(obs):
-	base_url = "http://lcogt.net/observations/"
 	if len(obs) > 1:
 		observations = []
 	elif len(obs) == 0:
@@ -1139,7 +1139,7 @@ def view_kml(request,obs,config):
 		output += '	<Placemark>\n'
 		output += '		<name>'+o['skyobjectname']+'</name>\n'
 		output += '		<description><![CDATA[\n'
-		output += '			<p>Observed by <a href="'+o['link_user']+'.kml">'+o['user'].schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
+		output += '			<p>Observed by <a href="'+base_url+o['link_user']+'.kml">'+o['user'].schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+base_url+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
 		output += '			<p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
 		output += '		]]></description>\n'
 		output += '		<LookAt>\n'
@@ -1171,7 +1171,7 @@ def view_rss(request,obs,config):
 	output += '<rss version="2.0">\n'
 	output += '<channel>\n'
 	output += '	<title>'+config['title']+'</title>\n'
-	output += '	<link>'+config['link']+'</link>\n'
+	output += '	<link>'+base_url+config['link']+'</link>\n'
 	output += '	<description>'+config['description']+'</description>\n'
 	output += '	<language>en-gb</language>\n'
 	output += '	<pubDate>'+datestamp('')+'</pubDate>\n'
@@ -1183,8 +1183,8 @@ def view_rss(request,obs,config):
 	for o in obs:
 		output += '	<item>\n'
 		output += '		<title>'+o['skyobjectname']+'</title>\n'
-		output += '		<description><![CDATA[<a href="'+o['link_user']+'">'+o['user'].schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
-		output += '		<link>'+o['link_obs']+'</link>\n'
+		output += '		<description><![CDATA[<a href="'+base_url+o['link_user']+'">'+o['user'].schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+base_url+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
+		output += '		<link>'+base_url+o['link_obs']+'</link>\n'
 		output += '		<pubDate>'+datestamp(o['whentaken'])+'</pubDate>\n'
 		output += '	</item>\n'
 
