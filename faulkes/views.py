@@ -1033,8 +1033,7 @@ def build_pager(request,n):
 
 
 def build_observations_json(obs):
-
-	baseurl = "http://localhost:8000/";
+	base_url = "http://lcogt.net/observations/"
 	if len(obs) > 1:
 		observations = []
 	elif len(obs) == 0:
@@ -1047,10 +1046,10 @@ def build_observations_json(obs):
 
 		o['fitsfiles'] = "";
 		ob = {
-			"_about" : o['link_obs'],
+			"_about" : base_url+o['link_obs'],
 			"label" : o['skyobjectname'],
 			"observer" : {
-				"_about" : o['link_user'],
+				"_about" : base_url+o['link_user'],
 				"label" : re.sub(r"\"",'',o['schoolname'])
 			},
 			"image" : {
@@ -1063,7 +1062,7 @@ def build_observations_json(obs):
 			"dec" : o['decval'],
 			"filter" : re.sub(r"\"",'',o['filter']),
 			"instr" : {
-				"_about" : o['link_tel'],
+				"_about" : base_url+o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
 			},
 			#"views" : o['views'],
