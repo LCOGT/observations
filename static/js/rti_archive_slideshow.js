@@ -159,7 +159,7 @@ Slideshow.prototype.updateObservations = function(){
 			e.preventDefault();
 			_object.displayImage(e.data.num);
 		}).bind('error',function() {
-			this.src = "http://lcogt.net/files/imagecache/large/egomez/no-image_120.png";
+			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
 			return true;
@@ -174,7 +174,7 @@ Slideshow.prototype.updateObservations = function(){
 		$('#result .bigpicture img').bind('click',{slides:this},function(e){
 			location.href = e.data.slides.observations[0]._about
 		}).bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
-			this.src = "/files/imagecache/large/egomez/no-image_120.png";
+			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
 			return true;
@@ -222,7 +222,7 @@ Slideshow.prototype.selectImage = function(sel){
 		e.data.slides.loading = false;
 		$('#result .loadingDiv').hide();
 	}).bind('error',function() {
-		this.src = "/files/imagecache/large/egomez/no-image_120.png";
+		this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 		this.alt = "Image unavailable";
 		this.onerror = "";
 		return true;
