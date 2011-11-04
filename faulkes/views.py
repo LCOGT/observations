@@ -884,13 +884,13 @@ def input_params(request):
 	mimetype = "text/html"
 
 	# If the user has requested a particular mime type we'll use that
-	if request.META['CONTENT_TYPE'] == 'application/json':
+	if request.META.get('CONTENT_TYPE', None) == 'application/json':
 		doctype = 'json'
-	elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
+	elif request.META.get('CONTENT_TYPE', None) == 'application/vnd.google-earth.kml+xml':
 		doctype = 'kml'
-	elif request.META['CONTENT_TYPE'] == 'application/xml':
+	elif request.META.get('CONTENT_TYPE', None) == 'application/xml':
 		doctype = 'rss'
-	elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
+	elif request.META.get('CONTENT_TYPE', None) == 'application/rdf+xml':
 		doctype = 'rdf'
 
 	if doctype == 'json':
@@ -908,7 +908,7 @@ def input_params(request):
 	if path[len(path)-1] == "show":
 		slideshow = True
 
-	query = request.META['QUERY_STRING']
+	query = request.META.get('QUERY_STRING', '')
 	
 
 	return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
