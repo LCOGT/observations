@@ -278,7 +278,7 @@ def search(request):
 	if input['query']:
 		obs = Imagearchive.objects.all()
 		if form['query'] != "":
-			obs = obs.filter(skyobjectname__regex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
+			obs = obs.filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
 		if form['telid'] != 0:
 			obs = obs.filter(telescopeid=form['telid'])
 		if form['filter'] != 'A':
@@ -1046,14 +1046,14 @@ def build_observations_json(obs):
 
 		o['fitsfiles'] = "";
 		ob = {
-			"_about" : base_url+o['link_obs'],
+			"about" : base_url+o['link_obs'],
 			"label" : o['skyobjectname'],
 			"observer" : {
-				"_about" : base_url+o['link_user'],
+				"about" : base_url+o['link_user'],
 				"label" : re.sub(r"\"",'',o['schoolname'])
 			},
 			"image" : {
-				"_about" : o['fullimage_url'],
+				"about" : o['fullimage_url'],
 				"label" : "Image",
 				"fits" : o['fitsfiles'],
 				"thumb" : o['thumbnail']
@@ -1062,7 +1062,7 @@ def build_observations_json(obs):
 			"dec" : o['decval'],
 			"filter" : re.sub(r"\"",'',o['filter']),
 			"instr" : {
-				"_about" : base_url+o['link_tel'],
+				"about" : base_url+o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
 			},
 			#"views" : o['views'],
@@ -1071,7 +1071,7 @@ def build_observations_json(obs):
 			},
 			"exposure": o['exposuresecs'],
 			"credit" : {
-				"_about" : o['license'],
+				"about" : o['license'],
 				"label" : o['credit']
 			}
 		}
