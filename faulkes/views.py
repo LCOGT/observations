@@ -885,7 +885,7 @@ def input_params(request):
 
 	# If the user has requested a particular mime type we'll use that
 	try:
-		reqtype = request.META.get('CONTENT_TYPE', '')
+		reqtype = request.META.get('CONTENT_TYPE', 'text/html')
 		if reqtype == 'application/json':
 			doctype = 'json'
 		elif reqtype == 'application/vnd.google-earth.kml+xml':
@@ -894,6 +894,8 @@ def input_params(request):
 			doctype = 'rss'
 		elif reqtype == 'application/rdf+xml':
 			doctype = 'rdf'
+		else:
+			doctype = 'html'
 	except:
 		reqtype = ''
 
