@@ -884,20 +884,20 @@ def input_params(request):
 	mimetype = "text/html"
 
 	# If the user has requested a particular mime type we'll use that
-	try:
-		reqtype = request.META.get('CONTENT_TYPE', 'text/html')
-		if reqtype == 'application/json':
-			doctype = 'json'
-		elif reqtype == 'application/vnd.google-earth.kml+xml':
-			doctype = 'kml'
-		elif reqtype == 'application/xml':
-			doctype = 'rss'
-		elif reqtype == 'application/rdf+xml':
-			doctype = 'rdf'
-		else:
-			doctype = 'html'
-	except:
-		reqtype = ''
+	#try:
+	#	reqtype = request.META.get('CONTENT_TYPE', 'text/html')
+	#	if reqtype == 'application/json':
+	#		doctype = 'json'
+	#	elif reqtype == 'application/vnd.google-earth.kml+xml':
+	#		doctype = 'kml'
+	#	elif reqtype == 'application/xml':
+	#		doctype = 'rss'
+	#	elif reqtype == 'application/rdf+xml':
+	#		doctype = 'rdf'
+	#	else:
+	#		doctype = 'html'
+	#except:
+	#	reqtype = ''
 
 	if doctype == 'json':
 		callback = request.GET.get('callback','')
