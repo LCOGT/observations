@@ -882,7 +882,7 @@ def input_params(request):
 		path[len(path)-1] = bits[0]
 
 	mimetype = "text/html"
-	reqtype = request.META.get('CONTENT_TYPE', None)
+	reqtype = request.META.get('CONTENT_TYPE', '')
 
 	# If the user has requested a particular mime type we'll use that
 	if reqtype:
