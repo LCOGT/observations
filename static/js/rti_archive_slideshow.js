@@ -150,7 +150,7 @@ Slideshow.prototype.updateObservations = function(){
 	var list = "";
 	var _object = this;
 	for(var i = 0 ; i < this.observations.length ; i++){
-		list += '		<li>\n			<a href="'+this.observations[i]._about+'"><img src="'+this.observations[i].image.thumb+'" title="'+this.observations[i].label+' ('+(i+1)+'/'+this.data.observations+')" class="thumb'+i+'" /></a>\n		</li>\n';
+		list += '		<li>\n			<a href="'+this.observations[i].about+'"><img src="'+this.observations[i].image.thumb+'" title="'+this.observations[i].label+' ('+(i+1)+'/'+this.data.observations+')" class="thumb'+i+'" /></a>\n		</li>\n';
 	}
 	$('#result .thumbnails ul').html(list);
 	for(var i = 0 ; i < this.observations.length ; i++){
@@ -170,9 +170,9 @@ Slideshow.prototype.updateObservations = function(){
 		if($('#result .intro').length == 0) $('#result').append('<div class="intro"><p>'+this.desc+'</p></div>');
 		$('#result .intro').css({'width':($(window).width()/3)+'px'});
 		$('#result .intro').css({'left':(($(window).width()-$('#result .intro').outerWidth())/2)+'px','top':(($(window).height()-$('#result .intro').outerHeight())/2)+'px','z-index':3}).delay(3000).fadeOut(500);
-		if($('#result .bigpicture').length == 0) $('#result').append('<div class="bigpicture"><img src="'+this.observations[0].image._about+'" /></div>');
+		if($('#result .bigpicture').length == 0) $('#result').append('<div class="bigpicture"><img src="'+this.observations[0].image.about+'" /></div>');
 		$('#result .bigpicture img').bind('click',{slides:this},function(e){
-			location.href = e.data.slides.observations[0]._about
+			location.href = e.data.slides.observations[0].about
 		}).bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
 			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 			this.alt = "Image unavailable";
@@ -214,10 +214,10 @@ Slideshow.prototype.selectImage = function(sel){
 	$('#result .thumbnails ul li img').css({'border-color':$('#result .thumbnails ul li img').css('border-color')});	
 	$('#result .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
 	$('#result .bigpicture img').attr({
-		src: obs.image._about,
+		src: obs.image.about,
 		title: obs.label
 	}).unbind('click').bind('click',{slides:this},function(e){
-		location.href = e.data.slides.observations[e.data.slides.selected]._about
+		location.href = e.data.slides.observations[e.data.slides.selected].about
 	}).unbind('load').bind('load',{slides:this},function(e){
 		e.data.slides.loading = false;
 		$('#result .loadingDiv').hide();
@@ -234,13 +234,13 @@ Slideshow.prototype.selectImage = function(sel){
 	sel = this.selected+1;
 	sel = (sel < 0) ? 0 : sel;
 	sel = (sel >= this.observations.length) ? 0 : sel;
-	$.preLoadImages(this.observations[sel].image._about);
+	$.preLoadImages(this.observations[sel].image.about);
 }
 
 Slideshow.prototype.getDescription = function(obs){
-	return '<h1 style="font-size:1em;margin:0px;"><a href="'+obs._about+'">'+obs.label+'</a></h1><p style="margin:0px;padding:0px;font-size:0.8em;">by <a href="'+obs.observer._about+'">'+obs.observer.label+'</a> '+relative_time(new Date(Date.parse(obs.time.creation)))+' using <a href="'+obs.instr._about+'">'+obs.instr.tel+'</a>';
+	return '<h1 style="font-size:1em;margin:0px;"><a href="'+obs.about+'">'+obs.label+'</a></h1><p style="margin:0px;padding:0px;font-size:0.8em;">by <a href="'+obs.observer.about+'">'+obs.observer.label+'</a> '+relative_time(new Date(Date.parse(obs.time.creation)))+' using <a href="'+obs.instr.about+'">'+obs.instr.tel+'</a>';
 
-	var str = $('#logo').html()+'<br style="clear:both;"><h1><a href="'+obs._about+'">'+obs.label+'</a></h1><table><tr><td>Observer:</td><td><a href="'+obs.observer._about+'">'+obs.observer.label+'</a></td></tr><tr><td>Date:</td><td>'+obs.time.creation+'</td></tr>';
+	var str = $('#logo').html()+'<br style="clear:both;"><h1><a href="'+obs.about+'">'+obs.label+'</a></h1><table><tr><td>Observer:</td><td><a href="'+obs.observer.about+'">'+obs.observer.label+'</a></td></tr><tr><td>Date:</td><td>'+obs.time.creation+'</td></tr>';
 	if(typeof obs.ra!="undefined"){
 		var ra_h = Math.floor(obs.ra/15);
 		var ra_m = Math.floor(((obs.ra/15)-ra_h)*60);
@@ -259,7 +259,7 @@ Slideshow.prototype.getDescription = function(obs){
 		var dec = dc_d+':'+dc_m+':'+dc_s;
 		str += '<tr><td>Coordinates:</td><td>'+ra+', '+dec+'</td></tr>';
 	}
-	str += '<tr><td>Telescope:</td><td><a href="'+obs.instr._about+'">'+obs.instr.tel+'</a></td></tr>';
+	str += '<tr><td>Telescope:</td><td><a href="'+obs.instr.about+'">'+obs.instr.tel+'</a></td></tr>';
 	return str;
 }
 
