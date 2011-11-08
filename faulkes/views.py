@@ -932,8 +932,8 @@ def build_observations(obs):
 		o = {}
 
 		try:
-			o['user'] = Registrations.objects.get(schoolid=ob.schoolid)
-			o['schoolname'] = o['user'].schoolname
+			o['user'] = Registrations.objects.get(schoolid=smart_unicode(ob.schoolid, encoding='utf-8', strings_only=False, errors='strict'))
+			o['schoolname'] = smart_unicode(o['user'].schoolname, encoding='utf-8', strings_only=False, errors='strict')
 		except ObjectDoesNotExist:
 			o['user'] = "Unknown"
 			o['schoolname'] = "Unknown"
