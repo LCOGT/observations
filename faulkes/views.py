@@ -933,10 +933,14 @@ def build_observations(obs):
 
 		try:
 			o['user'] = Registrations.objects.get(schoolid=ob.schoolid)
-			o['schoolname'] = smart_unicode(o['user'].schoolname, encoding='utf-8', strings_only=False, errors='strict')
-		except ObjectDoesNotExist:
+		except:
 			o['user'] = "Unknown"
+
+		try:
+			o['schoolname'] = o['user'].schoolname
+		except:
 			o['schoolname'] = "Unknown"
+
 
 		o['imageid'] = ob.imageid
 		o['imagetype'] = ob.imagetype
