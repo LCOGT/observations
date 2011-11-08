@@ -771,8 +771,11 @@ def view_observation(request,code,tel,obs):
 			obstats[0].moreurl = n.group(1)
 		obstats[0].save()
 
-
-	u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
+        try:
+	    u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
+            tag = u.tag
+        except:
+            tag='0'
 
 	obs[0]['views'] = views
 
@@ -794,7 +797,7 @@ def view_observation(request,code,tel,obs):
 
 	# Get FITS information
 	opener = urllib2.build_opener()
-	url = 'http://ari-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (u.tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
+	url = 'http://ari-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
 
 	rids = obs[0]['requestids'].split(',')
 	filters = []
