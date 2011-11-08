@@ -5,9 +5,11 @@
 {% block title %}{% if n > 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ form.query }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
+<!--
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.core.min.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.widget.min.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/ui/minified/jquery.ui.datepicker.min.js"></script>
+-->
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_search.js"></script>
 	<script>
 	<!--
@@ -30,12 +32,12 @@
 
 
 {% block search %}{% if n > 0 %}<div class="searchbox">
-									<form action='/observations/search/' method='GET'>
+									<form action='{% url rtiadminsite.faulkes.views.index %}search/' method='GET'>
 										<input type='text' name='query' class='searchbox' title='e.g. NGC 2011' /><input type='submit' value='Search' class='searchbtn' />
 										<br /><span style='font-size:0.8em;'>[<a href="{% url rtiadminsite.faulkes.views.index %}search">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url rtiadminsite.faulkes.views.index %}{{input.link}}/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href="{% url rtiadminsite.faulkes.views.index %}search/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
 {% endif %}
 								</div>{% else %}{% endif %}{% endblock %}
 
@@ -49,7 +51,7 @@
 {% block main-content %}
 {% if n > 0 %}
 						<div class="row">
-							<p>There are {{ n }} observations matching your search.</p>
+							<p>There are {{ n }} observations matching your search. Results are sorted with the newest observations first.</p>
 						</div>
 						
 						<div class="row">
@@ -90,128 +92,119 @@
 		<form action="{% url rtiadminsite.faulkes.views.index %}search" method="get" id="rti-archive-form">
 			<div class="row">
 				<fieldset>
-				<div class="sixcol lastcol">
 					<legend>By title:</legend>
 					<!--<label for="edit-ObName">Search by title: </label>-->
-				</div>
-				<div class="twocol">
-					<p class="gray-5">The name of a single astronomical object e.g. &quot;<em>Orion Nebula</em>&quot;. This is a simple title search so <em>Saturn</em> would match both &quot;<em>Saturn</em>&quot; and &quot;<em>NGC7009 (Saturn Nebula)</em>&quot;.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<label for="edit-ObName" class="hidden">Title: </label><input type="text" maxlength="128" name="query" id="ObName" value="{{ form.query }}" class="form-text" style="width:298px;" />
-				</div>
+					<div class="twocol">
+						<p class="gray-5">The name of a single astronomical object e.g. &quot;<em>Orion Nebula</em>&quot;. This is a simple title search so <em>Saturn</em> would match both &quot;<em>Saturn</em>&quot; and &quot;<em>NGC7009 (Saturn Nebula)</em>&quot;.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label for="edit-ObName" class="hidden">Title: </label><input type="text" maxlength="128" name="query" id="ObName" value="{{ form.query }}" class="form-text" style="width:298px;" />
+					</div>
 				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
 				<fieldset>
-				<div class="sixcol lastcol">
 					<legend>By category of object:</legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">The type of astronomical object determined from the title as set by the observer.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<div class="inline">
-						<label for="Category" class="hidden">Category:</label><select name="category" class="form-select" id="category" ><option value="0">All</option>{% for c in categories %}<option value="{{ forloop.counter }}"{% if form.category == forloop.counter %} selected="selected"{% endif %}>{{ c.name }}{% endfor %}</select>
+					<div class="twocol">
+						<p class="gray-5">The type of astronomical object determined from the title as set by the observer.</p>
 					</div>
-					<div class="inline">
-						<span class="inline">or by </span><label for="AVM" class="inline"><a href="{% url rtiadminsite.faulkes.views.index %}category">AVM taxonomy</a></label>
-						<input type="text" maxlength="7" name="avm" id="AVM" value="{{ form.avm }}" class="form-text" style="width:7em;" /><span id="avm_lookup"></span>
+					<div class="fourcol lastcol">
+						<div class="inline">
+							<label for="Category" class="hidden">Category:</label><select name="category" class="form-select" id="category" ><option value="0">All</option>{% for c in categories %}<option value="{{ forloop.counter }}"{% if form.category == forloop.counter %} selected="selected"{% endif %}>{{ c.name }}{% endfor %}</select>
+						</div>
+						<div class="inline">
+							<span class="inline">or by </span><label for="AVM" class="inline"><a href="{% url rtiadminsite.faulkes.views.index %}category">AVM taxonomy</a></label>
+							<input type="text" maxlength="7" name="avm" id="AVM" value="{{ form.avm }}" class="form-text" style="width:7em;" /><span id="avm_lookup"></span>
+						</div>
 					</div>
-				</div>
 				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
 				<fieldset>
-				<div class="sixcol lastcol">
 					<legend>By date range:</legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">Limit your search to a particular range of dates.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<label class="option"><input type="radio" name="daterange" value="all" checked="checked"  class="form-radio" /> All dates</label>
-					<label class="option inline"><input type="radio" name="daterange" value="select" class="form-radio" /> Use date range </label>
-						from
-						<div class="inline">
-							<label for="edit-StartDate-day" class="hidden">start day</label><select name="sday" class="form-select" id="edit-StartDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.sday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
-						</div>
-						<div class="inline">
-							<label for="edit-StartDate-month" class="hidden">start month</label><select name="smon" class="form-select" id="edit-StartDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.smon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
-						</div>
-						<div class="inline">
-							<label for="edit-StartDate-year" class="hidden">start year</label><select name="syear" class="form-select" id="edit-StartDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.syear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
-						</div>
-						<label for="edit-EndDate" class="inline"> until </label>
-						<div class="inline">
-							<label for="edit-EndDate-day" class="hidden">end day</label><select name="eday" class="form-select" id="edit-EndDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.eday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
-						</div>
-						<div class="inline">
-							<label for="edit-EndDate-month" class="hidden">end month</label><select name="emon" class="form-select" id="edit-EndDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.emon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
-						</div>
-						<div class="inline">
-							<label for="edit-EndDate-year" class="hidden">end year</label><select name="eyear" class="form-select" id="edit-EndDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.eyear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
-						</div>
-				</div>
+					<div class="twocol">
+						<p class="gray-5">Limit your search to a particular range of dates.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label class="option"><input type="radio" name="daterange" value="all" checked="checked"  class="form-radio" /> All dates</label>
+						<label class="option inline"><input type="radio" name="daterange" value="select" class="form-radio" /> Use date range </label>
+							from
+							<div class="inline">
+								<label for="edit-StartDate-day" class="hidden">start day</label><select name="sday" class="form-select" id="edit-StartDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.sday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
+							</div>
+							<div class="inline">
+								<label for="edit-StartDate-month" class="hidden">start month</label><select name="smon" class="form-select" id="edit-StartDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.smon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
+							</div>
+							<div class="inline">
+								<label for="edit-StartDate-year" class="hidden">start year</label><select name="syear" class="form-select" id="edit-StartDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.syear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
+							</div>
+							<label for="edit-EndDate" class="inline"> until </label>
+							<div class="inline">
+								<label for="edit-EndDate-day" class="hidden">end day</label><select name="eday" class="form-select" id="edit-EndDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.eday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
+							</div>
+							<div class="inline">
+								<label for="edit-EndDate-month" class="hidden">end month</label><select name="emon" class="form-select" id="edit-EndDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.emon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
+							</div>
+							<div class="inline">
+								<label for="edit-EndDate-year" class="hidden">end year</label><select name="eyear" class="form-select" id="edit-EndDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.eyear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
+							</div>
+					</div>
 				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
 				<fieldset>
-				<div class="sixcol lastcol">
 					<legend>By position: </legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">Limit your search to a specific patch of sky by astronomical coordinates (Right Ascension and Declination). The search radius is limited to less than 10 degrees.</p>
-				</div>
-				<div class="fourcol lastcol">
-						<label for="RA" class="inline">RA:</label> <input type="text" maxlength="15" name="RA" id="RA" value="{{ form.RA }}" class="form-text" style="width:5em;" /> ,
-						<label for="DEC" class="inline">Dec:</label> <input type="text" maxlength="15" name="DEC" id="DEC" value="{{ form.DEC }}" class="form-text" style="width:5em;" /> ,
-						<label for="SR" class="inline">radius (degrees):</label> <input type="text" maxlength="15" name="SR" id="SR" value="{{ form.SR }}" class="form-text" style="width:4em;" />
-				</div>
+					<div class="twocol">
+						<p class="gray-5">Limit your search to a specific patch of sky by astronomical coordinates (Right Ascension and Declination). The search radius is limited to less than 10 degrees.</p>
+					</div>
+					<div class="fourcol lastcol">
+							<label for="RA" class="inline">RA:</label> <input type="text" maxlength="15" name="RA" id="RA" value="{{ form.RA }}" class="form-text" style="width:5em;" /> ,
+							<label for="DEC" class="inline">Dec:</label> <input type="text" maxlength="15" name="DEC" id="DEC" value="{{ form.DEC }}" class="form-text" style="width:5em;" /> ,
+							<label for="SR" class="inline">radius (degrees):</label> <input type="text" maxlength="15" name="SR" id="SR" value="{{ form.SR }}" class="form-text" style="width:4em;" />
+					</div>
 				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
 				<fieldset>
-				<div class="sixcol lastcol">
 					<legend>By telescope:</legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">Limit your search to a specific telescope.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<label for="edit-telid" class="hidden">Telescope: </label><select name="telid" class="form-select" id="edit-telid" >
-						<option value="0">All</option>{% for telescope in telescopes %}
-						<option value="{{ telescope.id }}"{% if telescope.id == form.telid %} selected="selected"{% endif %}>{{ telescope.name }}</option>{% endfor %}
-					</select>
-				</div>
+					<div class="twocol">
+						<p class="gray-5">Limit your search to a specific telescope.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label for="edit-telid" class="hidden">Telescope: </label><select name="telid" class="form-select" id="edit-telid" >
+							<option value="0">All</option>{% for telescope in telescopes %}
+							<option value="{{ telescope.id }}"{% if telescope.id == form.telid %} selected="selected"{% endif %}>{{ telescope.name }}</option>{% endfor %}
+						</select>
+					</div>
+				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
-				<div class="sixcol lastcol">
+				<fieldset>
 					<legend>By wavelength filter:</legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">Limit your search by the type of astronomical <a href="http://lcogt.net/network/instrumentation/filtertypes">filter</a>.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<label for="edit-filter" class="hidden">Wavelength filter: </label><select name="filter" class="form-select" id="edit-filter" ><option value="A" selected="selected">Any</option><option value="RGB">Color</option><option value="RGB+ND">Color + Neutral Density</option><option value="">Opal</option><option value="BI">Bessell I</option><option value="CR">Bessell R</option><option value="BU">Bessell U</option><option value="CV">Bessell V</option><option value="D51">D51</option><option value="CA">H alpha</option><option value="HB">H beta</option><option value="CO">OIII</option><option value="SY">Pan-STARRS Y</option><option value="SZ">Pan-STARRS Z</option><option value="SG">SDSS g&#039;</option><option value="CI">SDSS i&#039;</option><option value="SR">SDSS r&#039;</option><option value="CU">SDSS u</option><option value="SM">SkyMap v</option><option value="SO">Solar</option></select>
-				</div>
+					<div class="twocol">
+						<p class="gray-5">Limit your search by the type of astronomical <a href="http://lcogt.net/network/instrumentation/filtertypes">filter</a>.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label for="edit-filter" class="hidden">Wavelength filter: </label><select name="filter" class="form-select" id="edit-filter" ><option value="A" selected="selected">Any</option><option value="RGB">Color</option><option value="RGB+ND">Color + Neutral Density</option><option value="">Opal</option><option value="BI">Bessell I</option><option value="CR">Bessell R</option><option value="BU">Bessell U</option><option value="CV">Bessell V</option><option value="D51">D51</option><option value="CA">H alpha</option><option value="HB">H beta</option><option value="CO">OIII</option><option value="SY">Pan-STARRS Y</option><option value="SZ">Pan-STARRS Z</option><option value="SG">SDSS g&#039;</option><option value="CI">SDSS i&#039;</option><option value="SR">SDSS r&#039;</option><option value="CU">SDSS u</option><option value="SM">SkyMap v</option><option value="SO">Solar</option></select>
+					</div>
+				</fieldset>
 			</div>
 			<div class="spacer"></div>
 			<div class="row">
-				<div class="sixcol lastcol">
+				<fieldset>
 					<legend>By user: </legend>
-				</div>
-				<div class="twocol">
-					<p class="gray-5">Limit your search to observations by a specific username.</p>
-				</div>
-				<div class="fourcol lastcol">
-					<label for="UserID" class="hidden">User: </label><input type="text" maxlength="30" name="user" id="UserID" value="{{ form.user }}" class="form-text" style="width:15em;" />
-				</div>
+					<div class="twocol">
+						<p class="gray-5">Limit your search to observations by a specific username.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label for="UserID" class="hidden">User: </label><input type="text" maxlength="30" name="user" id="UserID" value="{{ form.user }}" class="form-text" style="width:15em;" />
+					</div>
+				</fieldset>
 			</div>
 			<div class="row">
 				<div class="twocol">

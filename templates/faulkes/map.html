@@ -46,6 +46,9 @@
 			scale = Math.pow(Math.sin(0.5*Math.PI*grid[i]/max),0.3);
 			if(grid[i] > 0) paper.rect(x, y, dx, dy).attr({fill:"red",'stroke-width':0,'fill-opacity':scale});
 		}
+		$('#heatmap').css({'cursor':'pointer'}).bind("click",function(e){
+			window.location = '/observations/search?RA='+(360-360*e.layerX/wide)+'&DEC='+(90-180*e.layerY/tall)+'&SR=3';
+		});
 	});
 
 	// -->	
@@ -66,9 +69,9 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>This is a heat map showing how often various parts of the sky have been observed by our telescopes during the past three months. Brighter squares show areas that have more public observations.</p>
+							<p>This is a heat map showing how often various parts of the sky have been observed by our telescopes during the past month. Brighter squares show areas that have more public observations.</p>
 							<div id="starmap" class="sixcol" style="width:944px;height:472px;"></div>
-							<div id="heatmap" class="sixcol" style="width:944px;height:472px;position:absolute;z-index:10;margin-left:0px;"></div>
+							<div id="heatmap" class="sixcol" style="width:944px;height:472px;position:absolute;z-index:10;margin-left:0px;" title="Click on the map to search for nearby observations"></div>
 						</div>
 						<div class="row lastrow">
 

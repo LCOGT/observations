@@ -21,6 +21,7 @@ import urllib2
 
 n_per_line = 6
 n_per_page = 30
+base_url = "http://lcogt.net/observations/"
 categorylookup = { '1': 'Planets',
 				'1.1':'Planets (Type)',
 				'1.1.1':'Terrestrial Planets',
@@ -277,7 +278,7 @@ def search(request):
 	if input['query']:
 		obs = Imagearchive.objects.all()
 		if form['query'] != "":
-			obs = obs.filter(skyobjectname__regex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
+			obs = obs.filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
 		if form['telid'] != 0:
 			obs = obs.filter(telescopeid=form['telid'])
 		if form['filter'] != 'A':
@@ -296,8 +297,8 @@ def search(request):
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
 
-		print "All"
-		print obs.count()
+		#print "All"
+		#print obs.count()
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -336,11 +337,11 @@ def search(request):
 					dec2 = math.radians(o.decval)
 					dRA = (ra1-ra2)
 					cosd = math.fabs(math.sin(dec1)*math.sin(dec2) + math.cos(dec1)*math.cos(dec2)*math.cos(dRA))
-					print i
+					#print i
 					if cosd > cosr:
 						keepers.append(o.imageid)
 
-			print keepers
+			#print keepers
 			obs = obs.filter(imageid__in=keepers)
 
 		obs = obs.order_by('-whentaken')
@@ -690,7 +691,7 @@ def view_map(request):
 	dt = datetime.utcnow() - timedelta(90)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
-	print dt.strftime("%Y%m%d%H%M%S")
+	#print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
 		
 
@@ -770,8 +771,11 @@ def view_observation(request,code,tel,obs):
 			obstats[0].moreurl = n.group(1)
 		obstats[0].save()
 
-
-	u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
+        try:
+	    u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
+            tag = u.tag
+        except:
+            tag='0'
 
 	obs[0]['views'] = views
 
@@ -793,7 +797,7 @@ def view_observation(request,code,tel,obs):
 
 	# Get FITS information
 	opener = urllib2.build_opener()
-	url = 'http://ari-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (u.tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
+	url = 'http://ari-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
 
 	rids = obs[0]['requestids'].split(',')
 	filters = []
@@ -821,7 +825,7 @@ def view_observation(request,code,tel,obs):
 				filters[rid]['fits'] = fit.group(1)
 
 	if input['doctype'] == "json":
-		print obs
+		#print obs
 		return view_json(request,build_observations_json(obs),input)
 	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
 
@@ -883,14 +887,20 @@ def input_params(request):
 	mimetype = "text/html"
 
 	# If the user has requested a particular mime type we'll use that
-	if request.META['CONTENT_TYPE'] == 'application/json':
-		doctype = 'json'
-	elif request.META['CONTENT_TYPE'] == 'application/vnd.google-earth.kml+xml':
-		doctype = 'kml'
-	elif request.META['CONTENT_TYPE'] == 'application/xml':
-		doctype = 'rss'
-	elif request.META['CONTENT_TYPE'] == 'application/rdf+xml':
-		doctype = 'rdf'
+	#try:
+	#	reqtype = request.META.get('CONTENT_TYPE', 'text/html')
+	#	if reqtype == 'application/json':
+	#		doctype = 'json'
+	#	elif reqtype == 'application/vnd.google-earth.kml+xml':
+	#		doctype = 'kml'
+	#	elif reqtype == 'application/xml':
+	#		doctype = 'rss'
+	#	elif reqtype == 'application/rdf+xml':
+	#		doctype = 'rdf'
+	#	else:
+	#		doctype = 'html'
+	#except:
+	#	reqtype = ''
 
 	if doctype == 'json':
 		callback = request.GET.get('callback','')
@@ -907,7 +917,7 @@ def input_params(request):
 	if path[len(path)-1] == "show":
 		slideshow = True
 
-	query = request.META['QUERY_STRING']
+	query = request.META.get('QUERY_STRING', '')
 	
 
 	return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
@@ -926,10 +936,14 @@ def build_observations(obs):
 
 		try:
 			o['user'] = Registrations.objects.get(schoolid=ob.schoolid)
-			o['schoolname'] = o['user'].schoolname
-		except ObjectDoesNotExist:
+		except:
 			o['user'] = "Unknown"
+
+		try:
+			o['schoolname'] = o['user'].schoolname
+		except:
 			o['schoolname'] = "Unknown"
+
 
 		o['imageid'] = ob.imageid
 		o['imagetype'] = ob.imagetype
@@ -1033,8 +1047,6 @@ def build_pager(request,n):
 
 
 def build_observations_json(obs):
-
-	baseurl = "http://localhost:8000/";
 	if len(obs) > 1:
 		observations = []
 	elif len(obs) == 0:
@@ -1047,14 +1059,14 @@ def build_observations_json(obs):
 
 		o['fitsfiles'] = "";
 		ob = {
-			"_about" : o['link_obs'],
+			"about" : base_url+o['link_obs'],
 			"label" : o['skyobjectname'],
 			"observer" : {
-				"_about" : o['link_user'],
+				"about" : base_url+o['link_user'],
 				"label" : re.sub(r"\"",'',o['schoolname'])
 			},
 			"image" : {
-				"_about" : o['fullimage_url'],
+				"about" : o['fullimage_url'],
 				"label" : "Image",
 				"fits" : o['fitsfiles'],
 				"thumb" : o['thumbnail']
@@ -1063,7 +1075,7 @@ def build_observations_json(obs):
 			"dec" : o['decval'],
 			"filter" : re.sub(r"\"",'',o['filter']),
 			"instr" : {
-				"_about" : o['link_tel'],
+				"about" : base_url+o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
 			},
 			#"views" : o['views'],
@@ -1072,7 +1084,7 @@ def build_observations_json(obs):
 			},
 			"exposure": o['exposuresecs'],
 			"credit" : {
-				"_about" : o['license'],
+				"about" : o['license'],
 				"label" : o['credit']
 			}
 		}
@@ -1103,7 +1115,7 @@ def view_json(request,obs,config):
 	if 'pager' in config:
 		if 'next' in config['pager'] or 'previous' in config['pager']:
 			response["page"] = {}
-			print config
+			#print config
 			if 'previous' in config['pager'] and config['pager']['previous']!='':
 				response["page"]["previous"] = response["link"]+".json?"+str(config['pager']['previous'])
 			if 'next' in config['pager'] and config['pager']['next']!='':
@@ -1140,7 +1152,7 @@ def view_kml(request,obs,config):
 		output += '	<Placemark>\n'
 		output += '		<name>'+o['skyobjectname']+'</name>\n'
 		output += '		<description><![CDATA[\n'
-		output += '			<p>Observed by <a href="'+o['link_user']+'.kml">'+o['user'].schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
+		output += '			<p>Observed by <a href="'+base_url+o['link_user']+'.kml">'+o['user'].schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+base_url+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
 		output += '			<p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
 		output += '		]]></description>\n'
 		output += '		<LookAt>\n'
@@ -1172,7 +1184,7 @@ def view_rss(request,obs,config):
 	output += '<rss version="2.0">\n'
 	output += '<channel>\n'
 	output += '	<title>'+config['title']+'</title>\n'
-	output += '	<link>'+config['link']+'</link>\n'
+	output += '	<link>'+base_url+config['link']+'</link>\n'
 	output += '	<description>'+config['description']+'</description>\n'
 	output += '	<language>en-gb</language>\n'
 	output += '	<pubDate>'+datestamp('')+'</pubDate>\n'
@@ -1184,8 +1196,8 @@ def view_rss(request,obs,config):
 	for o in obs:
 		output += '	<item>\n'
 		output += '		<title>'+o['skyobjectname']+'</title>\n'
-		output += '		<description><![CDATA[<a href="'+o['link_user']+'">'+o['user'].schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
-		output += '		<link>'+o['link_obs']+'</link>\n'
+		output += '		<description><![CDATA[<a href="'+base_url+o['link_user']+'">'+o['user'].schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+base_url+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
+		output += '		<link>'+base_url+o['link_obs']+'</link>\n'
 		output += '		<pubDate>'+datestamp(o['whentaken'])+'</pubDate>\n'
 		output += '	</item>\n'
 

@@ -13,7 +13,7 @@
 							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% for o in latest %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
-								<div class='thumb onerow' about='{{ o.link_obs }}'>
+								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
 									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
 					
@@ -36,7 +36,7 @@
 							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% for o in trending %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
-								<div class='thumb onerow' about='{{ o.link_obs }}'>
+								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
 									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
 					
@@ -59,7 +59,7 @@
 							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% for o in popular %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
-								<div class='thumb onerow' about='{{ o.link_obs }}'>
+								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
 									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
 					

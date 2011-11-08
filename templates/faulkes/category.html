@@ -15,7 +15,7 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>There are {{ n }} observations classified as {{ category|lowercase }}. The classification is automatic based on the observation title set by the observer so may include incorrect results when objects of different types have similar names.</p>
+							<p>There are {{ n }} observations classified as {{ category|lowercase }}. The classification is automatic based on the observation title set by the observer so may include incorrect results when objects of different types have similar names or when observers have mis-labelled their observations.</p>
 						</div>
 						<div class="row">
 							{% if pager %}

@@ -89,6 +89,7 @@ ul.rti-fits-list {
 }
 
 #rti-archive-form fieldset { border: 0px; padding: 0px; margin: 0px;}
+#rti-archive-form fieldset legend { padding: 0px; margin: 0px;}
 #rti-archive-form legend {
 	display:block;
 	font-weight: bold;
@@ -282,6 +283,7 @@ div.searchbox input.searchbox, div.searchboxbig input.searchbox {
 	background: #fff;
 	border: solid 1px #bcbbbb;
 	outline: none;
+	margin: 0px;
 	-webkit-border-top-left-radius: 8px;
 	-webkit-border-bottom-left-radius: 8px;
 	-moz-border-radius-topleft: 8px;
@@ -295,6 +297,7 @@ div.searchbox input.searchbox, div.searchboxbig input.searchbox {
 div.searchbox .searchbtn, div.searchboxbig .searchbtn {
 	cursor: pointer;
 	color: #fff;
+	margin: 0px;
 	border: solid 1px #494949;
 	text-shadow: 0 1px 1px rgba(0,0,0,.6);
 	-webkit-border-top-right-radius: 8px;
@@ -323,6 +326,7 @@ div.searchboxbig .searchbtn { padding: 5px 8px 5px 8px; }
 
 img.observation-image {
 	width: 560px;
+	z-index: 1;
 }
 
 img.observation-image:hover {

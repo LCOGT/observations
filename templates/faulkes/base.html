@@ -7,8 +7,8 @@
 	<title>{%block header %}{%endblock%} | LCOGT</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="DC.Title" content="Las Cumbres Observatory Global Telescope Network" />
-	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/zen/lcogt/favicon.ico" type="image/x-icon" />
-	<link rel="stylesheet" href="http://wwwbuild.lco.gtn/sites/default/themes/lcogt/css/style.css" type="text/css">
+	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/lcogt/favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="http://lcogt.net/sites/default/themes/lcogt/css/style.css" type="text/css">
 	<link rel="stylesheet" href="{{MEDIA_URL}}css/rti_archive.css" type="text/css">{% block css-content %}{% endblock %}{% block feeds %}{% endblock %}
 	<script type="text/javascript" src="{{MEDIA_URL}}js/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="{{MEDIA_URL}}js/rti_archive.js"></script>{% block script-content %}{% endblock %}
@@ -27,7 +27,7 @@
 			<div id="screen">
 				<div id="container">
 					<div id="header">
-						{% block logo-content %}<div id="logo"><a href="/" title="Home" rel="home"><img src="http://wwwbuild.lco.gtn/sites/default/themes/lcogt/logo.png" alt="Home" id="logo-image" /></a></div>{% endblock %}
+						{% block logo-content %}<div id="logo"><a href="/" title="Home" rel="home"><img src="http://lcogt.net/sites/default/themes/lcogt/logo.png" alt="Home" id="logo-image" /></a></div>{% endblock %}
 						<div id="site-name">
 							<strong><a href="/" title="Home" rel="home"><span>Las Cumbres Observatory <em>Global Telescope Network</em></span></a></strong>
 						</div>
@@ -48,11 +48,6 @@
 											<label class="element-invisible" for="edit-search-block-form--2">Search </label>
 											<input title="Enter the terms you wish to search for." onblur="if (this.value == &#039;&#039;) { this.value = &#039;Search LCOGT...&#039;; }" onfocus="if (this.value == &#039;Search LCOGT...&#039;) { this.value = &#039;&#039;; }" class="search form-text" type="text" id="q" name="q" value="Search LCOGT..." size="15" maxlength="128" /><input title="Search" class="btn form-submit" type="submit" id="edit-submit" name="op" value="" /><input type="hidden" name="q" value="site:lcogt.net" />
 										</form>
-										<!--form action="/" method="post" id="search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
-											<h2 class="element-invisible">Search form</h2>
-											<label class="element-invisible" for="edit-search-block-form--2">Search </label>
-											<input title="Enter the terms you wish to search for." onblur="if (this.value == &#039;&#039;) { this.value = &#039;Search LCOGT...&#039;; }" onfocus="if (this.value == &#039;Search LCOGT...&#039;) { this.value = &#039;&#039;; }" class="search form-text" type="text" id="q" name="q" value="Search LCOGT..." size="15" maxlength="128" /><input title="Search" class="btn form-submit" type="submit" id="edit-submit" name="op" value="" /><input type="hidden" name="q" value="site:lcogt.net" />
-										</form-->
 									</li>
 								</ul>
 							</nav>
@@ -130,7 +125,17 @@
 					</div>
 
 					<div class="clear-block"></div>
-					<div id="footer">Copyright &copy; 2011 Las Cumbres Observatory Global Telescope Network. All rights reserved.</div>
+					<div id="footer">
+						Copyright &copy; 2011 Las Cumbres Observatory Global Telescope Network. All rights reserved.
+						<ul class="menu">
+							<li class="first leaf"><a title="Contact LCOGT" href="/contact">Contact</a></li>
+							<li class="leaf"><a href="/images">Image Galleries</a></li>
+							<li class="last leaf"><a title="A full list of all LCOGT staff" href="/people">Staff list</a></li>
+						</ul>
+						<a href="http://twitter.com/lcogt"><img title="Follow us on Twitter" alt="Twitter" src="/sites/default/themes/lcogt/images/twitter.png"></a> 
+						<a href="http://facebook.com/lcogt"><img title="Connect with us on Facebook" alt="Facebook" src="/sites/default/themes/lcogt/images/facebook.png"></a> 
+						<a href="/blog/feed"><img title="Subscribe to our news blog" alt="RSS Feed" src="/sites/default/themes/lcogt/images/feed.png"></a>
+					</div>
 				</div>
 			</div>
 		</div>

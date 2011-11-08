@@ -6,8 +6,6 @@ var obs_img = '';
 
 $(document).ready(function(){
 
-	//$('#lcogt-bar').fadeTo(5000,0.2).bind('mouseenter',function(e){ $(this).fadeTo(300,1); }).bind('mouseleave',function(e){ $(this).fadeTo(300,0.2); });
-	
 	// Check for failure to load images and use a dummy image
 	if($('img.observation-image').length > 0) imageLoadError('img.observation-image');
 	if($('.thumbnail img').length > 0) imageLoadError('.thumbnail img');
@@ -61,10 +59,10 @@ function imageLoadError(el){
 			// Work	around for error function reporting of file load failure
 			this.src = this.src;
 			$(this).bind('error',function() {
-				this.src = "http://lcogt.net/files/imagecache/large/egomez/no-image_120.png";
+				this.src = "http://lcogt.net/files/no-image_120.png";
 				this.alt = "Image unavailable";
-					this.onerror = "";
-					return true;
+				this.onerror = "";
+				return true;
 			})
 	});
 }
