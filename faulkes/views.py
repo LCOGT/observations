@@ -1243,7 +1243,7 @@ def degreestodms(value):
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return str(d)+':'+str(m)+':'+"{:05.2f}".format(s)
+	return str(d)+':'+str(m)+':'+"{0:05.2f}".format(s)
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal degrees minutes and seconds"
@@ -1251,7 +1251,7 @@ def degreestohms(value):
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return str(d)+':'+str(m)+':'+"{:05.2f}".format(s)
+	return str(d)+':'+str(m)+':'+"{0:05.2f}".format(s)
 
 def datestamp(value):
 	if value:
