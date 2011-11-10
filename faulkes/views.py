@@ -728,8 +728,8 @@ def view_map(request):
 	ras = []
 	dcs = []
 	for o in obs:
-		ras.append(o.raval*15)
-		dcs.append(o.decval)
+		ras.append(round(o.raval*15*100)/100)
+		dcs.append(round(o.decval*100)/100)
 
 	if input['doctype'] == "json":
 		return view_json(request,build_observations_json(obs),input)
