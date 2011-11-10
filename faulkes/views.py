@@ -303,15 +303,38 @@ def search(request):
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
 
-			form['SR'] = float(form['SR'])
+			try:
+				form['SR'] = float(form['SR'])
+			except:
+				return broken(request,"There was a problem with the search radius you entered. Please make sure that it is provided in decimal degrees.")
+
 			srlimit = 10
+
 			if form['SR'] > srlimit:
 				form['SR'] = srlimit
-			dec = float(form['DEC'])
+
 			if form['RA'].find(':') > 0:
-				ra = hexangletodec(form['RA'])*15
+				try:
+					ra = hexangletodec(form['RA'])*15
+				except:
+					return broken(request,"There was a problem with the format of the Right Ascension that you entered. Please make sure you either enter the Right Ascension as a decimal number of hours or in the format hh:mm:ss.s.")
 			else:
-				ra = float(form['RA'])
+				try:
+					ra = float(form['RA'])
+				except:
+					return broken(request,"There was a problem with the format of the Right Ascension that you entered. It doesn't appear to be a number. Please make sure you either enter the Right Ascension as a decimal number of hours or in the format hh:mm:ss.s.")
+
+			if form['DEC'].find(':') > 0:
+				try:
+					dec = hexangletodec(form['DEC'])
+				except:
+					return broken(request,"There was a problem with the format of the declination that you entered. Please make sure you either enter the declination as decimal degrees or in the format dd:mm:ss.s.")
+			else:
+				try:
+					dec = float(form['DEC'])
+				except:
+					return broken(request,"There was a problem with the format of the declination that you entered. Please make sure you either enter the declination as decimal degrees or in the format dd:mm:ss.s.")
+
 			keepers = []
 			cosr = math.cos(math.radians(form['SR']))
 			i = 0
@@ -1243,7 +1266,7 @@ def degreestodms(value):
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return str(d)+':'+str(m)+':'+"{:05.2f}".format(s)
+	return str(d)+':'+str(m)+':'+"{0:05.2f}".format(s)
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal degrees minutes and seconds"
@@ -1251,7 +1274,7 @@ def degreestohms(value):
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return str(d)+':'+str(m)+':'+"{:05.2f}".format(s)
+	return str(d)+':'+str(m)+':'+"{0:05.2f}".format(s)
 
 def datestamp(value):
 	if value:
@@ -1333,4 +1356,7 @@ def observation_URL(tel,obs):
 
 def unknown(request):
     return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
+
+def broken(request,msg):
+    return render_to_response('faulkes/500.html', {'msg':msg}, context_instance=RequestContext(request))
 
