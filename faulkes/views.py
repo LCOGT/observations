@@ -992,8 +992,12 @@ def build_observations(obs):
 		o['instrumentname'] = ob.instrumentname
 		o['telescope'] = Telescope.objects.filter(id=int(o['telescopeid']))[0]
 		o['fitsfiles'] = "";
-		o['fullimage_url'] = "http://rti.faulkes-telescope.com/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
-		o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
+		if o['filename'].startswith('NoImage'):
+			o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
+			o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
+		else:
+			o['fullimage_url'] = "http://rti.faulkes-telescope.com/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
+			o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
 		o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
 		o['licenseimage'] = 'cc-by-nc.png'
 		o['credit'] = "Image taken with "+o['telescope'].name+" operated by Las Cumbres Observatory Global Telescope Network"
