@@ -799,7 +799,6 @@ def view_observation(request,code,tel,obs):
             tag = u.tag
         except:
             tag='0'
-
 	obs[0]['views'] = views
 
 	if(obstats[0].avmcode!="0"):
@@ -846,6 +845,8 @@ def view_observation(request,code,tel,obs):
 				filters[rid]['img'] = jpg.group(1)
 			if fit:
 				filters[rid]['fits'] = fit.group(1)
+
+	obs[0]['filter'] = filter_name(obs[0]['filter'])
 
 	if input['doctype'] == "json":
 		#print obs
@@ -1296,7 +1297,7 @@ def datestamp_basic(value):
 
 
 def l(txt,lnk):
-	return "<a href=\""+lnk+"\">"+txt+"</a>";
+	return "<a href=\"http://lcogt.net/"+lnk+"\">"+txt+"</a>";
 
 def filter_name(code):
 	if code == 'CC':
@@ -1343,6 +1344,8 @@ def filter_name(code):
 		return l("Opal","node/50")
 	elif code == 'D5':
 		return "D51 filter"
+	else:
+		return "Unknown"
 
 
 def hexangletodec(value):
