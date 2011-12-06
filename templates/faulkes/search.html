@@ -86,8 +86,10 @@
 		<div class="row">
 {% if n == 0 %}
 			<div class="padder"></div>
-{% endif %}
+			<p>We found <strong>0</strong> results matching your search. Dont panic! Try making your search less specific.</p>
+{% else %}
 			<p>There are several ways to search through all our public observations. Use any combination of the options below to help narrow your search.</p>
+{% endif %}
 		</div>
 		<form action="{% url rtiadminsite.faulkes.views.index %}search" method="get" id="rti-archive-form">
 			<div class="row">

@@ -35,8 +35,8 @@
 										<br /><a href='{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/{{ obs.imageid }}.kml'>Position in Sky for Google Earth</a>
 										</td></tr>
 										<tr><td class='first'>Telescope:</td><td property='UCD:instr.tel'><a href="{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}">{{ telescope.name }}</a></td></tr>
-										<tr><td class='first'>Filter:</td><td>{{ obs.filter }}</td></tr>
-										<tr><td class='first'>Exposure:</td><td><span property='UCD:obs.exposure'>{{ obs.exposuresecs }}</span> s</td></tr>
+										<tr><td class='first'>Filter:</td><td>{{ obs.filter|safe }}</td></tr>
+										<tr><td class='first'>Exposure:</td><td><span property='UCD:obs.exposure'>{{ obs.exposuresecs }}</span> s{% if filters|length > 1 %} (total){% endif %}</td></tr>
 										<tr><td class='first'>Data:</td><td>
 											<ul class='filters'>
 {% for filter in filters %}

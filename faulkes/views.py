@@ -303,15 +303,38 @@ def search(request):
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
 
-			form['SR'] = float(form['SR'])
+			try:
+				form['SR'] = float(form['SR'])
+			except:
+				return broken(request,"There was a problem with the search radius you entered. Please make sure that it is provided in decimal degrees.")
+
 			srlimit = 10
+
 			if form['SR'] > srlimit:
 				form['SR'] = srlimit
-			dec = float(form['DEC'])
+
 			if form['RA'].find(':') > 0:
-				ra = hexangletodec(form['RA'])*15
+				try:
+					ra = hexangletodec(form['RA'])*15
+				except:
+					return broken(request,"There was a problem with the format of the Right Ascension that you entered. Please make sure you either enter the Right Ascension as a decimal number of hours or in the format hh:mm:ss.s.")
 			else:
-				ra = float(form['RA'])
+				try:
+					ra = float(form['RA'])
+				except:
+					return broken(request,"There was a problem with the format of the Right Ascension that you entered. It doesn't appear to be a number. Please make sure you either enter the Right Ascension as a decimal number of hours or in the format hh:mm:ss.s.")
+
+			if form['DEC'].find(':') > 0:
+				try:
+					dec = hexangletodec(form['DEC'])
+				except:
+					return broken(request,"There was a problem with the format of the declination that you entered. Please make sure you either enter the declination as decimal degrees or in the format dd:mm:ss.s.")
+			else:
+				try:
+					dec = float(form['DEC'])
+				except:
+					return broken(request,"There was a problem with the format of the declination that you entered. Please make sure you either enter the declination as decimal degrees or in the format dd:mm:ss.s.")
+
 			keepers = []
 			cosr = math.cos(math.radians(form['SR']))
 			i = 0
@@ -705,8 +728,8 @@ def view_map(request):
 	ras = []
 	dcs = []
 	for o in obs:
-		ras.append(o.raval*15)
-		dcs.append(o.decval)
+		ras.append(round(o.raval*15*100)/100)
+		dcs.append(round(o.decval*100)/100)
 
 	if input['doctype'] == "json":
 		return view_json(request,build_observations_json(obs),input)
@@ -776,7 +799,6 @@ def view_observation(request,code,tel,obs):
             tag = u.tag
         except:
             tag='0'
-
 	obs[0]['views'] = views
 
 	if(obstats[0].avmcode!="0"):
@@ -823,6 +845,8 @@ def view_observation(request,code,tel,obs):
 				filters[rid]['img'] = jpg.group(1)
 			if fit:
 				filters[rid]['fits'] = fit.group(1)
+
+	obs[0]['filter'] = filter_name(obs[0]['filter'])
 
 	if input['doctype'] == "json":
 		#print obs
@@ -969,8 +993,12 @@ def build_observations(obs):
 		o['instrumentname'] = ob.instrumentname
 		o['telescope'] = Telescope.objects.filter(id=int(o['telescopeid']))[0]
 		o['fitsfiles'] = "";
-		o['fullimage_url'] = "http://rti.faulkes-telescope.com/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
-		o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
+		if o['filename'].startswith('NoImage'):
+			o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
+			o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
+		else:
+			o['fullimage_url'] = "http://rti.faulkes-telescope.com/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
+			o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
 		o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
 		o['licenseimage'] = 'cc-by-nc.png'
 		o['credit'] = "Image taken with "+o['telescope'].name+" operated by Las Cumbres Observatory Global Telescope Network"
@@ -1269,7 +1297,7 @@ def datestamp_basic(value):
 
 
 def l(txt,lnk):
-	return "<a href=\""+lnk+"\">"+txt+"</a>";
+	return "<a href=\"http://lcogt.net/"+lnk+"\">"+txt+"</a>";
 
 def filter_name(code):
 	if code == 'CC':
@@ -1316,6 +1344,8 @@ def filter_name(code):
 		return l("Opal","node/50")
 	elif code == 'D5':
 		return "D51 filter"
+	else:
+		return "Unknown"
 
 
 def hexangletodec(value):
@@ -1333,4 +1363,7 @@ def observation_URL(tel,obs):
 
 def unknown(request):
     return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
+
+def broken(request,msg):
+    return render_to_response('faulkes/500.html', {'msg':msg}, context_instance=RequestContext(request))
 
