@@ -272,9 +272,10 @@ def search(request):
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
+	
 
 	obs = []
-	n = 0
+	n = -1
 	if input['query']:
 		obs = Imagearchive.objects.all()
 		if form['query'] != "":
