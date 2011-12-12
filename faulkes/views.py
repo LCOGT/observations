@@ -272,9 +272,10 @@ def search(request):
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
+	
 
 	obs = []
-	n = 0
+	n = -1
 	if input['query']:
 		obs = Imagearchive.objects.all()
 		if form['query'] != "":
@@ -751,7 +752,13 @@ def view_observation(request,code,tel,obs):
 	except ObjectDoesNotExist:
 		return unknown(request)
 
-	obs = Imagearchive.objects.filter(imageid=obs)
+	try:
+		obs = Imagearchive.objects.filter(imageid=obs)
+	except:
+		return broken(request,"There was a problem finding the requested observation in the database.")
+
+	if len(obs) < 1:
+		return broken(request,"There was a problem finding the requested observation in the database.")
 
 	# Update stats
 	obstats = ObservationStats.objects.filter(imagearchive=obs[0])
@@ -778,27 +785,31 @@ def view_observation(request,code,tel,obs):
 							('User-Agent', 'LCOGT/1.0')]
 		obj = re.sub(r" ",'\+',obs[0]['object'])
 		req = urllib2.Request(url='http://www.strudel.org.uk/lookUP/xml/?name=%s' % obj)
-		# Allow 6 seconds for timeout
-		f = urllib2.urlopen(req,None,6)
-		xml = f.read()
-		m = re.search('avmcode="([^\"]*)"',xml)
-		n = re.search('service href="([^\"]*)"',xml)
-		if(m):
-			try:
-				obstats[0].avmcode = m.group(1)
-			except ObjectDoesNotExist:
+		# Allow 3 seconds for timeout
+		try:
+			f = urllib2.urlopen(req,None,3)
+			xml = f.read()
+			m = re.search('avmcode="([^\"]*)"',xml)
+			n = re.search('service href="([^\"]*)"',xml)
+			if(m):
+				try:
+					obstats[0].avmcode = m.group(1)
+				except ObjectDoesNotExist:
+					obstats[0].avmcode = "0.0"
+			else:
 				obstats[0].avmcode = "0.0"
-		else:
-			obstats[0].avmcode = "0.0"
-		if(n):
-			obstats[0].moreurl = n.group(1)
-		obstats[0].save()
+			if(n):
+				obstats[0].moreurl = n.group(1)
+			obstats[0].save()
+		except:
+			obstats[0].avmcode = "0"
 
-        try:
-	    u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
-            tag = u.tag
-        except:
-            tag='0'
+	try:
+		u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
+		tag = u.tag
+	except:
+		tag='0'
+
 	obs[0]['views'] = views
 
 	if(obstats[0].avmcode!="0"):
@@ -819,7 +830,7 @@ def view_observation(request,code,tel,obs):
 
 	# Get FITS information
 	opener = urllib2.build_opener()
-	url = 'http://ari-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
+	url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
 
 	rids = obs[0]['requestids'].split(',')
 	filters = []
@@ -836,15 +847,19 @@ def view_observation(request,code,tel,obs):
 			req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
 
 			# Allow 6 seconds for timeout
-			f = urllib2.urlopen(req,None,6)
-			xml = f.read()
-			jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
-			fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
-
-			if jpg:
-				filters[rid]['img'] = jpg.group(1)
-			if fit:
-				filters[rid]['fits'] = fit.group(1)
+			try:
+				f = urllib2.urlopen(req,None,6)
+				xml = f.read()
+				jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
+				fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+	
+				if jpg:
+					filters[rid]['img'] = jpg.group(1)
+				if fit:
+					filters[rid]['fits'] = fit.group(1)
+			except:
+				filters[rid]['img'] = ""
+				filters[rid]['fits'] = ""
 
 	obs[0]['filter'] = filter_name(obs[0]['filter'])
 

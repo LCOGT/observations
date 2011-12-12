@@ -1,8 +1,8 @@
 {% extends 'faulkes/list.html' %}
 {% load faulkes_extras %}
 
-{% block header %}{% if n > 0 %}Results of your search{% if form.query != "" %} for {{ form.query }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
-{% block title %}{% if n > 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ form.query }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
+{% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ form.query }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
+{% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ form.query }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
 <!--
@@ -31,7 +31,7 @@
 
 
 
-{% block search %}{% if n > 0 %}<div class="searchbox">
+{% block search %}{% if n >= 0 %}<div class="searchbox">
 									<form action='{% url rtiadminsite.faulkes.views.index %}search/' method='GET'>
 										<input type='text' name='query' class='searchbox' title='e.g. NGC 2011' /><input type='submit' value='Search' class='searchbtn' />
 										<br /><span style='font-size:0.8em;'>[<a href="{% url rtiadminsite.faulkes.views.index %}search">advanced search</a>]</span>
@@ -42,7 +42,7 @@
 								</div>{% else %}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
-							<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; {% if n == 0 %}Search{% else %}<a href="{% url rtiadminsite.faulkes.views.index %}search">Search</a> &raquo; Results{% endif %}
+							<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; {% if n < 0 %}Search{% else %}<a href="{% url rtiadminsite.faulkes.views.index %}search">Search</a> &raquo; Results{% endif %}
 							<br />
 {% endblock %}
 
@@ -84,8 +84,8 @@
 						</div>
 {% else %}
 		<div class="row">
-{% if n == 0 %}
 			<div class="padder"></div>
+{% if n == 0 %}
 			<p>We found <strong>0</strong> results matching your search. Dont panic! Try making your search less specific.</p>
 {% else %}
 			<p>There are several ways to search through all our public observations. Use any combination of the options below to help narrow your search.</p>
