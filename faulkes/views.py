@@ -213,7 +213,18 @@ def view_group(request,mode):
 	sites = Site.objects.all()
 	
 	if(mode == "recent"):
-		obs = Imagearchive.objects.using('faulkes').all().order_by('-whentaken')[:n_per_page]
+		try:
+			dup = request.GET.get('noduplicates','')
+		except:
+			dup = '';
+
+		if(dup==''):
+			obs = Imagearchive.objects.using('faulkes').order_by('-whentaken')[:n_per_page]
+		else:
+			obs = Imagearchive.objects.using('faulkes').extra(order_by=['-whentaken'])
+			obs.query.group_by = ['schoolid']
+			obs = obs[:n_per_page]
+
 		n = obs.count()
 		obs = build_observations(obs)
 		input['title'] = "Recent Observations from LCOGT"
@@ -712,7 +723,7 @@ def view_map(request):
 	sites = Site.objects.all()
 	telescopes = Telescope.objects.all()
 
-	dt = datetime.utcnow() - timedelta(90)
+	dt = datetime.utcnow() - timedelta(30)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
 	#print dt.strftime("%Y%m%d%H%M%S")
@@ -760,19 +771,36 @@ def view_observation(request,code,tel,obs):
 	if len(obs) < 1:
 		return broken(request,"There was a problem finding the requested observation in the database.")
 
+	# Let's try to work out if this is from a crawler. If not we'll assume a real person.
+	BotNames=['Googlebot','Slurp','Twiceler','Spider','spider','Crawler','crawler','Bot','bot','robot']
+	request.is_crawler=False
+	try:
+		user_agent=request.META.get('HTTP_USER_AGENT',None)
+	except:
+		user_agent = ''
+	for botname in BotNames:
+		if botname in user_agent:
+			request.is_crawler=True
+
 	# Update stats
 	obstats = ObservationStats.objects.filter(imagearchive=obs[0])
-	if obstats:
-		obstats[0].views = obstats[0].views+1
+	# Only update stats if it isn't a crawler
+	if (request.is_crawler):
 		views = obstats[0].views
-		delta = datetime.utcnow()-obstats[0].lastviewed
-		# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
-		obstats[0].weight = 1. + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
-		obstats[0].lastviewed = datetime.utcnow()
 	else:
-		obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
-		views = 1
-	obstats[0].save()
+		if obstats:
+			obstats[0].views = obstats[0].views+1
+			views = obstats[0].views
+			delta = datetime.utcnow()-obstats[0].lastviewed
+			# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
+			#print obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
+			obstats[0].weight = 1. + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
+			#print obstats[0].weight
+			obstats[0].lastviewed = datetime.utcnow()
+		else:
+			obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
+			views = 1
+		obstats[0].save()
 
 	obs = build_observations(obs)
 	otherobs = get_observation_stream(obs[0])
@@ -812,7 +840,7 @@ def view_observation(request,code,tel,obs):
 
 	obs[0]['views'] = views
 
-	if(obstats[0].avmcode!="0"):
+	if(obstats[0].avmcode!="0" and obstats[0].avmcode!="0.0"):
 		cats = obstats[0].avmcode.split(';')
 		if len(cats) > 0:
 			cats = cats[-1]

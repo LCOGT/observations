@@ -1,12 +1,14 @@
 body {
+	overflow: hidden;
 	margin: 0px;
 	padding: 0px;
 	font-family: Helvetica,Arial,sans-serif;
 	background-color: black;
 	color: white;
 }
-a { 
+a {
 	color: #bbb;
+	text-decoration: none;
 }
 a:hover {
 	color: #fff;
@@ -17,6 +19,10 @@ h1 {
 }
 p {
 	margin: 0px;
+}
+p.telescope, p.date, p.observer {
+	margin:0px;
+	padding:0px;
 }
 #logo {
 	position: absolute;
