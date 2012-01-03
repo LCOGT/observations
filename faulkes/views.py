@@ -894,7 +894,7 @@ def view_observation(request,code,tel,obs):
 	if input['doctype'] == "json":
 		#print obs
 		return view_json(request,build_observations_json(obs),input)
-	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
+	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters,'base':base_url},context_instance=RequestContext(request))
 
 
 def get_observation_stream(obs):

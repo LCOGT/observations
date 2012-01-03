@@ -48,6 +48,10 @@
 {% if obs.avmcode %}										<tr><td class='first'>Category:</td><td><a href="{% url rtiadminsite.faulkes.views.index %}category/{{ obs.avmcode }}">{{ obs.avmname }}</a></td></tr>{% endif %}
 										<tr><td class='first'>Credit:</td><td>{{ obs.credit }}</td></tr>
 										<tr><td class='first'>License:</td><td>	<a href="{{ obs.license }}" rel="license cc:license"><img src="{{ MEDIA_URL }}img/{{ obs.licenseimage }}" style="height:1.5em;" title="Some rights reserved" /></a></td></tr>
+										<tr><td class='first'>Share:</td><td>
+											<a href="http://twitter.com/home/?status={{ obs.skyobjectname|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt"><img title="Tweet this" alt="Twitter" src="http://lcogt.net/sites/default/themes/lcogt/images/twitter.png"></a>
+											<a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}"><img title="Share on Facebook" alt="Facebook" src="http://lcogt.net/sites/default/themes/lcogt/images/facebook.png"></a>
+										</td></tr>
 									</table>
 								</div>
 							</div>

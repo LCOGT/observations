@@ -34,8 +34,8 @@ p.telescope, p.date, p.observer {
 #logo img {
 	width: 75px;
 	height: 27px;
-	opacity:0.25;
-	filter:alpha(opacity=25);
+	opacity:0.5;
+	filter:alpha(opacity=50);
 	border: 0px;
 }
 #result .intro {
