@@ -776,11 +776,11 @@ def view_observation(request,code,tel,obs):
 	request.is_crawler=False
 	try:
 		user_agent=request.META.get('HTTP_USER_AGENT',None)
+		for botname in BotNames:
+			if botname in user_agent:
+				request.is_crawler=True
 	except:
 		user_agent = ''
-	for botname in BotNames:
-		if botname in user_agent:
-			request.is_crawler=True
 
 	# Update stats
 	obstats = ObservationStats.objects.filter(imagearchive=obs[0])
@@ -856,38 +856,41 @@ def view_observation(request,code,tel,obs):
 		return view_kml(request,obs,input)
 
 
-	# Get FITS information
-	opener = urllib2.build_opener()
-	url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
-
-	rids = obs[0]['requestids'].split(',')
-	filters = []
-	if rids:
-		if len(rids) == 3:
-			filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
-						{ 'id':'g','name': 'Green','fits':'','img':'' },
-						{ 'id':'r','name': 'Red','fits':'','img':'' }]
-		if len(rids) == 1:
-			filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
-
-
-		for rid in range(0,len(rids)):
-			req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
-
-			# Allow 6 seconds for timeout
-			try:
-				f = urllib2.urlopen(req,None,6)
-				xml = f.read()
-				jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
-				fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+	# Get FITS information only if not a crawler
+	if (request.is_crawler):
+		filters = []
+	else:
+		opener = urllib2.build_opener()
+		url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
 	
-				if jpg:
-					filters[rid]['img'] = jpg.group(1)
-				if fit:
-					filters[rid]['fits'] = fit.group(1)
-			except:
-				filters[rid]['img'] = ""
-				filters[rid]['fits'] = ""
+		rids = obs[0]['requestids'].split(',')
+		filters = []
+		if rids:
+			if len(rids) == 3:
+				filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
+							{ 'id':'g','name': 'Green','fits':'','img':'' },
+							{ 'id':'r','name': 'Red','fits':'','img':'' }]
+			if len(rids) == 1:
+				filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
+	
+	
+			for rid in range(0,len(rids)):
+				req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
+	
+				# Allow 6 seconds for timeout
+				try:
+					f = urllib2.urlopen(req,None,6)
+					xml = f.read()
+					jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
+					fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+		
+					if jpg:
+						filters[rid]['img'] = jpg.group(1)
+					if fit:
+						filters[rid]['fits'] = fit.group(1)
+				except:
+					filters[rid]['img'] = ""
+					filters[rid]['fits'] = ""
 
 	obs[0]['filter'] = filter_name(obs[0]['filter'])
 
