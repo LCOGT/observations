@@ -199,10 +199,8 @@ Slideshow.prototype.updateObservations = function(){
 		if($('#'+this.id+' .intro').length == 0) $('#'+this.id).append('<div class="intro"><p>'+this.desc+'</p></div>');
 		$('#'+this.id+' .intro').css({'width':($(window).width()/3)+'px'});
 		$('#'+this.id+' .intro').css({'left':(($(window).width()-$('#'+this.id+' .intro').outerWidth())/2)+'px','top':(($(window).height()-$('#'+this.id+' .intro').outerHeight())/2)+'px','z-index':3}).delay(3000).fadeOut(500);
-		if($('#'+this.id+' .bigpicture').length == 0) $('#'+this.id).append('<div class="bigpicture"><img src="'+this.observations[0].image.about+'" /></div>');
-		$('#'+this.id+' .bigpicture img').bind('click',{slides:this},function(e){
-			location.href = e.data.slides.observations[0].about
-		}).bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
+		if($('#'+this.id+' .bigpicture').length == 0) $('#'+this.id).append('<div class="bigpicture"><a href="'+this.observations[0].about+'"><img src="'+this.observations[0].image.about+'" /></div></a>');
+		$('#'+this.id+' .bigpicture img').bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
 			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
@@ -242,11 +240,11 @@ Slideshow.prototype.selectImage = function(sel){
 
 	$('#'+this.id+' .thumbnails ul li img').css({'border-color':$('#'+this.id+' .thumbnails ul li img').css('border-color')});	
 	$('#'+this.id+' .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
+	$('#'+this.id+' .bigpicture a').attr('href',this.observations[this.selected].about);
+
 	$('#'+this.id+' .bigpicture img').attr({
 		src: obs.image.about,
 		title: obs.label
-	}).unbind('click').bind('click',{slides:this},function(e){
-		location.href = e.data.slides.observations[e.data.slides.selected].about
 	}).unbind('load').bind('load',{slides:this},function(e){
 		e.data.slides.loading = false;
 		$('#'+e.data.slides.id+' .loadingDiv').hide();
@@ -274,11 +272,14 @@ Slideshow.prototype.getDescription = function(obs){
 		html += '<p class="avm">';
 		for(c = 0 ; c < codes.length ; c++){
 			if(c > 0) html += "/"
-			html += '<a href="http://lcogt.net/observations/category/'+codes[c]+'">'+names[c]+'</a>'
+			html += '<a href="http://lcogt.net/observations/category/'+codes[c]+'" title="Object type">'+names[c]+'</a>'
 		}
 		html += '</p>';
 	}
-	html += '<p class="date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</p><p class="telescope"><a href="'+obs.instr.about+'">'+obs.instr.tel+'</a></p><p class="observer"><a href="'+obs.observer.about+'">'+obs.observer.label+'</a></p>';
+	html += '<p class="telescope"><a href="'+obs.instr.about+'" title="Telescope">'+obs.instr.tel+'</a></p>'
+	html += '<p class="exposure"><span title="Exposure">'+obs.filter+' '+obs.exposure+' seconds</span></p>'
+	html += '<p class="date"><span title="Date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</span></p>'
+	html += '<p class="observer"><a href="'+obs.observer.about+'" title="Observer">'+obs.observer.label+'</a></p>';
 	return html;
 }
 
@@ -300,8 +301,12 @@ function relative_time(pd) {
 		var mons = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
 		y = pd.getYear()+'';
 		if(y.length < 4) y = (y-0+1900);
-		if(dt < (360*86400)) return pd.getDate()+' '+mons[pd.getMonth()]+' ('+pd.getHours()+':'+pd.getMinutes()+')';
-		else return pd.getDate()+' '+mons[pd.getMonth()]+' '+y+' ('+pd.getHours()+':'+pd.getMinutes()+')';
+		h = pd.getHours();
+		if(h < 10) h = "0"+h;
+		m = pd.getMinutes();
+		if(m < 10) m = "0"+m;
+		if(dt < (360*86400)) return pd.getDate()+' '+mons[pd.getMonth()]+' ('+h+':'+m+')';
+		else return pd.getDate()+' '+mons[pd.getMonth()]+' '+y+' ('+h+':'+m+')';
 	}
 }
 var cache = [];
