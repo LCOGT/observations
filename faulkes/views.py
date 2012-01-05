@@ -174,6 +174,10 @@ categorylookup = { '1': 'Planets',
 				'5.4.8':'Dust Lanes',
 				'5.4.9':'Center Cores',
 				'5.5':'Galaxies (Grouping)',
+				'5.5.1':'Pair of Galaxies',
+				'5.5.2':'Multiple Galaxies',
+				'5.5.3':'Galaxy Clusters',
+				'5.5.4':'Galaxy Superclusters',
 				}
 categories = [
 			{ 'link': "planets", 'name': 'Planets', 'avm':1 },

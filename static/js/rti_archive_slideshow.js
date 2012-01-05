@@ -267,7 +267,19 @@ Slideshow.prototype.selectImage = function(sel){
 }
 
 Slideshow.prototype.getDescription = function(obs){
-	return '<h1><a href="'+obs.about+'">'+obs.label+'</a></h1><p class="date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</p><p class="telescope"><a href="'+obs.instr.about+'">'+obs.instr.tel+'</a></p><p class="observer"><a href="'+obs.observer.about+'">'+obs.observer.label+'</a></p>';
+	html = '<h1><a href="'+obs.about+'">'+obs.label+'</a></h1>'
+	if(obs.avm && obs.avm.name){
+		codes = obs.avm.code.split(';');
+		names = obs.avm.name.split(';');
+		html += '<p class="avm">';
+		for(c = 0 ; c < codes.length ; c++){
+			if(c > 0) html += "/"
+			html += '<a href="http://lcogt.net/observations/category/'+codes[c]+'">'+names[c]+'</a>'
+		}
+		html += '</p>';
+	}
+	html += '<p class="date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</p><p class="telescope"><a href="'+obs.instr.about+'">'+obs.instr.tel+'</a></p><p class="observer"><a href="'+obs.observer.about+'">'+obs.observer.label+'</a></p>';
+	return html;
 }
 
 // pd = parsed date
