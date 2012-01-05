@@ -1014,6 +1014,22 @@ def build_observations(obs):
 		except:
 			o['schoolname'] = "Unknown"
 
+		try:
+			obstats = ObservationStats.objects.filter(imagearchive=ob)
+			if(obstats[0].avmcode!="0.0"):
+				o['avmcode'] = obstats[0].avmcode
+				cats = o['avmcode'].split(';')
+				o['avmname'] = "";
+				for (counter,c) in enumerate(cats):
+					if counter > 0:
+						o['avmname'] += ";"
+					if c in categorylookup:
+						o['avmname'] += categorylookup[c]
+			else:
+				o['avmcode'] = ""
+			o['views'] = obstats[0].views
+		except:
+			o['avmcode'] = ""
 
 		o['imageid'] = ob.imageid
 		o['imagetype'] = ob.imagetype
@@ -1062,6 +1078,7 @@ def build_observations(obs):
 
 		if len(obs) > 0 and o['schoolid']:
 			observations.append(o)
+			
 
 	return observations
 
@@ -1165,6 +1182,12 @@ def build_observations_json(obs):
 
 		if 'schooluri' in o:
 			ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
+		if 'avmcode' in o and o['avmcode']!="":
+			ob['avm'] = { "code": o['avmcode'], }
+		if 'avmname' in o and o['avmname']!="":
+			ob['avm']['name'] = o['avmname']
+		if 'views' in o:
+			ob['views'] = o['views']
 
 		if len(obs) > 1:
 			observations.append(ob)
