@@ -47,7 +47,7 @@
 			if(grid[i] > 0) paper.rect(x, y, dx, dy).attr({fill:"red",'stroke-width':0,'fill-opacity':scale});
 		}
 		$('#heatmap').css({'cursor':'pointer'}).bind("click",function(e){
-			window.location = '/observations/search?RA='+(360-360*e.layerX/wide)+'&DEC='+(90-180*e.layerY/tall)+'&SR=3';
+			window.location = '/observations/search?RA='+(360-360*e.originalEvent.layerX/wide)+'&DEC='+(90-180*e.originalEvent.layerY/tall)+'&SR=3';
 		});
 	});
 

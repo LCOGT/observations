@@ -727,7 +727,7 @@ def view_map(request):
 	sites = Site.objects.all()
 	telescopes = Telescope.objects.all()
 
-	dt = datetime.utcnow() - timedelta(30)
+	dt = datetime.utcnow() - timedelta(130)
 	
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
 	#print dt.strftime("%Y%m%d%H%M%S")
