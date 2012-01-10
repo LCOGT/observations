@@ -304,7 +304,8 @@ def search(request):
 			ed = "%s%02d%02d235959" % (form['eyear'],form['emon'],form['eday'])
 			obs = obs.filter(whentaken__gte=sd,whentaken__lte=ed)
 		if form['user'] != '':
-			obs = obs.filter(schoolloginname=form['user'])
+			schools = Registrations.objects.filter(schoolname__icontains=form['user']).values_list('schoolloginname',flat=True)
+			obs = obs.filter(schoolloginname__in=list(schools))
 		if form['avm']!='':
 			avmtemp = re.sub(r"\.","\\.",form['avm'])
 			obs = obs.filter(observationstats__avmcode__regex=r'(^|;)%s' % avmtemp)
