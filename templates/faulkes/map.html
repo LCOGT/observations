@@ -2,6 +2,7 @@
 {% load faulkes_extras %}
 
 {% block script-content %}
+	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.js" type="text/javascript"></script><![endif]-->
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_virtualsky.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
 	<script>
@@ -70,7 +71,7 @@
 {% block main-content %}
 						<div class="row">
 							<p>This is a heat map showing how often various parts of the sky have been observed by our telescopes during the past month. Brighter squares show areas that have more public observations.</p>
-							<div id="starmap" class="sixcol" style="width:944px;height:472px;"></div>
+							<div id="starmap" class="sixcol" style="width:944px;height:472px;"><img src="{{ MEDIA_URL }}img/virtualskyplaceholder.jpg" /></div>
 							<div id="heatmap" class="sixcol" style="width:944px;height:472px;position:absolute;z-index:10;margin-left:0px;" title="Click on the map to search for nearby observations"></div>
 						</div>
 						<div class="row lastrow">

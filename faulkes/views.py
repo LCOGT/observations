@@ -871,11 +871,15 @@ def view_observation(request,code,tel,obs):
 		filters = []
 		if rids:
 			if len(rids) == 3:
-				filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
-							{ 'id':'g','name': 'Green','fits':'','img':'' },
-							{ 'id':'r','name': 'Red','fits':'','img':'' }]
+				ids = ['b','g','r']
+				names = ['Blue','Green','Red']
+				#filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
+				#			{ 'id':'g','name': 'Green','fits':'','img':'' },
+				#			{ 'id':'r','name': 'Red','fits':'','img':'' }]
 			if len(rids) == 1:
-				filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
+				ids = ['f']
+				names = [obs[0]['filter']]
+				#filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
 	
 	
 			for rid in range(0,len(rids)):
@@ -885,13 +889,16 @@ def view_observation(request,code,tel,obs):
 				try:
 					f = urllib2.urlopen(req,None,6)
 					xml = f.read()
+
 					jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
 					fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
-		
-					if jpg:
-						filters[rid]['img'] = jpg.group(1)
-					if fit:
-						filters[rid]['fits'] = fit.group(1)
+					if jpg or fit:
+						tmp = {'id':ids[rid],'name':names[rid]}
+						if jpg:
+							tmp['img'] = jpg.group(1)
+						if fit:
+							tmp['fits'] = fit.group(1)
+						filters.append(tmp)
 				except:
 					filters[rid]['img'] = ""
 					filters[rid]['fits'] = ""
