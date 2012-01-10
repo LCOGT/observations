@@ -729,6 +729,9 @@ def view_map(request):
 
 	dt = datetime.utcnow() - timedelta(30)
 	
+	sites = Site.objects.all()
+	telescopes = Telescope.objects.all()
+
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
 	#print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
@@ -754,7 +757,7 @@ def view_map(request):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input}
+		data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input,'sites':sites,'telescopes':telescopes}
 		return render_to_response('faulkes/map.html', data,context_instance=RequestContext(request))
 
 
@@ -1267,7 +1270,7 @@ def view_kml(request,obs,config):
 		output += '			<longitude>'+str(o['raval'] - 180)+'</longitude>\n'
 		output += '			<latitude>'+str(o['decval'])+'</latitude>\n'
 		output += '			<altitude>0</altitude>\n'
-		output += '			<range>10000</range>\n'
+		output += '			<range>20000</range>\n'
 		output += '			<tilt>0</tilt>\n'
 		output += '			<heading>0</heading>\n'
 		output += '		</LookAt>\n'
