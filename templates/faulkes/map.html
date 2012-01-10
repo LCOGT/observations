@@ -2,24 +2,13 @@
 {% load faulkes_extras %}
 
 {% block script-content %}
-	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.js" type="text/javascript"></script><![endif]-->
-	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_virtualsky.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
 	<script>
 	<!--
 	ras = {{ ras|safe }}
 	dcs = {{ dcs|safe }}
-	function spinOff(){
-		planetarium.az_step = 0;
-		if(typeof timer_az!='undefined') clearTimeout(timer_az);
-	}
-	window.onload = function(){
-		planetarium = new VirtualSky({id:'starmap',projection:'planechart',sky_gradient:false,constellations:true,magnitude:5,showposition:false,showdate:false,showorbits:false});
-		planetarium.draw();
-	}
-
 	$(document).ready(function(){
-		reso = 5
+		reso = 5;
 		wide = 944;
 		tall = 472;
 		nx = Math.round(360/reso);
@@ -31,11 +20,9 @@
 			row = Math.floor(ny*(90-dcs[i])/180);
 			col = nx-Math.ceil(nx*(ras[i]/360));	// RA goes in the opposite sense on the sky
 			j = row*nx + col;
-			//console.log(i,j,row,col,grid.length)
 			grid[j]++;
 			if(grid[j] > max) max = grid[j];
 		}
-		
 		var paper = Raphael("heatmap", wide, tall);
 		dx = wide/nx;
 		dy = tall/ny;
