@@ -178,13 +178,35 @@ categorylookup = { '1': 'Planets',
 				'5.5.2':'Multiple Galaxies',
 				'5.5.3':'Galaxy Clusters',
 				'5.5.4':'Galaxy Superclusters',
+				'6':'Cosmology',
+				'6.1':'Cosmology (Morphology)',
+				'6.1.1':'Deep Field',
+				'6.1.2':'Large-scale Structure',
+				'6.1.3':'Cosmic Background',
+				'6.2':'Cosmology (Phenomenon)',
+				'6.2.2':'Gamma Ray Burst',
+				'6.2.3':'Dark Matter',
+				'7':'Sky Phenomenon',
+				'7.1':'Night Sky',
+				'7.1.1':'Constellations',
+				'7.1.2':'Asterisms',
+				'7.1.3':'Milky Way',
+				'7.1.4':'Trails',
+				'7.1.4.1':'Meteor Trails',
+				'7.1.4.2':'Star Trails',
+				'7.1.4.3':'Satellite Trails',
+				'7.1.5':'Zodiacal Light',
+				'7.1.5.1':'Gegenschein',
+				'7.1.5.2':'Night glow',
 				}
 categories = [
 			{ 'link': "planets", 'name': 'Planets', 'avm':1 },
 			{ 'link':"interplanetarybodies", 'name': 'Interplanetary Bodies', 'avm':2 },
 			{ 'link': "stars", 'name': 'Stars', 'avm':3 },
 			{ 'link': "nebulae", 'name': 'Nebulae', 'avm':4},
-			{ 'link': "galaxies", 'name': 'Galaxies', 'avm':5 }]
+			{ 'link': "galaxies", 'name': 'Galaxies', 'avm':5 },
+			{ 'link': "cosmology", 'name': 'Cosmology', 'avm':6 },
+			{ 'link': "sky", 'name': 'Sky Phenomenon', 'avm':7 }]
 
 def index(request):
 
