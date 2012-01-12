@@ -67,7 +67,7 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 
 {% block main-content %}
 						<div class="row">
-							<p>You can browse our public observations based on the following <a href="http://www.virtualastronomy.org/avm_metadata.php">AVM</a> categories. Not all categories will have observations.</p>
+							<p>You can browse our public observations based on the following <a href="http://www.virtualastronomy.org/avm_metadata.php">AVM</a> categories. These categories cover the whole of astronomy and therefore some of these categories will be empty.</p>
 							<ol>
 {% for c in category %}
 							<li class="category"><a href="{% url rtiadminsite.faulkes.views.index %}category/{{ c.link }}" data="{{ c.avm }}">{{ c.name }}</a></li>

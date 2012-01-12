@@ -174,13 +174,39 @@ categorylookup = { '1': 'Planets',
 				'5.4.8':'Dust Lanes',
 				'5.4.9':'Center Cores',
 				'5.5':'Galaxies (Grouping)',
+				'5.5.1':'Pair of Galaxies',
+				'5.5.2':'Multiple Galaxies',
+				'5.5.3':'Galaxy Clusters',
+				'5.5.4':'Galaxy Superclusters',
+				'6':'Cosmology',
+				'6.1':'Cosmology (Morphology)',
+				'6.1.1':'Deep Field',
+				'6.1.2':'Large-scale Structure',
+				'6.1.3':'Cosmic Background',
+				'6.2':'Cosmology (Phenomenon)',
+				'6.2.2':'Gamma Ray Burst',
+				'6.2.3':'Dark Matter',
+				'7':'Sky Phenomenon',
+				'7.1':'Night Sky',
+				'7.1.1':'Constellations',
+				'7.1.2':'Asterisms',
+				'7.1.3':'Milky Way',
+				'7.1.4':'Trails',
+				'7.1.4.1':'Meteor Trails',
+				'7.1.4.2':'Star Trails',
+				'7.1.4.3':'Satellite Trails',
+				'7.1.5':'Zodiacal Light',
+				'7.1.5.1':'Gegenschein',
+				'7.1.5.2':'Night glow',
 				}
 categories = [
 			{ 'link': "planets", 'name': 'Planets', 'avm':1 },
 			{ 'link':"interplanetarybodies", 'name': 'Interplanetary Bodies', 'avm':2 },
 			{ 'link': "stars", 'name': 'Stars', 'avm':3 },
 			{ 'link': "nebulae", 'name': 'Nebulae', 'avm':4},
-			{ 'link': "galaxies", 'name': 'Galaxies', 'avm':5 }]
+			{ 'link': "galaxies", 'name': 'Galaxies', 'avm':5 },
+			{ 'link': "cosmology", 'name': 'Cosmology', 'avm':6 },
+			{ 'link': "sky", 'name': 'Sky Phenomenon', 'avm':7 }]
 
 def index(request):
 
@@ -213,7 +239,18 @@ def view_group(request,mode):
 	sites = Site.objects.all()
 	
 	if(mode == "recent"):
-		obs = Imagearchive.objects.using('faulkes').all().order_by('-whentaken')[:n_per_page]
+		try:
+			dup = request.GET.get('noduplicates','')
+		except:
+			dup = '';
+
+		if(dup==''):
+			obs = Imagearchive.objects.using('faulkes').order_by('-whentaken')[:n_per_page]
+		else:
+			obs = Imagearchive.objects.using('faulkes').extra(order_by=['-whentaken'])
+			obs.query.group_by = ['schoolid']
+			obs = obs[:n_per_page]
+
 		n = obs.count()
 		obs = build_observations(obs)
 		input['title'] = "Recent Observations from LCOGT"
@@ -289,7 +326,8 @@ def search(request):
 			ed = "%s%02d%02d235959" % (form['eyear'],form['emon'],form['eday'])
 			obs = obs.filter(whentaken__gte=sd,whentaken__lte=ed)
 		if form['user'] != '':
-			obs = obs.filter(schoolloginname=form['user'])
+			schools = Registrations.objects.filter(schoolname__icontains=form['user']).values_list('schoolloginname',flat=True)
+			obs = obs.filter(schoolloginname__in=list(schools))
 		if form['avm']!='':
 			avmtemp = re.sub(r"\.","\\.",form['avm'])
 			obs = obs.filter(observationstats__avmcode__regex=r'(^|;)%s' % avmtemp)
@@ -712,8 +750,11 @@ def view_map(request):
 	sites = Site.objects.all()
 	telescopes = Telescope.objects.all()
 
-	dt = datetime.utcnow() - timedelta(90)
+	dt = datetime.utcnow() - timedelta(30)
 	
+	sites = Site.objects.all()
+	telescopes = Telescope.objects.all()
+
 	obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
 	#print dt.strftime("%Y%m%d%H%M%S")
 	n = obs.count()
@@ -739,7 +780,7 @@ def view_map(request):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input}
+		data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input,'sites':sites,'telescopes':telescopes}
 		return render_to_response('faulkes/map.html', data,context_instance=RequestContext(request))
 
 
@@ -760,19 +801,36 @@ def view_observation(request,code,tel,obs):
 	if len(obs) < 1:
 		return broken(request,"There was a problem finding the requested observation in the database.")
 
+	# Let's try to work out if this is from a crawler. If not we'll assume a real person.
+	BotNames=['Googlebot','Slurp','Twiceler','Spider','spider','Crawler','crawler','Bot','bot','robot']
+	request.is_crawler=False
+	try:
+		user_agent=request.META.get('HTTP_USER_AGENT',None)
+		for botname in BotNames:
+			if botname in user_agent:
+				request.is_crawler=True
+	except:
+		user_agent = ''
+
 	# Update stats
 	obstats = ObservationStats.objects.filter(imagearchive=obs[0])
-	if obstats:
-		obstats[0].views = obstats[0].views+1
+	# Only update stats if it isn't a crawler
+	if (request.is_crawler):
 		views = obstats[0].views
-		delta = datetime.utcnow()-obstats[0].lastviewed
-		# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
-		obstats[0].weight = 1. + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
-		obstats[0].lastviewed = datetime.utcnow()
 	else:
-		obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
-		views = 1
-	obstats[0].save()
+		if obstats:
+			obstats[0].views = obstats[0].views+1
+			views = obstats[0].views
+			delta = datetime.utcnow()-obstats[0].lastviewed
+			# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
+			#print obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
+			obstats[0].weight = 1. + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
+			#print obstats[0].weight
+			obstats[0].lastviewed = datetime.utcnow()
+		else:
+			obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
+			views = 1
+		obstats[0].save()
 
 	obs = build_observations(obs)
 	otherobs = get_observation_stream(obs[0])
@@ -812,7 +870,7 @@ def view_observation(request,code,tel,obs):
 
 	obs[0]['views'] = views
 
-	if(obstats[0].avmcode!="0"):
+	if(obstats[0].avmcode!="0" and obstats[0].avmcode!="0.0"):
 		cats = obstats[0].avmcode.split(';')
 		if len(cats) > 0:
 			cats = cats[-1]
@@ -828,45 +886,55 @@ def view_observation(request,code,tel,obs):
 		return view_kml(request,obs,input)
 
 
-	# Get FITS information
-	opener = urllib2.build_opener()
-	url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
-
-	rids = obs[0]['requestids'].split(',')
-	filters = []
-	if rids:
-		if len(rids) == 3:
-			filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
-						{ 'id':'g','name': 'Green','fits':'','img':'' },
-						{ 'id':'r','name': 'Red','fits':'','img':'' }]
-		if len(rids) == 1:
-			filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
-
-
-		for rid in range(0,len(rids)):
-			req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
-
-			# Allow 6 seconds for timeout
-			try:
-				f = urllib2.urlopen(req,None,6)
-				xml = f.read()
-				jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
-				fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+	# Get FITS information only if not a crawler
+	if (request.is_crawler):
+		filters = []
+	else:
+		opener = urllib2.build_opener()
+		url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=%s&user-id=%s&date=%s&telescope=ft%s' % (tag,obs[0]['schoolloginname'],obs[0]['whentaken'][0:8],obs[0]['telescopeid'])
 	
-				if jpg:
-					filters[rid]['img'] = jpg.group(1)
-				if fit:
-					filters[rid]['fits'] = fit.group(1)
-			except:
-				filters[rid]['img'] = ""
-				filters[rid]['fits'] = ""
+		rids = obs[0]['requestids'].split(',')
+		filters = []
+		if rids:
+			if len(rids) == 3:
+				ids = ['b','g','r']
+				names = ['Blue','Green','Red']
+				#filters = [{ 'id':'b','name': 'Blue','fits':'','img':'' },
+				#			{ 'id':'g','name': 'Green','fits':'','img':'' },
+				#			{ 'id':'r','name': 'Red','fits':'','img':'' }]
+			if len(rids) == 1:
+				ids = ['f']
+				names = [obs[0]['filter']]
+				#filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
+	
+	
+			for rid in range(0,len(rids)):
+				req = urllib2.Request(url=url+'&obs-id=' + rids[rid])
+	
+				# Allow 6 seconds for timeout
+				try:
+					f = urllib2.urlopen(req,None,6)
+					xml = f.read()
+
+					jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
+					fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
+					if jpg or fit:
+						tmp = {'id':ids[rid],'name':names[rid]}
+						if jpg:
+							tmp['img'] = jpg.group(1)
+						if fit:
+							tmp['fits'] = fit.group(1)
+						filters.append(tmp)
+				except:
+					filters[rid]['img'] = ""
+					filters[rid]['fits'] = ""
 
 	obs[0]['filter'] = filter_name(obs[0]['filter'])
 
 	if input['doctype'] == "json":
 		#print obs
 		return view_json(request,build_observations_json(obs),input)
-	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters},context_instance=RequestContext(request))
+	return render_to_response('faulkes/observation.html', {'n':1,'telescope': telescope,'obs':obs[0],'otherobs':otherobs,'filters':filters,'base':base_url},context_instance=RequestContext(request))
 
 
 def get_observation_stream(obs):
@@ -983,6 +1051,22 @@ def build_observations(obs):
 		except:
 			o['schoolname'] = "Unknown"
 
+		try:
+			obstats = ObservationStats.objects.filter(imagearchive=ob)
+			if(obstats[0].avmcode!="0.0"):
+				o['avmcode'] = obstats[0].avmcode
+				cats = o['avmcode'].split(';')
+				o['avmname'] = "";
+				for (counter,c) in enumerate(cats):
+					if counter > 0:
+						o['avmname'] += ";"
+					if c in categorylookup:
+						o['avmname'] += categorylookup[c]
+			else:
+				o['avmcode'] = ""
+			o['views'] = obstats[0].views
+		except:
+			o['avmcode'] = ""
 
 		o['imageid'] = ob.imageid
 		o['imagetype'] = ob.imagetype
@@ -1031,6 +1115,7 @@ def build_observations(obs):
 
 		if len(obs) > 0 and o['schoolid']:
 			observations.append(o)
+			
 
 	return observations
 
@@ -1134,6 +1219,12 @@ def build_observations_json(obs):
 
 		if 'schooluri' in o:
 			ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
+		if 'avmcode' in o and o['avmcode']!="":
+			ob['avm'] = { "code": o['avmcode'], }
+		if 'avmname' in o and o['avmname']!="":
+			ob['avm']['name'] = o['avmname']
+		if 'views' in o:
+			ob['views'] = o['views']
 
 		if len(obs) > 1:
 			observations.append(ob)
@@ -1202,7 +1293,7 @@ def view_kml(request,obs,config):
 		output += '			<longitude>'+str(o['raval'] - 180)+'</longitude>\n'
 		output += '			<latitude>'+str(o['decval'])+'</latitude>\n'
 		output += '			<altitude>0</altitude>\n'
-		output += '			<range>10000</range>\n'
+		output += '			<range>20000</range>\n'
 		output += '			<tilt>0</tilt>\n'
 		output += '			<heading>0</heading>\n'
 		output += '		</LookAt>\n'

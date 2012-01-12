@@ -1,8 +1,8 @@
-
+// LCOGT Slideshow module
+// Last updated 2 January 2012
 function Slideshow(inp){
 
-	this.json = "http://lco3-beta/en/observations/ogg/2m0a.json";
-	this.json = "http://lco3-beta/en/observations/user/1323.json";
+	this.json = "";
 	this.id = "result";
 	this.slideby = 7;
 	this.firstload = true;
@@ -11,6 +11,7 @@ function Slideshow(inp){
 	this.hideable = true;
 	this.loading = false;
 	this.pause = 5000;
+	this.running = false;
 
 	if(typeof inp=="object"){
 		if(typeof inp.id=="string") this.id = inp.id;
@@ -21,56 +22,95 @@ function Slideshow(inp){
 	this.observations = "";
 
 	this.getObservations();
-	var _object = this;
+	$('#'+this.id).html('');
 
-	$('body').bind('mousemove',function(e){
-		$('#result .scroller, #result .controls').stop().css({opacity:'0.9'});
-		clearTimeout(_object.clock);
-		_object.readyToHide();
+	$('body').bind('mousemove',{slides:this},function(e){
+		ss = e.data.slides;
+		$('#'+ss.id+' .scroller, #'+ss.id+' .controls').stop().css({opacity:'0.9'});
+		clearTimeout(ss.clock);
+		ss.readyToHide();
 	})
 	$(document).bind('keypress',{slides:this},function(e){
 		if(!e) e=window.event;
+		ss = e.data.slides;
 		var code = e.keyCode || e.charCode || e.which || 0;
-		if(code == 37) e.data.slides.displayImage(e.data.slides.selected-1)
-		else if(code == 39) e.data.slides.displayImage(e.data.slides.selected+1)
+		if(code == 37) ss.displayImage(e.data.slides.selected-1)
+		else if(code == 39) ss.displayImage(ss.selected+1)
 		if(code == 37 || code == 39){
-			var fromright = ($('#result .thumbnails').outerWidth()/$('#result .thumbnails li').outerWidth());
-			var n = (e.data.slides.selected > e.data.slides.observations.length-Math.floor(fromright)) ? e.data.slides.observations.length-Math.floor(fromright) : e.data.slides.selected;
+			var fromright = ($('#'+ss.id+' .thumbnails').outerWidth()/$('#'+ss.id+' .thumbnails li').outerWidth());
+			var n = (ss.selected > ss.observations.length-Math.floor(fromright)) ? ss.observations.length-Math.floor(fromright) : ss.selected;
 			n = (n < 0) ? 0 : n;
 			var left = -(n*$('.thumbnails li').outerWidth());
 			$('.thumbnails ul').animate({marginLeft:left+'px'},100);
 		}else{
-			var character = String.fromCharCode(code).toLowerCase();
-			if(character == 's') e.data.slides.stop();	
-			else if(character == 'p') e.data.slides.start();
+			if(code == 32) ss.toggle();
+			else{
+				var character = String.fromCharCode(code).toLowerCase();
+				if(character == 's') ss.stop();	
+				else if(character == 'p') ss.start();
+				else if(character == 'i') ss.toggleInfo();
+			}
 		}
 	});
-	$('#result').append('<div class="loadingDiv" style="display:none;z-index:2;position:absolute;top:100px;">Loading...</div>');
-	$(window).resize(function(){ _object.reposition(); });
+	$('#'+this.id).append('<div class="loadingDiv" style="display:none;z-index:2;position:absolute;top:100px;">Loading...</div>');
+	$(window).bind('resize',{s:this},function(e){ e.data.s.reposition(); });
 }
 
 Slideshow.prototype.reposition = function(){
 	var l = (($(window).width()-$(window).height())/2);
-	$('#result .controls').css({'right':'0px'});
-	$('#result .bigpicture img').css({'height':$(window).height()});
-	$('#result .bigpicture').css({'left':l+'px'});
-	var w = $(window).width()-($('#result .scrollLeft').outerWidth()+$('#result .scrollRight').outerWidth())-25;
-	$('#result .thumbnails').css({width:w+'px'});
-	$('#result .info').css({left:l+'px'});
-	$('#result .loadingDiv').css({left:'5px',top:'5px'});//:(($(window).height()-$('#result .loadingDiv').outerHeight())/2)+'px'});
+	$('#'+this.id+' .controls').css({'right':'0px'});
+	$('#'+this.id+' .bigpicture img').css({'height':$(window).height()});
+	$('#'+this.id+' .bigpicture').css({'padding-left':l+'px'});
+	var w = $(window).width()-($('#'+this.id+' .scrollLeft').outerWidth()+$('#'+this.id+' .scrollRight').outerWidth())-25;
+	$('#'+this.id+' .thumbnails').css({width:w+'px'});
+	$('#'+this.id+' .info').css({left:l+'px'});
+	$('#'+this.id+' .loadingDiv').css({left:'5px',top:'5px'});
 }
-
+Slideshow.prototype.toggle = function(){
+	if(this.running) this.stop();
+	else this.start();
+}
+Slideshow.prototype.toggleInfo = function(){
+	$('#'+this.id+' .info').fadeToggle();
+}
 Slideshow.prototype.start = function(){
-	$('#result .scroller, #result .controls').animate({opacity:'0'},500);
+	this.running = true;
+	$('#'+this.id+' .scroller, #'+this.id+' .controls').animate({opacity:'0'},500);
+	$('#logo').fadeOut();
+	$('#'+this.id+' .controls .play').hide();
+	$('#'+this.id+' .controls .stop').show();
 	this.startofslide = new Date();
-	$('#result .controls .play').hide();
-	$('#result .controls .stop').show();
 	this.nextSlide();
+}
+Slideshow.prototype.stop = function(){
+	this.running = false;
+	clearTimeout(this.slidetimer);
+	$('#'+this.id+' .controls .play').show();
+	$('#'+this.id+' .controls .stop').hide();
+	$('#logo').fadeIn();
 }
 
 Slideshow.prototype.displayImage = function(sel){
-	$('#result .loadingDiv').show();
+	$('#'+this.id+' .loadingDiv').show();
 	this.selectImage(sel);
+	//this.panAndZoom();
+}
+
+Slideshow.prototype.panAndZoom = function(inp){
+	w = $(window).width();
+	h = $(window).height();
+	if(!inp) inp = { };
+	inp.x1 = inp.x1 || 0.5;
+	inp.x2 = inp.x2 || 0.5;
+	inp.y1 = inp.y1 || 0.5;
+	inp.y2 = inp.y2 || 0.5;
+	inp.z1 = inp.z1 || w/h;
+	inp.z2 = inp.z2 || 1.5*w/h;
+	inp.t = inp.t || 5000;
+	var l1 = (inp.z1*(w-h)/2);
+	var l2 = ((w-h*inp.z2)/2);
+	$('#'+this.id+' .bigpicture').css({'padding-left':'0px','overflow':'hidden','width':w+'px','height':h+'px','left':'0px','top':'0px'})
+	$('#'+this.id+' .bigpicture img').css({'left':l1+'px','width':(h*inp.z1)+'px','height':(h*inp.z1)+'px'}).animate({'left':l2+'px','width':($(window).height()*inp.z2)+'px','height':($(window).height()*inp.z2)+'px'},inp.t);
 }
 
 Slideshow.prototype.nextSlide = function(){
@@ -91,15 +131,9 @@ Slideshow.prototype.nextSlide = function(){
 	}
 }
 
-Slideshow.prototype.stop = function(){
-	clearTimeout(this.slidetimer);
-	$('#result .controls .play').show();
-	$('#result .controls .stop').hide();
-}
-
 Slideshow.prototype.readyToHide = function(){
 	this.clock = setTimeout(function(myslides){
-		if(myslides.hideable) $('#result .scroller, #result .controls').animate({opacity:'0'},1000);
+		if(myslides.hideable) $('#'+myslides.id+' .scroller, #'+myslides.id+' .controls').animate({opacity:'0'},1000);
 	},this.delay,this);
 }
 
@@ -119,45 +153,40 @@ Slideshow.prototype.updateObservations = function(){
 		this.observations = this.data.observation;
 	}
 	this.desc = this.data.desc;
-	if($('#result .thumbnails').length == 0){
-		$('#result').append('<div class="info"></div><div class="controls"><div class="play" title="Play"></div><div class="stop" title="Pause"></div><form><radio><input type="radio" name="speed" value="5000" checked /> Slow<br /><input type="radio" name="speed" value="2000" /> Fast</form></div><div class="scroller"><div class="scrollLeft"></div><div class="scrollRight"></div><div class="thumbnails"><ul></ul></div></div>');
-		var _object = this;
+	if($('#'+this.id+' .thumbnails').length == 0){
+		$('#'+this.id).append('<div class="info" style="display:none;"></div><div class="controls"><div class="play" title="Play"></div><div class="stop" title="Pause"></div><form><radio><input type="radio" name="speed" value="5000" checked /> Slow<br /><input type="radio" name="speed" value="2000" /> Fast</form></div><div class="scroller"><div class="scrollLeft"></div><div class="scrollRight"></div><div class="thumbnails"><ul></ul></div></div>');
 
-		$("input[name=speed]").change(function () { _object.pause = $('input[name=speed]:checked').val(); });
-
-
-		$('#result .play').bind('click',function(){ _object.start(); });
-		$('#result .stop').bind('click',function(){ _object.stop(); });
-		$('#result .scroller, #result .controls').bind('mouseover',function(e){ _object.hideable = false; }).bind('mouseleave',function(e){ _object.hideable = true; });
-		$('#result .scrollLeft').bind('click',function(){
-			var shift = (_object.slideby*$('.thumbnails li').outerWidth());
+		$("input[name=speed]").bind('change',{s:this},function(e){ e.data.s.pause = $('input[name=speed]:checked').val(); });
+		$('#'+this.id+' .play').bind('click',{s:this},function(e){ e.data.s.start(); });
+		$('#'+this.id+' .stop').bind('click',{s:this},function(e){ e.data.s.stop(); });
+		$('#'+this.id+' .scroller, #'+this.id+' .controls').bind('mouseover',{s:this},function(e){ e.data.s.hideable = false; }).bind('mouseleave',{s:this},function(e){ e.data.s.hideable = true; });
+		$('#'+this.id+' .scrollLeft').bind('click',{slides:this},function(e){
+			var shift = (e.data.slides.slideby*$('.thumbnails li').outerWidth());
 			var left = parseFloat($('.thumbnails ul').css('margin-left'))+shift
 			if(left < 0) $('.thumbnails ul').animate({marginLeft:'+='+shift+'px'},400);
 			else $('.thumbnails ul').animate({marginLeft:'0px'},400);
 		});
-		$('#result .scrollRight').bind('click',function(){
-			var shift = (_object.slideby*$('.thumbnails li').outerWidth());
+		$('#'+this.id+' .scrollRight').bind('click',{slides:this},function(e){
+			ss = e.data.slides;
+			var shift = (ss.slideby*$('.thumbnails li').outerWidth());
 			var right = $('.thumbnails ul').outerWidth()+parseFloat($('.thumbnails ul').css('margin-left'))-$('#result .thumbnails').outerWidth()-shift
-			if(right < shift && _object.nextjson) _object.getObservations(_object.nextjson);
+			if(right < shift && ss.nextjson) ss.getObservations(ss.nextjson);
 			if(right+shift > 0) $('.thumbnails ul').animate({marginLeft:'-='+shift+'px'},400);
 		});
-		$('#result .scrollLeft,#result .scrollRight, #result .play, #result .stop').bind('mousemove',function(){
+		$('#'+this.id+' .scrollLeft,#'+this.id+' .scrollRight, #'+this.id+' .play, #'+this.id+' .stop').bind('mousemove',function(){
 			$(this).css({cursor:'pointer'});
 		});
-		w = $(window).width()-($('#result .scrollLeft').outerWidth()+$('#result .scrollRight').outerWidth())-20;
-		$('#result .thumbnails').css({width:w+'px'});
+		w = $(window).width()-($('#'+this.id+' .scrollLeft').outerWidth()+$('#'+this.id+' .scrollRight').outerWidth())-20;
+		$('#'+this.id+' .thumbnails').css({width:w+'px'});
 	}
 	var list = "";
-	var _object = this;
+	for(var i = 0 ; i < this.observations.length ; i++) list += '		<li>\n			<a href="'+this.observations[i].about+'"><img src="'+this.observations[i].image.thumb+'" title="'+this.observations[i].label+' ('+(i+1)+'/'+this.data.observations+')" class="thumb'+i+'" /></a>\n		</li>\n';
+	$('#'+this.id+' .thumbnails ul').html(list);
 	for(var i = 0 ; i < this.observations.length ; i++){
-		list += '		<li>\n			<a href="'+this.observations[i].about+'"><img src="'+this.observations[i].image.thumb+'" title="'+this.observations[i].label+' ('+(i+1)+'/'+this.data.observations+')" class="thumb'+i+'" /></a>\n		</li>\n';
-	}
-	$('#result .thumbnails ul').html(list);
-	for(var i = 0 ; i < this.observations.length ; i++){
-		$('img.thumb'+i).bind('click',{num:i},function(e){
+		$('img.thumb'+i).bind('click',{num:i,slides:this},function(e){
 			e.stopPropagation();
 			e.preventDefault();
-			_object.displayImage(e.data.num);
+			e.data.slides.displayImage(e.data.num);
 		}).bind('error',function() {
 			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png";
 			this.alt = "Image unavailable";
@@ -165,44 +194,42 @@ Slideshow.prototype.updateObservations = function(){
 			return true;
 		});
 	}
-	$('#result .thumbnails ul').css({width:this.observations.length*$('.thumbnails li').outerWidth()+'px'});
+	$('#'+this.id+' .thumbnails ul').css({width:this.observations.length*$('.thumbnails li').outerWidth()+'px'});
 	if(this.firstload){
-		if($('#result .intro').length == 0) $('#result').append('<div class="intro"><p>'+this.desc+'</p></div>');
-		$('#result .intro').css({'width':($(window).width()/3)+'px'});
-		$('#result .intro').css({'left':(($(window).width()-$('#result .intro').outerWidth())/2)+'px','top':(($(window).height()-$('#result .intro').outerHeight())/2)+'px','z-index':3}).delay(3000).fadeOut(500);
-		if($('#result .bigpicture').length == 0) $('#result').append('<div class="bigpicture"><img src="'+this.observations[0].image.about+'" /></div>');
-		$('#result .bigpicture img').bind('click',{slides:this},function(e){
-			location.href = e.data.slides.observations[0].about
-		}).bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
+		if($('#'+this.id+' .intro').length == 0) $('#'+this.id).append('<div class="intro"><p>'+this.desc+'</p></div>');
+		$('#'+this.id+' .intro').css({'width':($(window).width()/3)+'px'});
+		$('#'+this.id+' .intro').css({'left':(($(window).width()-$('#'+this.id+' .intro').outerWidth())/2)+'px','top':(($(window).height()-$('#'+this.id+' .intro').outerHeight())/2)+'px','z-index':3}).delay(3000).fadeOut(500);
+		if($('#'+this.id+' .bigpicture').length == 0) $('#'+this.id).append('<div class="bigpicture"><a href="'+this.observations[0].about+'"><img src="'+this.observations[0].image.about+'" /></div></a>');
+		$('#'+this.id+' .bigpicture img').bind('mousemove',function(){ $(this).css({cursor:'pointer'}); }).bind('error',function() {
 			this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
 			return true;
 		});
 		var obs = this.observations[this.selected];
-		$('#result .info').html(_object.getDescription(obs));
+		$('#'+this.id+' .info').html(this.getDescription(obs));
 		this.firstload = false;
 	}
-	$('#result .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
+	$('#'+this.id+' .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
 	this.reposition();
 }
 
 Slideshow.prototype.getObservations = function(json){
 	if(typeof json!="string") json = this.json;
-	var _object = this;
+	if(!json) return this;
 	$.ajax({
 		dataType: "jsonp", 
 		url: json,
-		context: _object,
+		context: this,
 		success: function(data){
-			_object.data = data;
-			_object.updateObservations();
+			this.data = data;
+			this.updateObservations();
 		}
 	});
 }
 
 Slideshow.prototype.selectImage = function(sel){
-	var fromright = ($('#result .thumbnails').outerWidth()/$('#result .thumbnails li').outerWidth());
+	var fromright = ($('#'+this.id+' .thumbnails').outerWidth()/$('#'+this.id+' .thumbnails li').outerWidth());
 	if(sel > this.observations.length-fromright && this.nextjson) this.getObservations(this.nextjson);
 
 	sel = (sel < 0) ? 0 : sel;
@@ -211,16 +238,16 @@ Slideshow.prototype.selectImage = function(sel){
 	var obs = this.observations[this.selected];
 	this.loading = true;
 
-	$('#result .thumbnails ul li img').css({'border-color':$('#result .thumbnails ul li img').css('border-color')});	
-	$('#result .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
-	$('#result .bigpicture img').attr({
+	$('#'+this.id+' .thumbnails ul li img').css({'border-color':$('#'+this.id+' .thumbnails ul li img').css('border-color')});	
+	$('#'+this.id+' .thumbnails ul li').eq(this.selected).find('img').css({'border-color':'white'});
+	$('#'+this.id+' .bigpicture a').attr('href',this.observations[this.selected].about);
+
+	$('#'+this.id+' .bigpicture img').attr({
 		src: obs.image.about,
 		title: obs.label
-	}).unbind('click').bind('click',{slides:this},function(e){
-		location.href = e.data.slides.observations[e.data.slides.selected].about
 	}).unbind('load').bind('load',{slides:this},function(e){
 		e.data.slides.loading = false;
-		$('#result .loadingDiv').hide();
+		$('#'+e.data.slides.id+' .loadingDiv').hide();
 	}).bind('error',function() {
 		this.src = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png";
 		this.alt = "Image unavailable";
@@ -228,7 +255,7 @@ Slideshow.prototype.selectImage = function(sel){
 		return true;
 	});
 
-	$('#result .info').html(this.getDescription(obs));
+	$('#'+this.id+' .info').html(this.getDescription(obs));
 
 	// Now we pre-cache the next image
 	sel = this.selected+1;
@@ -238,47 +265,50 @@ Slideshow.prototype.selectImage = function(sel){
 }
 
 Slideshow.prototype.getDescription = function(obs){
-	return '<h1 style="font-size:1em;margin:0px;"><a href="'+obs.about+'">'+obs.label+'</a></h1><p style="margin:0px;padding:0px;font-size:0.8em;">by <a href="'+obs.observer.about+'">'+obs.observer.label+'</a> '+relative_time(new Date(Date.parse(obs.time.creation)))+' using <a href="'+obs.instr.about+'">'+obs.instr.tel+'</a>';
-
-	var str = $('#logo').html()+'<br style="clear:both;"><h1><a href="'+obs.about+'">'+obs.label+'</a></h1><table><tr><td>Observer:</td><td><a href="'+obs.observer.about+'">'+obs.observer.label+'</a></td></tr><tr><td>Date:</td><td>'+obs.time.creation+'</td></tr>';
-	if(typeof obs.ra!="undefined"){
-		var ra_h = Math.floor(obs.ra/15);
-		var ra_m = Math.floor(((obs.ra/15)-ra_h)*60);
-		var ra_s = Math.round(((obs.ra/15)-ra_h)*3600 - (ra_m)*60);
-		if (ra_h < 10) ra_h = "0"+ra_h;
-		if (ra_m < 10) ra_m = "0"+ra_m;
-		if (ra_s < 10) ra_s = "0"+ra_s;
-		var ra = ra_h+':'+ra_m+':'+ra_s
-		var dc_d = Math.floor(obs.dec);
-		var dc_m = Math.floor((obs.dec-dc_d)*60);
-		var dc_s = Math.round((obs.dec-dc_d)*3600 - (dc_m)*60);
-		var sign = (dc_d >= 0) ? "+" : "-";
-		if (Math.abs(dc_d) < 10) dc_d = sign+"0"+Math.abs(dc_d);
-		if (dc_m < 10) dc_m = "0"+dc_m;
-		if (dc_s < 10) dc_s = "0"+dc_s;
-		var dec = dc_d+':'+dc_m+':'+dc_s;
-		str += '<tr><td>Coordinates:</td><td>'+ra+', '+dec+'</td></tr>';
+	html = '<h1><a href="'+obs.about+'">'+obs.label+'</a></h1>'
+	if(obs.avm && obs.avm.name){
+		codes = obs.avm.code.split(';');
+		names = obs.avm.name.split(';');
+		html += '<p class="avm">';
+		for(c = 0 ; c < codes.length ; c++){
+			if(c > 0) html += "/"
+			html += '<a href="http://lcogt.net/observations/category/'+codes[c]+'" title="Object type">'+names[c]+'</a>'
+		}
+		html += '</p>';
 	}
-	str += '<tr><td>Telescope:</td><td><a href="'+obs.instr.about+'">'+obs.instr.tel+'</a></td></tr>';
-	return str;
+	html += '<p class="telescope"><a href="'+obs.instr.about+'" title="Telescope">'+obs.instr.tel+'</a></p>'
+	html += '<p class="exposure"><span title="Exposure">'+obs.filter+' '+obs.exposure+' seconds</span></p>'
+	html += '<p class="date"><span title="Date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</span></p>'
+	html += '<p class="observer"><a href="'+obs.observer.about+'" title="Observer">'+obs.observer.label+'</a></p>';
+	return html;
 }
 
-function relative_time(parsed_date) {
+// pd = parsed date
+function relative_time(pd) {
 	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
-	var delta = parseInt((relative_to.getTime() - parsed_date) / 1000);
-	//delta = delta - (relative_to.getTimezoneOffset() * 60);
-	if (delta < 60) return 'less than a minute ago';
-	else if(delta < 120) return 'about a minute ago';
-	else if(delta < (45*60)) return (parseInt(delta / 60)).toString() + ' minutes ago';
-	else if(delta < (90*60)) return 'about an hour ago';
-	else if(delta < (48*60*60)) {
-		h = (parseInt(delta / 3600)).toString()
+	var dt = parseInt((relative_to.getTime() - pd) / 1000);
+	if (dt < 60) return 'less than a minute ago';
+	else if(dt < 120) return 'about a minute ago';
+	else if(dt < (45*60)) return (parseInt(dt / 60)).toString() + ' minutes ago';
+	else if(dt < (90*60)) return 'about an hour ago';
+	else if(dt < (48*60*60)) {
+		h = (parseInt(dt / 3600)).toString()
 		if(h == 1) return 'about ' + h + ' hour ago';
 		else return 'about ' + h + ' hours ago';
-	}else return (parseInt(delta / 86400)).toString() + ' days ago';
+	}else if(dt < (30*86400)) {
+		return (parseInt(dt / 86400)).toString() + ' days ago';
+	}else{
+		var mons = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
+		y = pd.getYear()+'';
+		if(y.length < 4) y = (y-0+1900);
+		h = pd.getHours();
+		if(h < 10) h = "0"+h;
+		m = pd.getMinutes();
+		if(m < 10) m = "0"+m;
+		if(dt < (360*86400)) return pd.getDate()+' '+mons[pd.getMonth()]+' ('+h+':'+m+')';
+		else return pd.getDate()+' '+mons[pd.getMonth()]+' '+y+' ('+h+':'+m+')';
+	}
 }
-
-//(function($) {
 var cache = [];
 // Arguments are image paths relative to the current page.
 $.preLoadImages = function() {
@@ -289,4 +319,3 @@ $.preLoadImages = function() {
 		cache.push(cacheImage);
 	}
 }
-
