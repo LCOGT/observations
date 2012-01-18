@@ -814,23 +814,25 @@ def view_observation(request,code,tel,obs):
 
 	# Update stats
 	obstats = ObservationStats.objects.filter(imagearchive=obs[0])
-	# Only update stats if it isn't a crawler
-	if (request.is_crawler):
-		views = obstats[0].views
-	else:
-		if obstats:
-			obstats[0].views = obstats[0].views+1
-			views = obstats[0].views
-			delta = datetime.utcnow()-obstats[0].lastviewed
-			# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
-			#print obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
-			obstats[0].weight = 1. + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
-			#print obstats[0].weight
-			obstats[0].lastviewed = datetime.utcnow()
+	if obstats:
+		# Only update the number of views if it isn't a crawler
+		if (request.is_crawler):
+			addition = 0
 		else:
-			obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
-			views = 1
-		obstats[0].save()
+			addition = 1
+		obstats[0].views = obstats[0].views + addition
+		views = obstats[0].views
+		delta = datetime.utcnow()-obstats[0].lastviewed
+		# 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
+		# 0.5 = 2*(0.5^2) <- where 0.5 days is the sigma for the Gaussian function
+		#print obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
+		obstats[0].weight = addition + obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/0.5)
+		#print obstats[0].weight
+		obstats[0].lastviewed = datetime.utcnow()
+	else:
+		obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
+		views = 1
+	obstats[0].save()
 
 	obs = build_observations(obs)
 	otherobs = get_observation_stream(obs[0])
