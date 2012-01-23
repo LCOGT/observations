@@ -212,7 +212,7 @@ class RegAdmin(admin.ModelAdmin):
           result['Location'] = ref            
       else:                   
           extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
-          result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context )
+          result = super(RegAdmin, self).change_view(request, object_id, extra_context )
       return result
 
   
@@ -376,7 +376,7 @@ class SlotAdmin(admin.ModelAdmin):
             result['Location'] = ref            
         else:                   
             extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
-            result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context )
+            result = super(SlotAdmin, self).change_view(request, object_id, extra_context )
         return result
 
 class FaulkesAdmin(admin.ModelAdmin):
