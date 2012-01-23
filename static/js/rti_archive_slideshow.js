@@ -277,7 +277,7 @@ Slideshow.prototype.getDescription = function(obs){
 		html += '</p>';
 	}
 	html += '<p class="telescope"><a href="'+obs.instr.about+'" title="Telescope">'+obs.instr.tel+'</a></p>'
-	html += '<p class="exposure"><span title="Exposure">'+obs.filter+' '+obs.exposure+' seconds</span></p>'
+	html += '<p class="exposure"><span title="Exposure">'+obs.filter.name+' '+obs.exposure+' seconds</span></p>'
 	html += '<p class="date"><span title="Date">'+relative_time(new Date(Date.parse(obs.time.creation)))+'</span></p>'
 	html += '<p class="observer"><a href="'+obs.observer.about+'" title="Observer">'+obs.observer.label+'</a></p>';
 	return html;

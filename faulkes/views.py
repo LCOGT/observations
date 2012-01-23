@@ -1188,6 +1188,10 @@ def build_observations_json(obs):
 			o['telescope'] = tel[0]
 
 		o['fitsfiles'] = "";
+		try:
+			filter = filter_props(o['filter'])
+		except:
+			filter = ["Unknown"]
 		ob = {
 			"about" : base_url+o['link_obs'],
 			"label" : o['skyobjectname'],
@@ -1203,7 +1207,9 @@ def build_observations_json(obs):
 			},
 			"ra" : o['raval'], 
 			"dec" : o['decval'],
-			"filter" : re.sub(r"\"",'',o['filter']),
+			"filter" :  {
+				"name" : re.sub(r"\"",'',filter[0]),
+			},
 			"instr" : {
 				"about" : base_url+o['link_tel'],
 				"tel" : re.sub(r"\"",'',o['telescope'].name)
@@ -1218,7 +1224,8 @@ def build_observations_json(obs):
 				"label" : o['credit']
 			}
 		}
-
+		if len(filter)==2:
+			ob['filter']['about'] = "http://lcogt.net/"+filter[1]
 		if 'schooluri' in o:
 			ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
 		if 'avmcode' in o and o['avmcode']!="":
