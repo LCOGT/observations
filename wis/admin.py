@@ -47,7 +47,7 @@ class RegAdminForm(forms.ModelForm):
 class RegAdmin(admin.ModelAdmin):
   form = RegAdminForm
   search_fields = ['schoolname','schoolloginname','schooladdress3','schoolpostcode']
-  list_display  = ['schoolname','teachername','colour_status','schooladdress3','usertype','tag']
+  list_display  = ['schoolname','teachername','colour_status','schooladdress3','usertype','peakrtiminsavailable','tag']
   list_filter   = ['accountstatus','tag','usertype']
   inlines       = [SchooluriInline]
   fieldsets     = (
@@ -204,6 +204,16 @@ class RegAdmin(admin.ModelAdmin):
         message_bit = "%s users emailed with custom email" % len(items)
     self.message_user(request,"%s successfully" % message_bit)
   astrosoc_email.short_description = "FTP: send Astronomical Soc email"
+  
+  def change_view(self, request, object_id, extra_context={}):
+      if len(extra_context) > 0:                    
+          ref = extra_context['ref']            
+          result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context.clear() )
+          result['Location'] = ref            
+      else:                   
+          extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
+          result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context )
+      return result
 
   
 '''
@@ -359,6 +369,15 @@ class SlotAdmin(admin.ModelAdmin):
       
       self.message_user(request,"%s successfully" % message_bit)
     unbook_slots.short_description = "Change slots to not booked"
+    def change_view(self, request, object_id, extra_context={}):
+        if len(extra_context) > 0:                    
+            ref = extra_context['ref']            
+            result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context.clear() )
+            result['Location'] = ref            
+        else:                   
+            extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
+            result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context )
+        return result
 
 class FaulkesAdmin(admin.ModelAdmin):
     # A handy constant for the name of the alternate database.
