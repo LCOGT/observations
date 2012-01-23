@@ -206,11 +206,11 @@ class RegAdmin(admin.ModelAdmin):
   astrosoc_email.short_description = "FTP: send Astronomical Soc email"
   
   def change_view(self, request, object_id, extra_context={}):
-      if len(extra_context) > 0:                    
+      if len(extra_context) > 0:                        
           ref = extra_context['ref']            
-          result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context.clear() )
+          result = super(RegAdmin, self).change_view(request, object_id, extra_context.clear() )
           result['Location'] = ref            
-      else:                   
+      else:                    
           extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
           result = super(RegAdmin, self).change_view(request, object_id, extra_context )
       return result
@@ -369,12 +369,13 @@ class SlotAdmin(admin.ModelAdmin):
       
       self.message_user(request,"%s successfully" % message_bit)
     unbook_slots.short_description = "Change slots to not booked"
+    
     def change_view(self, request, object_id, extra_context={}):
-        if len(extra_context) > 0:                    
+        if len(extra_context) > 0:                        
             ref = extra_context['ref']            
-            result = super(AnalysisAdmin, self).change_view(request, object_id, extra_context.clear() )
+            result = super(SlotAdmin, self).change_view(request, object_id, extra_context.clear() )
             result['Location'] = ref            
-        else:                   
+        else:                    
             extra_context['ref'] = unicode( request.META.get('HTTP_REFERER', '') ) 
             result = super(SlotAdmin, self).change_view(request, object_id, extra_context )
         return result
