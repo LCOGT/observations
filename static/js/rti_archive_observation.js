@@ -12,7 +12,7 @@ if (jQuery) {
 				var col = $(this).attr('title').substring(0,$(this).attr('title').indexOf(' '));
 				col = col.toLowerCase();
 				if($(this).attr('href').indexOf('.jpg') >= 0){
-					$(this).parent().append('<div class="filter_loader">(Loading...)</div>');
+					$(this).parent().append('<div class="filter_loader">loading</div>');
 					$('.filter_loader').css({'color':'black','display':'inline','margin-left':5});
 					$('img.observation-image').attr({'src':$(this).attr('href')}).bind('load',function(){
 						showFilter(col);

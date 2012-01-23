@@ -30,9 +30,8 @@
 										<tr><td class='first'>Observer:</td><td><a href="{% url rtiadminsite.faulkes.views.index %}user/{{ obs.userid }}" property="UCD:obs.observer">{{ obs.user }}</a></td></tr>
 										<tr><td class='first'>Date:</td><td><time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time></td></tr>
 										<tr><td class='first'>Coordinates:</td><td><span class='Spatial-ReferenceValue' title='{{ obs.raval }};{{ obs.decval }}'><span property='UCD:pos.eq.RA' content='{{ obs.raval }}'>{{ obs.raval|degreestohms }}</span>, <span property='UCD:pos.eq.DEC' content='{{ obs.decval }}'>{{ obs.decval|degreestodms }}</span></span><span class='Spatial-CoordinateFrame'>FK5</span> <span class='Spatial-Equinox'>J2000</span>
-										<br /><a href='http://server1.wikisky.org/v2?ra={{ obs.raval|degreestohours }}&amp;de={{ obs.decval }}&amp;zoom=10&amp;img_source=astrophoto'>Position in Wikisky</a>
-										<br /><a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.raval|degreestohours }}&amp;dec={{ obs.decval }}&amp;zoom=3'>Position in WorldWideTelescope</a>
-										<br /><a href='{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/{{ obs.imageid }}.kml'>Position in Sky for Google Earth</a>
+										<br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.raval|degreestohours }}&amp;de={{ obs.decval }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a>, <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.raval|degreestohours }}&amp;dec={{ obs.decval }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a> or <a href='{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/{{ obs.imageid }}.kml' title="View these coordinates in Sky for Google Earth">Sky for Google Earth</a>.
+										<br /><a href='{% url rtiadminsite.faulkes.views.index %}search?RA={{ obs.raval }}&DEC={{ obs.decval }}&SR=3'>Find nearby observations...</a>
 										</td></tr>
 										<tr><td class='first'>Telescope:</td><td property='UCD:instr.tel'><a href="{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}">{{ telescope.name }}</a></td></tr>
 										<tr><td class='first'>Filter:</td><td>{{ obs.filter|safe }}</td></tr>
@@ -42,7 +41,7 @@
 											<ul class='filters'>
 {% for filter in filters %}
 {% if filter.fits %}
-												<li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{{ filter.name }} FITS</a> <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>or jpeg</a></li>
+												<li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{{ filter.fullname }} FITS</a> or <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>jpeg</a></li>
 {% endif %}
 {% endfor %}
 											</ul>

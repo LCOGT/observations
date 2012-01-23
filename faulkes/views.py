@@ -921,7 +921,7 @@ def view_observation(request,code,tel,obs):
 					jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
 					fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
 					if jpg or fit:
-						tmp = {'id':ids[rid],'name':names[rid]}
+						tmp = {'id':ids[rid],'name':names[rid],'fullname':filter_name(names[rid])}
 						if jpg:
 							tmp['img'] = jpg.group(1)
 						if fit:
@@ -931,7 +931,7 @@ def view_observation(request,code,tel,obs):
 					filters[rid]['img'] = ""
 					filters[rid]['fits'] = ""
 
-	obs[0]['filter'] = filter_name(obs[0]['filter'])
+	obs[0]['filter'] = filter_link(obs[0]['filter'])
 
 	if input['doctype'] == "json":
 		#print obs
@@ -1407,53 +1407,76 @@ def datestamp_basic(value):
 def l(txt,lnk):
 	return "<a href=\"http://lcogt.net/"+lnk+"\">"+txt+"</a>";
 
-def filter_name(code):
+def filter_props(code):
 	if code == 'CC':
-		return l('Air','node/31')
+		return ['Air','node/31']
 	elif code == 'CA':
-		return l('Hydrogen Alpha','node/51')
+		return ['Hydrogen Alpha','node/51']
 	elif code == 'CB':
-		return l('Bessell B','node/36')
+		return ['Bessell B','node/36']
 	elif code == 'CO':
-		return l('Oxygen III','node/34')
+		return ['Oxygen III','node/34']
 	elif code == 'RGB':
-		return 'RGB composite'
+		return ['RGB composite']
 	elif code == 'RGB_ND':
-		return "BVr' +Neutral Dens"
+		return ["BVr' +Neutral Dens"]
 	elif code == 'CI':
-		return l("SDSS i'","node/35")
+		return ["SDSS i'","node/35"]
 	elif code == 'CR':
-		return l('Bessell R',"node/43")
+		return ['Bessell R',"node/43"]
 	elif code == 'CU':
-		return l("SDSS u'","node/42")
+		return ["SDSS u'","node/42"]
 	elif code == 'CV':
-		return l("Bessell V","node/37")
+		return ["Bessell V","node/37"]
 	elif code == 'NB':
-		return "B +Neutral Dens"
+		return ["B +Neutral Dens"]
 	elif code == 'NV':
-		return "V +Neutral Dens"
+		return ["V +Neutral Dens"]
 	elif code == 'SR':
-		return "SDSS r'"
+		return ["SDSS r'"]
 	elif code == 'SZ':
-		return l("Pan-STARRS Z","node/48")
+		return ["Pan-STARRS Z","node/48"]
 	elif code == 'SG':
-		return l("Sloan g'","node/45")
+		return ["Sloan g'","node/45"]
 	elif code == 'SY':
-		return l("Pan-STARRS Y","node/49")
+		return ["Pan-STARRS Y","node/49"]
 	elif code == 'BI':
-		return "Bessel I"
+		return ["Bessel I"]
 	elif code == 'HB':
-		return l("Hydrogen Beta","node/53")
+		return ["Hydrogen Beta","node/53"]
 	elif code == 'SO':
-		return l("Solar","node/40")
+		return ["Solar","node/40"]
 	elif code == 'SM':
-		return l("SkyMap - CaV","node/41")
+		return ["SkyMap - CaV","node/41"]
 	elif code == 'OP':
-		return l("Opal","node/50")
+		return ["Opal","node/50"]
 	elif code == 'D5':
-		return "D51 filter"
+		return ["D51 filter"]
+	elif code == 'Blue':
+		return [code]
+	elif code == 'Green':
+		return [code]
+	elif code == 'Red':
+		return [code]
 	else:
+		return ["Unknown"]
+
+def filter_link(code):
+	try:
+		props = filter_props(code)
+	except:
 		return "Unknown"
+	if len(props) == 2:
+		return l(props[0],props[1])
+	else:
+		return props[0]
+
+def filter_name(code):
+	try:
+		props = filter_props(code)
+	except:
+		return "Unknown"
+	return props[0]
 
 
 def hexangletodec(value):
