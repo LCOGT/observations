@@ -199,6 +199,23 @@
 			<div class="spacer"></div>
 			<div class="row">
 				<fieldset>
+					<legend>By exposure length: </legend>
+					<div class="twocol">
+						<p class="gray-5">Limit your search by the length of the exposure in seconds.</p>
+					</div>
+					<div class="fourcol lastcol">
+						<label for="exposure" class="hidden">Exposure length: </label>
+						<select name="exposurecondition" class="form-select">
+							{% for condition in conditions %}
+								<option value="{{condition.value}}"{% if condition.value == form.exposurecondition %} selected="selected"{% endif %}>{{condition.text}}</option>
+							{% endfor %}
+							</select> <input type="text" maxlength="30" name="exposure" id="exposure" value="{{ form.exposure }}" class="form-text" style="width:5em;" /> seconds
+					</div>
+				</fieldset>
+			</div>
+			<div class="spacer"></div>
+			<div class="row">
+				<fieldset>
 					<legend>By user: </legend>
 					<div class="twocol">
 						<p class="gray-5">Limit your search to observations by a specific user's name.</p>

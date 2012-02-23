@@ -305,7 +305,7 @@ def search(request):
 	months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 	days = range(1,32)
 	ago = now + timedelta(-30)
-	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC','')}
+	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq')}
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
@@ -336,8 +336,17 @@ def search(request):
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
 
-		#print "All"
-		#print obs.count()
+		if form['exposure'] != '':
+			try:
+				form['exposure'] = float(form['exposure'])
+				if(form['exposurecondition']=='gt'):
+					obs = obs.filter(exposuresecs__gt=form['exposure'])
+				elif(form['exposurecondition']=='lt'):
+					obs = obs.filter(exposuresecs__lt=form['exposure'])
+				else:
+					obs = obs.filter(exposuresecs=form['exposure'])
+			except:
+				form['exposure'] = 0;
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -434,7 +443,7 @@ def search(request):
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', {'input':input,'obs':obs,'n':n,'link':input['link']},context_instance=RequestContext(request))
 		else:
-			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
+			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
 
 
 
