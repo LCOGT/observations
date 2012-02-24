@@ -73,6 +73,8 @@ class Imagearchive(models.Model):
         else:
             d = "Error"
         return d
+    def __unicode__(self):
+        return self.skyobjectname
 
 class ObservationStats(models.Model):
 	imagearchive = models.ForeignKey(Imagearchive)
@@ -82,6 +84,10 @@ class ObservationStats(models.Model):
 	imageurl = models.URLField(blank=True)
 	moreurl = models.URLField(blank=True)
 	avmcode = models.CharField(max_length=32, db_column='AVMCode', blank=True,help_text='The AVM code for this image. Can contain multiple codes separated by a semi-colon.')
+	class Meta:
+	    app_label = 'faulkes'
+	    verbose_name = u'observation stat'
+        verbose_name_plural = u'observation stats'
 
 
 class Posdebug(models.Model):

@@ -6,7 +6,7 @@ from django.contrib.admin.models import LogEntry, CHANGE
 from django.core.mail import send_mail
 from django.core import urlresolvers
 from rtiadminsite.wis.models import Registrations, Slots, Timeallocationgroups, EmailMessage, Alerts, StatusUpdate, Settings, Schooluri 
-from rtiadminsite.faulkes.models import Imagearchive, Filter
+from rtiadminsite.faulkes.models import Imagearchive, Filter, ObservationStats, Telescope,Site
 
 from rtiadminsite.wis.choices import SCOPE_CHOICES,email_sender, email_footer
 from rtiadminsite.wis.templatetags.extra_options import date_full_format
@@ -33,7 +33,15 @@ class EmailAdmin(admin.ModelAdmin):
 class SchooluriInline(admin.StackedInline):
     model = Schooluri
     max_num = 1
-
+    
+'''
+Observation stats admin
+'''    
+    
+class StatsAdmin(admin.ModelAdmin):
+    list_display = ['imagearchive','views','weight','lastviewed','avmcode','imageurl','moreurl']
+    search_fields = ['imagearchive']
+    ordering = ['-weight']
 '''
 ****
 Registrations admin section
@@ -408,7 +416,10 @@ class ArchiveAdmin(FaulkesAdmin):
     list_display = ['skyobjectname','schoolloginname','datestamp','telescopeid']
 
 admin.site.register(Imagearchive,ArchiveAdmin)
-admin.site.register(Filter)     
+admin.site.register(Filter) 
+admin.site.register(Telescope) 
+admin.site.register(Site)
+admin.site.register(ObservationStats,StatsAdmin)      
 admin.site.register(Registrations, RegAdmin)
 admin.site.register(Slots, SlotAdmin)
 admin.site.register(Timeallocationgroups)

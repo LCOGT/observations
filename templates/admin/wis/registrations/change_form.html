@@ -23,8 +23,8 @@ $(document).ready(function() {
 		// Bug fix for reading local JSON file in FF3
 		$.ajaxSetup({async:false,'beforeSend': function(xhr){ if (xhr.overrideMimeType) xhr.overrideMimeType("text/plain"); } });
 
-		//$.getJSON(edurl, {query : sparql, output:"json"},
 		$('#schooluri').append('<div id="progress"><img src="{{ MEDIA_URL }}admin/img/ajax-loader.gif"></div>');
+		//$.getJSON(edurl, {query : sparql, output:"json"},
 		$.getJSON(yql,
 		 	function(data){
 			  if (typeof data.query.results.sparql.result != "undefined"){
