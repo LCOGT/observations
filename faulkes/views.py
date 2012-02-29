@@ -538,6 +538,161 @@ def view_telescope(request,code,tel):
 			return render_to_response('faulkes/telescope.html', data,context_instance=RequestContext(request))
 
 
+def view_object(request,object):
+	input = input_params(request)
+
+	# Remove trailing full-stop
+	#objectm = re.sub(r"\.$","",avm)
+	#avmtemp = re.sub(r"\.","\\.",avm)
+	object = re.sub(r"\.json$","",object)
+	object = re.sub(r"\.kml$","",object)
+	original = object
+	object = object.replace('+', ' ')
+
+	page = int(request.GET.get('page','1'))
+	
+	if page == 1 and input['doctype'] == "html":
+		opener = urllib2.build_opener()
+		opener.addheaders = [('Accept', 'application/xml'),
+							('Content-Type', 'application/xml'),
+							('User-Agent', 'LCOGT/1.0')]
+		req = urllib2.Request(url='http://www.strudel.org.uk/lookUP/xml/?name=%s' % original)
+		# Allow 3 seconds for timeout
+		try:
+			f = urllib2.urlopen(req,None,5)
+			xml = f.read()
+		except:
+			return unknown(request)
+	
+		service = re.search('service href="([^\"]*)">([^\<]*)<',xml)
+		if type(service) == 'NoneType':
+			return unknown(request)
+	
+		try:
+			service = {'name':service.group(2),'url':service.group(1) }
+		except:
+			return unknown(request)
+	
+		raval = re.search('<ra ([^\>]*)>([^\<]*)<',xml)
+		if type(raval) == 'NoneType':
+			return unknown(request)
+		try:
+			raval = float(raval.group(2))
+		except:
+			return unknown(request)
+	
+		decval = re.search('<dec ([^\>]*)>([^\<]*)<',xml)
+		if type(decval) == 'NoneType':
+			return unknown(request)
+		try:
+			decval = float(decval.group(2))
+		except:
+			return unknown(request)
+	
+		m = re.search('avmcode="([^\"]*)"',xml)
+		print xml
+		try:
+			avmcode = m.group(1)
+			if len(avmcode) > 0:
+				cats = avmcode.split(';')
+				if len(cats) > 0:
+					avmcode = cats[-1]
+					if avmcode in categorylookup:
+						avm = categorylookup[avmcode]
+					else:
+						avm = avmcode
+				else:
+					avm = "Unknown"
+					avmcode = ""
+			else:
+				avm = "Unknown"
+				avmcode = ""
+		except:
+			avm = "Unknown"
+			avmcode = ""
+
+
+		object = {'name':object,'raval':raval,'decval':decval,'service':service,'avm':{'name':avm,'code':avmcode}}
+	else:
+		object = {'name':object}
+
+	try:
+		obser = Imagearchive.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
+	except ObjectDoesNotExist:
+		return unknown(request)
+	
+	
+	n = obser.count()
+
+	input['observations'] = n
+	input['title'] = object['name']
+	input['link'] = 'object/'+original
+	input['description'] = 'Observations of '+object['name']+' (LCOGT)'
+	input['perpage'] = n_per_page
+	input['pager'] = build_pager(request,n)
+		
+	if(n > n_per_page):
+		obs = build_observations(obser[input['pager']['start']:input['pager']['end']])
+	else:
+		obs = build_observations(obser)
+
+	if page == 1:
+		# Bin the observations by month
+		import bisect
+		import collections
+		interval = timedelta(days=30)
+		bins = 12
+		total = bins*interval
+		now = datetime.utcnow()
+		if now.month == 12:
+			end = now.replace(year=now.year+1,month=1,day=1,hour=0,minute=0,second=0)
+		else:
+			end = now.replace(month=now.month + 1,day=1,hour=0,minute=0,second=0)
+		start = end - interval*bins
+		grid = [start+num*interval for num in range(bins)]
+		binned = [0 for num in range(bins)]
+		for o in obser:
+			t = parsetime(o.whentaken)
+			if (end - t < total):
+				idx = bisect.bisect(grid,t)
+				binned[idx] = binned[idx] + 1
+
+		# Calculate how many in each bin
+		ns = [{'label':'Under 1 second','observations':0},{'label':'1-10 seconds','observations':0},{'label':'10-30 seconds','observations':0},{'label':'30-90 seconds','observations':0},{'label':'Over 90 seconds','observations':0}]
+		obser = obser.filter(exposuresecs__gt=1)
+		ns[0]['observations'] = n-len(obser)
+		obser = obser.filter(exposuresecs__gt=10)
+		ns[1]['observations'] = n-ns[0]['observations']-len(obser)
+		obser = obser.filter(exposuresecs__gt=30)
+		ns[2]['observations'] = n-ns[0]['observations']-ns[1]['observations']-len(obser)
+		obser = obser.filter(exposuresecs__gt=90)
+		ns[3]['observations'] = n-ns[0]['observations']-ns[1]['observations']-ns[2]['observations']-len(obser)
+		ns[4]['observations'] = len(obser)
+		input['exposure'] = ns
+	else:
+		ns = []
+
+	uri = ""
+	mostrecent = ""
+
+
+	if len(obs) > 0:
+		mostrecent = relativetime(obs[0]['whentaken'])
+
+	if input['doctype'] == "json":
+		return view_json(request,build_observations_json(obs),input)
+	elif input['doctype'] == "kml":
+		return view_kml(request,obs,input)
+	elif input['doctype'] == "rss":
+		return view_rss(request,obs,input)
+	else:
+		data = {'n':n,'ns':ns,'bins':binned,'binmax':max(binned),'object':object,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+		if input['slideshow']:
+			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
+		else:
+			return render_to_response('faulkes/object.html', data,context_instance=RequestContext(request))
+
+
 def view_user(request,userid):
 	input = input_params(request)
 
@@ -1261,7 +1416,7 @@ def view_json(request,obs,config):
 	if 'description' in config:
 		response["desc"] = config['description']
 	if 'link' in config:
-		response["link"] = config['link']
+		response["link"] = base_url+config['link']
 	if 'title' in config:
 		response["title"] = config['title']
 	if 'pager' in config:
@@ -1276,6 +1431,8 @@ def view_json(request,obs,config):
 		response["observations"] = config['observations']
 	if 'live' in config:
 		response["live"] = config['live']
+	if 'exposure' in config:
+		response["exposure"] = config['exposure']
 	
 	s = simplejson.dumps(response, indent=8,sort_keys=True)
 	output = '\n'.join([l.rstrip() for l in  s.splitlines()])

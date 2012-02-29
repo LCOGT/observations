@@ -94,6 +94,9 @@ def isodatestamp(value):
 def lowercase(value):
 	return value.lower()
 
+def negative(value, arg):
+	return int(value) - int(arg) 
+    
 register.filter('degreestohours', degreestohours)
 register.filter('hourstodegrees', hourstodegrees)
 register.filter('degreestodms', degreestodms)
@@ -101,3 +104,4 @@ register.filter('degreestohms', degreestohms)
 register.filter('datestamp', datestamp)
 register.filter('isodatestamp', isodatestamp)
 register.filter('lowercase', lowercase)
+register.filter('negative', negative)

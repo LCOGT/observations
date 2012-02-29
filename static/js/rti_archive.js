@@ -44,7 +44,7 @@ $(document).ready(function(){
 
 	$(".observation-results li .observer").each(function(){
 		var html = $(this).html()
-		if(html.length > 15) $(this).html(html.substring(0,13)+"...");
+		if(html.length > 13) $(this).html(html.substring(0,11)+"...");
 	});
 	$(".observation-results li .title").each(function(){
 		var html = $(this).html()
