@@ -1674,10 +1674,7 @@ def binMonths(obs,input,bins):
 		values[num]['year'] = now.year+((m-1)/12)		
 		while m < 1:
 			m += 12
-		if m % 12 == 1:
-			values[num]['month'] = datetime(now.year-int(num/12), m, 1).strftime("%b %Y")
-		else:
-			values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
+		values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
 		values[num]['m'] = m
 	for o in obs:
 		try:
