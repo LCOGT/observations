@@ -449,3 +449,4 @@ ol ol { list-style-type: decimal; }
 .temporalplot .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
 .temporalplot .temporalbar { width:34px; }
 .temporalplot .temporaltxt { margin-top:2px;font-size:0.8em;display:inline-block;height:1.5em;width:34px;text-align:center;vertical-align:top;color:#606060; }
+.temporalbar, .exposurebar { background-color: #3366dd; color: white; }

@@ -20,7 +20,7 @@
 									<h2>Statistics</h2>
 									<div class="temporalplot">
 										<div class="temporalbars">
-{% for b in input.bins reversed %}											<div style="display:inline-block;float:left;"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 80 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?user={{user}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}">{{ b.count }}</a>{% endif %}</div><div class="blue-3-bg temporalbar" style="height:{% widthratio b.count input.binmax 80 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div></div>{% endfor %}
+{% for b in input.bins reversed %}											<div style="display:inline-block;float:left;"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 80 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?user={{user}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 80 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div></div>{% endfor %}
 											<div style="clear:both;"></div>
 										</div>
 										{% for b in input.bins reversed %}<div class="temporaltxt" style="{% if not forloop.last %}margin-right:4px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div>{% endfor %}
