@@ -649,19 +649,25 @@ def view_object(request,object):
 	if page == 1:
 		# Bin the observations by month for the past year
 		input = binMonths(obser,input,12)
-		
+
+		b = [0,1,2,3,4]
 		# Calculate how many in each bin
 		ns = [{'label':'Under 1 second','observations':0},{'label':'1-10 seconds','observations':0},{'label':'10-30 seconds','observations':0},{'label':'30-90 seconds','observations':0},{'label':'Over 90 seconds','observations':0}]
 		obser = obser.filter(exposuresecs__gt=1)
-		ns[0]['observations'] = n-len(obser)
+		b[0] = n-len(obser);
 		obser = obser.filter(exposuresecs__gt=10)
-		ns[1]['observations'] = n-ns[0]['observations']-len(obser)
+		b[1] = n-b[0]-len(obser)
 		obser = obser.filter(exposuresecs__gt=30)
-		ns[2]['observations'] = n-ns[0]['observations']-ns[1]['observations']-len(obser)
+		b[2] = n-b[0]-b[1]-len(obser)
 		obser = obser.filter(exposuresecs__gt=90)
-		ns[3]['observations'] = n-ns[0]['observations']-ns[1]['observations']-ns[2]['observations']-len(obser)
-		ns[4]['observations'] = len(obser)
+		b[3] = n-b[0]-b[1]-b[2]-len(obser)
+		b[4] = len(obser)
+
+		for i in range(5):
+			ns[i]['observations'] = b[i]
+
 		input['exposure'] = ns
+		input['exposuremax'] = max(b)
 	else:
 		ns = []
 
