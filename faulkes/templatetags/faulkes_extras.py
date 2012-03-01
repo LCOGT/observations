@@ -95,7 +95,7 @@ def lowercase(value):
 	return value.lower()
 
 def negative(value, arg):
-	return int(value) - int(arg) 
+	return round(value)-round(arg)
     
 register.filter('degreestohours', degreestohours)
 register.filter('hourstodegrees', hourstodegrees)

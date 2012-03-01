@@ -195,6 +195,7 @@ li.end-of-line {
 	-moz-box-shadow:1px 1px 5px #000;
 	-webkit-box-shadow:1px 1px 5px #000;
 	text-decoration: none;
+	display: inline-block;
 }
 .thumb a.more-info-hint:hover {
 	font-size:1.1em;
@@ -437,3 +438,14 @@ ul.stream li.current img {
 }
 ol { list-style-type: decimal; }
 ol ol { list-style-type: decimal; }
+.closer { margin-top:12px;margin-right:16px; position: absolute; right: 16px; }
+.exposureplot { display:inline-block;margin-right: 16px;float: left;width:430px; }
+.exposureplot ul { list-style:none;margin:0px;padding:0px;font-size:0.8em; }
+.exposureplot li { clear:both; }
+.exposureplot .exposuretxt { float:left;width:112px;margin:3px 4px 0px 0px;text-align:right;height:16px; }
+.exposureplot .exposurebar { display:inline-block;float:left;border-left:1px solid #808080; height:16px;margin-right:4px; }
+.exposureplot .exposurenum { padding-bottom:2px;float:left;margin-top:2px; }
+.temporalplot .temporalbars { border-bottom:1px solid #808080; }
+.temporalplot .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
+.temporalplot .temporalbar { width:34px; }
+.temporalplot .temporaltxt { margin-top:2px;font-size:0.8em;display:inline-block;height:1.5em;width:34px;text-align:center;vertical-align:top;color:#606060; }

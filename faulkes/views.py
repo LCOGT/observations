@@ -542,15 +542,13 @@ def view_object(request,object):
 	input = input_params(request)
 
 	# Remove trailing full-stop
-	#objectm = re.sub(r"\.$","",avm)
-	#avmtemp = re.sub(r"\.","\\.",avm)
 	object = re.sub(r"\.json$","",object)
 	object = re.sub(r"\.kml$","",object)
 	original = object
 	object = object.replace('+', ' ')
 
 	page = int(request.GET.get('page','1'))
-	
+
 	if page == 1 and input['doctype'] == "html":
 		opener = urllib2.build_opener()
 		opener.addheaders = [('Accept', 'application/xml'),
@@ -567,7 +565,6 @@ def view_object(request,object):
 		service = re.search('service href="([^\"]*)">([^\<]*)<',xml)
 		if type(service) == 'NoneType':
 			return unknown(request)
-	
 		try:
 			service = {'name':service.group(2),'url':service.group(1) }
 		except:
@@ -575,22 +572,21 @@ def view_object(request,object):
 	
 		raval = re.search('<ra ([^\>]*)>([^\<]*)<',xml)
 		if type(raval) == 'NoneType':
-			return unknown(request)
+			raval = ""
 		try:
 			raval = float(raval.group(2))
 		except:
-			return unknown(request)
+			raval = 0.0
 	
 		decval = re.search('<dec ([^\>]*)>([^\<]*)<',xml)
 		if type(decval) == 'NoneType':
-			return unknown(request)
+			decval = ""
 		try:
 			decval = float(decval.group(2))
 		except:
-			return unknown(request)
+			decval = 0.0
 	
 		m = re.search('avmcode="([^\"]*)"',xml)
-		print xml
 		try:
 			avmcode = m.group(1)
 			if len(avmcode) > 0:
@@ -615,9 +611,23 @@ def view_object(request,object):
 		object = {'name':object,'raval':raval,'decval':decval,'service':service,'avm':{'name':avm,'code':avmcode}}
 	else:
 		object = {'name':object}
+		avmcode = ""
 
 	try:
 		obser = Imagearchive.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
+		# If we have an AVM code we can use it to limit to objects of the correct type
+		if avmcode != "":
+			obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % avmcode)
+		a = obser.values('schoolid').annotate(count=Count('schoolid')).order_by('-count')
+		if a:
+			try:
+				u = Registrations.objects.get(schoolid=a[0]['schoolid'])
+			except ObjectDoesNotExist:
+				u = ""
+			input['mostobservedby'] = {'name':u,'id':a[0]['schoolid'],'count':a[0]['count']}
+		else:
+			u = ""
+
 	except ObjectDoesNotExist:
 		return unknown(request)
 	
@@ -637,26 +647,9 @@ def view_object(request,object):
 		obs = build_observations(obser)
 
 	if page == 1:
-		# Bin the observations by month
-		import bisect
-		import collections
-		interval = timedelta(days=30)
-		bins = 12
-		total = bins*interval
-		now = datetime.utcnow()
-		if now.month == 12:
-			end = now.replace(year=now.year+1,month=1,day=1,hour=0,minute=0,second=0)
-		else:
-			end = now.replace(month=now.month + 1,day=1,hour=0,minute=0,second=0)
-		start = end - interval*bins
-		grid = [start+num*interval for num in range(bins)]
-		binned = [0 for num in range(bins)]
-		for o in obser:
-			t = parsetime(o.whentaken)
-			if (end - t < total):
-				idx = bisect.bisect(grid,t)
-				binned[idx] = binned[idx] + 1
-
+		# Bin the observations by month for the past year
+		input = binMonths(obser,input,12)
+		
 		# Calculate how many in each bin
 		ns = [{'label':'Under 1 second','observations':0},{'label':'1-10 seconds','observations':0},{'label':'10-30 seconds','observations':0},{'label':'30-90 seconds','observations':0},{'label':'Over 90 seconds','observations':0}]
 		obser = obser.filter(exposuresecs__gt=1)
@@ -686,7 +679,7 @@ def view_object(request,object):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		data = {'n':n,'ns':ns,'bins':binned,'binmax':max(binned),'object':object,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+		data = {'n':n,'input':input,'object':object,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
 		else:
@@ -715,10 +708,16 @@ def view_user(request,userid):
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
 
+	if int(request.GET.get('page','1')) == 1:
+		# Bin the observations by month for the past year
+		input = binMonths(obs,input,24)
+
 	if(n > n_per_page):
 		obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
 	else:
 		obs = build_observations(obs)
+
+
 
 	try:
 		uri = Schooluri.objects.get(usr_id=u).uri
@@ -737,7 +736,7 @@ def view_user(request,userid):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		data = {'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+		data = {'input':input,'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
 		else:
@@ -1664,6 +1663,37 @@ def hexangletodec(value):
 def observation_URL(tel,obs):
 	telescope = telescope_details(tel)
 	return telescope.site+'/'+telescope.code+"/"+obs
+
+# Bin the observations by month for the specified number of bins
+def binMonths(obs,input,bins):
+	now = datetime.utcnow()
+	binned = [0 for num in range(bins)]
+	values = [{'count':0,'year':0,'m':0,'month':''} for num in range(bins)]
+	for num in range(bins):
+		m = now.month - num
+		values[num]['year'] = now.year+((m-1)/12)		
+		while m < 1:
+			m += 12
+		if m % 12 == 1:
+			values[num]['month'] = datetime(now.year-int(num/12), m, 1).strftime("%b %Y")
+		else:
+			values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
+		values[num]['m'] = m
+	for o in obs:
+		try:
+			date = parsetime(o['whentaken'])
+		except:
+			date = parsetime(o.whentaken)
+		month = date.month - 12*(now.year-date.year)
+		m = now.month-month
+		if (m < bins):
+			binned[m] = binned[m] + 1
+			values[m]['count'] = binned[m]
+	input['bins'] = values
+	input['binmax'] = max(binned)
+	if input['binmax'] == 0:
+		input['binmax'] = 1
+	return input
 
 def unknown(request):
     return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
