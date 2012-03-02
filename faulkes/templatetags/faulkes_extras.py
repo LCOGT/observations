@@ -16,14 +16,14 @@ def degreestodms(value):
 	if not(value):
 		return ""
 	if(value < 0):
-		sign = -1
+		sign = "-"
 	else:
-		sign = 1
+		sign = ""
 	value = abs(value)
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return "%s:%02d:%05.2f" % (sign*d,m,s)
+	return "%s%02d:%02d:%05.2f" % (sign,d,m,s)
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal hours minutes and seconds"
