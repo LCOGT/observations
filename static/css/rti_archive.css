@@ -448,5 +448,6 @@ ol ol { list-style-type: decimal; }
 .temporalplot .temporalbars { border-bottom:1px solid #808080; }
 .temporalplot .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
 .temporalplot .temporalbar { width:34px; }
-.temporalplot .temporaltxt { margin-top:2px;font-size:0.8em;display:inline-block;height:1.5em;width:34px;text-align:center;vertical-align:top;color:#606060; }
+.temporalplot .temporaltxt { padding-top:2px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
+.temporalplot .startyear { border-left: 1px solid #606060; width:33px; }
 .temporalbar, .exposurebar { background-color: #3366dd; color: white; }

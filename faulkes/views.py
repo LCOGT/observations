@@ -548,7 +548,12 @@ def view_object(request,object):
 	object = object.replace('+', ' ')
 
 	page = int(request.GET.get('page','1'))
+	try:
+		avmcode = int(request.GET.get('avm',0)[0])	# Only allow the major category to be provided by the user. Should distinguish Jupiter from Ghost of Jupiter
+	except:
+		avmcode = ''
 
+	# On the first page (HTML version only) we do a lookUP
 	if page == 1 and input['doctype'] == "html":
 		opener = urllib2.build_opener()
 		opener.addheaders = [('Accept', 'application/xml'),
@@ -561,7 +566,6 @@ def view_object(request,object):
 			xml = f.read()
 		except:
 			return unknown(request)
-	
 		service = re.search('service href="([^\"]*)">([^\<]*)<',xml)
 		if type(service) == 'NoneType':
 			return unknown(request)
@@ -569,7 +573,6 @@ def view_object(request,object):
 			service = {'name':service.group(2),'url':service.group(1) }
 		except:
 			return unknown(request)
-	
 		raval = re.search('<ra ([^\>]*)>([^\<]*)<',xml)
 		if type(raval) == 'NoneType':
 			raval = ""
@@ -577,7 +580,6 @@ def view_object(request,object):
 			raval = float(raval.group(2))
 		except:
 			raval = 0.0
-	
 		decval = re.search('<dec ([^\>]*)>([^\<]*)<',xml)
 		if type(decval) == 'NoneType':
 			decval = ""
@@ -585,39 +587,49 @@ def view_object(request,object):
 			decval = float(decval.group(2))
 		except:
 			decval = 0.0
-	
-		m = re.search('avmcode="([^\"]*)"',xml)
-		try:
-			avmcode = m.group(1)
-			if len(avmcode) > 0:
-				cats = avmcode.split(';')
-				if len(cats) > 0:
-					avmcode = cats[-1]
-					if avmcode in categorylookup:
-						avm = categorylookup[avmcode]
+		if avmcode == '' or avmcode < 1 or avmcode > 7:
+			m = re.search('avmcode="([^\"]*)"',xml)
+			try:
+				avmcode = m.group(1)
+				if len(avmcode) > 0:
+					cats = avmcode.split(';')
+					if len(cats) > 0:
+						avmcode = cats[-1]
+						if avmcode in categorylookup:
+							avm = categorylookup[avmcode]
+						else:
+							avm = avmcode
 					else:
-						avm = avmcode
+						avm = "Unknown"
+						avmcode = ""
 				else:
 					avm = "Unknown"
 					avmcode = ""
-			else:
+			except:
 				avm = "Unknown"
 				avmcode = ""
+		else:
+			try:
+				avmcode = str(avmcode)
+				avm = categorylookup[avmcode]
+			except:
+				avm = "Unknown"
+				avmcode = ""
+		object = {'name':object,'raval':raval,'decval':decval,'service':service,'avm':{'name':avm,'code':avmcode}}
+	else:
+		try:
+			avmcode = str(avmcode)
+			avm = categorylookup[avmcode]
 		except:
 			avm = "Unknown"
 			avmcode = ""
-
-
-		object = {'name':object,'raval':raval,'decval':decval,'service':service,'avm':{'name':avm,'code':avmcode}}
-	else:
-		object = {'name':object}
-		avmcode = ""
+		object = {'name':object,'avm':{'name':avm,'code':avmcode}}
 
 	try:
 		obser = Imagearchive.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
 		# If we have an AVM code we can use it to limit to objects of the correct type
-		if avmcode != "":
-			obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % avmcode)
+		if object['avm']['code'] != "":
+			obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
 		a = obser.values('schoolid').annotate(count=Count('schoolid')).order_by('-count')
 		if a:
 			try:
@@ -639,7 +651,7 @@ def view_object(request,object):
 	input['link'] = 'object/'+original
 	input['description'] = 'Observations of '+object['name']+' (LCOGT)'
 	input['perpage'] = n_per_page
-	input['pager'] = build_pager(request,n)
+	input['pager'] = build_pager(request,n,object['avm']['code'])
 		
 	if(n > n_per_page):
 		obs = build_observations(obser[input['pager']['start']:input['pager']['end']])
@@ -1292,7 +1304,7 @@ def build_observations(obs):
 
 # n = total number of observations
 # page = the current page
-def build_pager(request,n):
+def build_pager(request,n,avm=''):
 	if(n < n_per_page):
 		return { 'next': '','prev':'','html':'','page':0 }
 	else:
@@ -1306,6 +1318,15 @@ def build_pager(request,n):
 				qstring = 'page=1'
 			else:
 				qstring = qstring+'&page=1'
+
+		if avm != '':
+			m = re.search('avm=', qstring)
+			if not(m):
+				if qstring=='':
+					qstring = 'avm=%s' % str(avm)
+				else:
+					qstring = qstring+'&avm=%s' % str(avm)
+			qstring = re.sub(r"avm=[^\&]+",'avm=%s' % str(avm),qstring)
 
 		start = 1
 		if page > start+4:
@@ -1682,17 +1703,20 @@ def binMonths(obs,input,bins):
 			m += 12
 		values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
 		values[num]['m'] = m
+	e = 0
 	for o in obs:
 		try:
 			date = parsetime(o['whentaken'])
 		except:
 			date = parsetime(o.whentaken)
+			e += o.exposuresecs
 		month = date.month - 12*(now.year-date.year)
 		m = now.month-month
 		if (m < bins):
 			binned[m] = binned[m] + 1
 			values[m]['count'] = binned[m]
 	input['bins'] = values
+	input['exposuretime'] = e
 	input['binmax'] = max(binned)
 	if input['binmax'] == 0:
 		input['binmax'] = 1
