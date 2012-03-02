@@ -24,7 +24,7 @@
 										<p>A summary of all observations over the past year:</p>
 										<div class="temporalplot">
 											<div class="temporalbars">
-{% for b in input.bins reversed %}											<div style="display:inline-block;float:left;"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 60 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?query={{object.name}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 60 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div></div>{% endfor %}
+{% for b in input.bins reversed %}											<div style="display:inline-block;float:left;"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 60 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?query={{object.name}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 60 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div></div>{% endfor %}
 												<div style="clear:both;"></div>
 											</div>
 											{% for b in input.bins reversed %}<div class="temporaltxt{% if b.m = 1 %} startyear{% endif %}" style="{% if not forloop.last %}margin-right:4px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div>{% endfor %}
