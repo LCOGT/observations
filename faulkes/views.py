@@ -305,7 +305,7 @@ def search(request):
 	months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 	days = range(1,32)
 	ago = now + timedelta(-30)
-	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq')}
+	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax','')}
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
@@ -335,6 +335,18 @@ def search(request):
 			if form['category'] > 0:
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
+		if form['expmin'] != '':
+			try:
+				form['expmin'] = float(form['expmin'])
+				obs = obs.filter(exposuresecs__gt=form['expmin'])
+			except:
+				form['expmin'] = 0
+		if form['expmax'] != '':
+			try:
+				form['expmax'] = float(form['expmax'])
+				obs = obs.filter(exposuresecs__lte=form['expmax'])
+			except:
+				form['expmax'] = 0
 
 		if form['exposure'] != '':
 			try:
@@ -664,7 +676,7 @@ def view_object(request,object):
 
 		b = [0,1,2,3,4]
 		# Calculate how many in each bin
-		ns = [{'label':'Under 1 second','observations':0},{'label':'1-10 seconds','observations':0},{'label':'10-30 seconds','observations':0},{'label':'30-90 seconds','observations':0},{'label':'Over 90 seconds','observations':0}]
+		ns = [{'label':'Under 1 second','max':1,'observations':0},{'label':'1-10 seconds','min':1,'max':10,'observations':0},{'label':'10-30 seconds','min':10,'max':30,'observations':0},{'label':'30-90 seconds','min':30,'max':90,'observations':0},{'label':'Over 90 seconds','min':90,'observations':0}]
 		obser = obser.filter(exposuresecs__gt=1)
 		b[0] = n-len(obser);
 		obser = obser.filter(exposuresecs__gt=10)

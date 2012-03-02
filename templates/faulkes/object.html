@@ -34,7 +34,7 @@
 									<div class="exposureplot">
 										<p>A summary of all exposure times for {{ object.name }}:</p>
 										<ul>
-											{% for range in input.exposure %}<li><div class="exposuretxt">{{ range.label }}</div><div class="exposurebar" style="width:{% widthratio range.observations input.exposuremax 272 %}px;"></div> <div class="exposurenum">{% if range.observations > 0 %}{{ range.observations }}{% endif %}</div></li>{% endfor %}
+											{% for range in input.exposure %}<li><div class="exposuretxt">{{ range.label }}</div><div class="exposurebar" style="width:{% widthratio range.observations input.exposuremax 272 %}px;"></div> <div class="exposurenum">{% if range.observations > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?query={{object.name}}{% if range.min %}&expmin={{ range.min }}{% endif %}{% if range.max %}&expmax={{ range.max }}{% endif %}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ range.observations }}</a>{% endif %}</div></li>{% endfor %}
 										</ul>
 									</div>
 									<div style="clear:both;"></div>

@@ -31,11 +31,11 @@ $(document).ready(function(){
 	$(".observation-results li").each(function(index) {
 
 		$(this).find('.thumbnail a').after('<a href="" class="more-info-hint" id="more-info-hint-'+index+'">i</a>')
-		$(this).find('.thumbnail').mouseover({idx:index},function(e){
-			$(this).find('.more-info-hint').clearQueue().css({display:'inline-block'}).fadeIn("fast");
-		}).mouseout({idx:index},function(e){
-			$(this).find('.more-info-hint').clearQueue().delay(500).fadeOut("slow").css({display:'inline-block'});
-		});
+		//$(this).find('.thumbnail').mouseover({idx:index},function(e){
+		//	$(this).find('.more-info-hint').clearQueue().css({display:'inline-block'}).fadeIn("fast");
+		//}).mouseout({idx:index},function(e){
+		//	$(this).find('.more-info-hint').clearQueue().delay(500).fadeOut("slow").css({display:'inline-block'});
+		//});
 
 		$("#more-info-hint-"+index).bind('click',{idx:index,img:$(this).find('img').attr('src'),link:$(this).find('a').attr('href'),observer:$(this).find('.observer').attr('title')},function(event){
 			if($('.show-details').size() == 0) $('body').append('<div class="show-details"></div>');
@@ -49,9 +49,9 @@ $(document).ready(function(){
 				$('.show-details').fadeOut("slow");
 			});
 			return false;
-		}).mouseover(function(e){
-			$(this).clearQueue();
-		}).delay(2000).clearQueue().fadeOut(6000).css({display:'inline-block'});
+		})//.mouseover(function(e){
+		//	$(this).clearQueue();
+		//}).delay(2000).clearQueue().fadeOut(6000).css({display:'inline-block'});
 	});
 
 	$(".observation-results li .observer").each(function(){
