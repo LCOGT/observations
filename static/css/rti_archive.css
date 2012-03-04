@@ -445,9 +445,31 @@ ol ol { list-style-type: decimal; }
 .exposureplot .exposuretxt { float:left;width:112px;margin:3px 4px 0px 0px;text-align:right;height:16px; }
 .exposureplot .exposurebar { display:inline-block;float:left;border-left:1px solid #808080; height:16px;margin-right:4px; }
 .exposureplot .exposurenum { padding-bottom:2px;float:left;margin-top:2px; }
-.temporalplot .temporalbars { border-bottom:1px solid #808080; }
+.temporalplot .temporalbars { }
 .temporalplot .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
 .temporalplot .temporalbar { width:34px; }
-.temporalplot .temporaltxt { padding-top:2px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
+.temporalplot .temporaltxt { border-top:1px solid #808080; padding-top:2px;padding-right:4px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
 .temporalplot .startyear { border-left: 1px solid #606060; width:33px; }
 .temporalbar, .exposurebar { background-color: #3366dd; color: white; }
+
+@media (max-width: 480px), (max-device-width: 480px) {
+	ul.observation-results li {
+		width: 50%;
+		margin-right: 0px;
+	}
+	ul.observation-results li:nth-child(2n+1) {
+		clear: both;
+	}
+	.thumbnail {
+		width: 100%;
+		height: auto;
+		text-align: center;
+	}
+	.thumb img {
+		max-width: 95%;
+		width: 95%;
+		max-height: none;
+		max-height: auto;
+	}
+	.pager a { padding: 4px 0.25em; }
+}
