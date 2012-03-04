@@ -453,13 +453,8 @@ ol ol { list-style-type: decimal; }
 .temporalbar, .exposurebar { background-color: #3366dd; color: white; }
 
 @media (max-width: 480px), (max-device-width: 480px) {
-	ul.observation-results li {
-		width: 50%;
-		margin-right: 0px;
-	}
-	ul.observation-results li:nth-child(2n+1) {
-		clear: both;
-	}
+	ul.observation-results li { width: 50%; margin-right: 0px; }
+	ul.observation-results li:nth-child(2n+1) { clear: both; }
 	.thumbnail {
 		width: 100%;
 		height: auto;
@@ -474,4 +469,5 @@ ol ol { list-style-type: decimal; }
 	.exposurebar { max-width: 55%; }
 	.pager a { padding: 4px 0.25em; }
 	div.show-details { max-width: 85%; border: 1px solid #999999; }
+	div.searchbox { margin-top: 16px; float: none;  text-align: center; }
 }
