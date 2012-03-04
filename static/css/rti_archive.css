@@ -241,7 +241,7 @@ div.show-details {
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
-	padding: 10px;
+	padding: 16px;
 	font-size: 1em;
 }
 div.show-details-close {
@@ -471,5 +471,7 @@ ol ol { list-style-type: decimal; }
 		max-height: none;
 		max-height: auto;
 	}
+	.exposurebar { max-width: 55%; }
 	.pager a { padding: 4px 0.25em; }
+	div.show-details { max-width: 85%; border: 1px solid #999999; }
 }
