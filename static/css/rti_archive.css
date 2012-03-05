@@ -440,11 +440,11 @@ ol { list-style-type: decimal; }
 ol ol { list-style-type: decimal; }
 .closer { margin-top:12px;margin-right:16px; position: absolute; right: 16px; }
 .exposureplot { display:inline-block;float: left;width:428px; }
-.exposureplot ul { list-style:none;margin:0px;padding:0px;font-size:0.8em; }
-.exposureplot li { clear:both; }
-.exposureplot .exposuretxt { float:left;width:112px;margin:3px 4px 0px 0px;text-align:right;height:16px; }
-.exposureplot .exposurebar { display:inline-block;float:left;border-left:1px solid #808080; height:16px;margin-right:4px; }
-.exposureplot .exposurenum { padding-bottom:2px;float:left;margin-top:2px; }
+.exposureplot ul { list-style:none;margin:0px;padding:0px;font-size:0.8em; width: 100%; }
+.exposureplot li { clear:both; display: block;}
+.exposuretxt { float:left;width:112px;margin:3px 4px 0px 0px;text-align:right;height:16px; }
+.exposurebar { display:inline-block;float:left;border-left:1px solid #808080; height:16px;margin-right:4px; }
+.exposurenum { padding-bottom:2px;float:left;margin-top:2px; }
 .temporalstats { display:inline-block;float:left;margin-right:32px; }
 .temporalitem { display:inline-block;float:left; }
 .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
@@ -461,12 +461,15 @@ ol ol { list-style-type: decimal; }
 	ul.stream li { width: 16%; margin-right: 0.8%; }
 	ul.stream li a { display: inline; }
 	ul.stream img { max-width: 100%;}
-
+	.exposureplot { width: 100%; }
 }
 @media (max-width: 800px), (max-device-width: 800px) {
 	.fouroften, .sixoften { width: 100%; display: block; }
 	.fouroften { max-width: none; }
 	img.observation-image { width: 100%; }
+	.temporalstats { margin-right:0px; width: 100%; }
+	.temporalitem { width: 8.33%; font-size: 0.9em; }
+	.temporalnum,.temporalbar,.temporaltxt { width: 100%; padding-right: 0px; }
 }
 
 @media (max-width: 480px), (max-device-width: 480px) {
@@ -488,10 +491,9 @@ ol ol { list-style-type: decimal; }
 	.observation-metadata { clear: both; }
 	ul.stream { max-height: none; }
 	img.observation-image { max-width: 100%; }
-	.exposurebar { max-width: 55%; }
-	.temporalstats { margin-right:0px; width: 100%; }
-	.temporalplot .temporalitem { width: 8.3%; font-size: 0.9em; }
-	.temporalplot .temporalnum,.temporalplot .temporalbar,.temporalplot .temporaltxt { width: 100%; padding-right: 0px; }
+	.exposureplot { font-size: 0.9em; }
+	.exposurebar { max-width: 70%; }
+	.exposuretxt { width: 95px; }
 	.pager a { padding: 4px 0.25em; }
 	div.show-details { max-width: 85%; border: 1px solid #999999; }
 	div.searchbox { margin-top: 16px; float: none;  text-align: center; }
