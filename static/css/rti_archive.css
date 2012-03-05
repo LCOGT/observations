@@ -446,12 +446,11 @@ ol ol { list-style-type: decimal; }
 .exposureplot .exposurebar { display:inline-block;float:left;border-left:1px solid #808080; height:16px;margin-right:4px; }
 .exposureplot .exposurenum { padding-bottom:2px;float:left;margin-top:2px; }
 .temporalstats { display:inline-block;float:left;margin-right:32px; }
-.temporalplot .temporalbars { }
-.temporalplot .temporalitem { display:inline-block;float:left; }
-.temporalplot .temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
-.temporalplot .temporalbar { width:34px; }
-.temporalplot .temporaltxt { border-top:1px solid #808080; padding-top:2px;padding-right:4px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
-.temporalplot .startyear { border-left: 1px solid #606060; width:33px; }
+.temporalitem { display:inline-block;float:left; }
+.temporalnum { font-size:0.8em;height:14px;text-align:center;width:34px; }
+.temporalbar { width:34px; }
+.temporaltxt { border-top:1px solid #808080; padding-top:2px;padding-right:4px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
+.startyear { border-left: 1px solid #606060; width:33px; }
 .temporalbar, .exposurebar { background-color: #3366dd; color: white; }
 
 @media (max-width: 1024px), (max-device-width: 1024px) { 
