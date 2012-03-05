@@ -305,7 +305,7 @@ def search(request):
 	months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 	days = range(1,32)
 	ago = now + timedelta(-30)
-	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC','')}
+	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax','')}
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
@@ -335,9 +335,30 @@ def search(request):
 			if form['category'] > 0:
 				avm = "%s" % form['category']
 				obs = obs.filter(observationstats__avmcode__startswith=avm)
+		if form['expmin'] != '':
+			try:
+				form['expmin'] = float(form['expmin'])
+				obs = obs.filter(exposuresecs__gt=form['expmin'])
+			except:
+				form['expmin'] = 0
+		if form['expmax'] != '':
+			try:
+				form['expmax'] = float(form['expmax'])
+				obs = obs.filter(exposuresecs__lte=form['expmax'])
+			except:
+				form['expmax'] = 0
 
-		#print "All"
-		#print obs.count()
+		if form['exposure'] != '':
+			try:
+				form['exposure'] = float(form['exposure'])
+				if(form['exposurecondition']=='gt'):
+					obs = obs.filter(exposuresecs__gt=form['exposure'])
+				elif(form['exposurecondition']=='lt'):
+					obs = obs.filter(exposuresecs__lt=form['exposure'])
+				else:
+					obs = obs.filter(exposuresecs=form['exposure'])
+			except:
+				form['exposure'] = 0;
 
 		# Cone search
 		if form['SR']!='' and form['RA']!='' and form['DEC']!='':
@@ -434,7 +455,7 @@ def search(request):
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', {'input':input,'obs':obs,'n':n,'link':input['link']},context_instance=RequestContext(request))
 		else:
-			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
+			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
 
 
 
@@ -529,6 +550,172 @@ def view_telescope(request,code,tel):
 			return render_to_response('faulkes/telescope.html', data,context_instance=RequestContext(request))
 
 
+def view_object(request,object):
+	input = input_params(request)
+
+	# Remove trailing full-stop
+	object = re.sub(r"\.json$","",object)
+	object = re.sub(r"\.kml$","",object)
+	original = object
+	object = object.replace('+', ' ')
+
+	page = int(request.GET.get('page','1'))
+	try:
+		avmcode = int(request.GET.get('avm',0)[0])	# Only allow the major category to be provided by the user. Should distinguish Jupiter from Ghost of Jupiter
+	except:
+		avmcode = ''
+
+	# On the first page (HTML version only) we do a lookUP
+	if page == 1 and input['doctype'] == "html":
+		opener = urllib2.build_opener()
+		opener.addheaders = [('Accept', 'application/xml'),
+							('Content-Type', 'application/xml'),
+							('User-Agent', 'LCOGT/1.0')]
+		req = urllib2.Request(url='http://www.strudel.org.uk/lookUP/xml/?name=%s' % original)
+		# Allow 3 seconds for timeout
+		try:
+			f = urllib2.urlopen(req,None,5)
+			xml = f.read()
+		except:
+			return unknown(request)
+		service = re.search('service href="([^\"]*)">([^\<]*)<',xml)
+		if type(service) == 'NoneType':
+			return unknown(request)
+		try:
+			service = {'name':service.group(2),'url':service.group(1) }
+		except:
+			return unknown(request)
+		raval = re.search('<ra ([^\>]*)>([^\<]*)<',xml)
+		if type(raval) == 'NoneType':
+			raval = ""
+		try:
+			raval = float(raval.group(2))
+		except:
+			raval = 0.0
+		decval = re.search('<dec ([^\>]*)>([^\<]*)<',xml)
+		if type(decval) == 'NoneType':
+			decval = ""
+		try:
+			decval = float(decval.group(2))
+		except:
+			decval = 0.0
+		if avmcode == '' or avmcode < 1 or avmcode > 7:
+			m = re.search('avmcode="([^\"]*)"',xml)
+			try:
+				avmcode = m.group(1)
+				if len(avmcode) > 0:
+					cats = avmcode.split(';')
+					if len(cats) > 0:
+						avmcode = cats[-1]
+						if avmcode in categorylookup:
+							avm = categorylookup[avmcode]
+						else:
+							avm = avmcode
+					else:
+						avm = "Unknown"
+						avmcode = ""
+				else:
+					avm = "Unknown"
+					avmcode = ""
+			except:
+				avm = "Unknown"
+				avmcode = ""
+		else:
+			try:
+				avmcode = str(avmcode)
+				avm = categorylookup[avmcode]
+			except:
+				avm = "Unknown"
+				avmcode = ""
+		object = {'name':object,'raval':raval,'decval':decval,'service':service,'avm':{'name':avm,'code':avmcode}}
+	else:
+		try:
+			avmcode = str(avmcode)
+			avm = categorylookup[avmcode]
+		except:
+			avm = "Unknown"
+			avmcode = ""
+		object = {'name':object,'avm':{'name':avm,'code':avmcode}}
+
+	try:
+		obser = Imagearchive.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
+		# If we have an AVM code we can use it to limit to objects of the correct type
+		if object['avm']['code'] != "":
+			obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
+		a = obser.values('schoolid').annotate(count=Count('schoolid')).order_by('-count')
+		if a:
+			try:
+				u = Registrations.objects.get(schoolid=a[0]['schoolid'])
+			except ObjectDoesNotExist:
+				u = ""
+			input['mostobservedby'] = {'name':u,'id':a[0]['schoolid'],'count':a[0]['count']}
+		else:
+			u = ""
+
+	except ObjectDoesNotExist:
+		return unknown(request)
+	
+	
+	n = obser.count()
+
+	input['observations'] = n
+	input['title'] = object['name']
+	input['link'] = 'object/'+original
+	input['description'] = 'Observations of '+object['name']+' (LCOGT)'
+	input['perpage'] = n_per_page
+	input['pager'] = build_pager(request,n,object['avm']['code'])
+		
+	if(n > n_per_page):
+		obs = build_observations(obser[input['pager']['start']:input['pager']['end']])
+	else:
+		obs = build_observations(obser)
+
+	if page == 1:
+		# Bin the observations by month for the past year
+		input = binMonths(obser,input,12)
+
+		b = [0,1,2,3,4]
+		# Calculate how many in each bin
+		ns = [{'label':'Under 1 second','max':1,'observations':0},{'label':'1-10 seconds','min':1,'max':10,'observations':0},{'label':'10-30 seconds','min':10,'max':30,'observations':0},{'label':'30-90 seconds','min':30,'max':90,'observations':0},{'label':'Over 90 seconds','min':90,'observations':0}]
+		obser = obser.filter(exposuresecs__gt=1)
+		b[0] = n-len(obser);
+		obser = obser.filter(exposuresecs__gt=10)
+		b[1] = n-b[0]-len(obser)
+		obser = obser.filter(exposuresecs__gt=30)
+		b[2] = n-b[0]-b[1]-len(obser)
+		obser = obser.filter(exposuresecs__gt=90)
+		b[3] = n-b[0]-b[1]-b[2]-len(obser)
+		b[4] = len(obser)
+
+		for i in range(5):
+			ns[i]['observations'] = b[i]
+
+		input['exposure'] = ns
+		input['exposuremax'] = max(b)
+	else:
+		ns = []
+
+	uri = ""
+	mostrecent = ""
+
+
+	if len(obs) > 0:
+		mostrecent = relativetime(obs[0]['whentaken'])
+
+	if input['doctype'] == "json":
+		return view_json(request,build_observations_json(obs),input)
+	elif input['doctype'] == "kml":
+		return view_kml(request,obs,input)
+	elif input['doctype'] == "rss":
+		return view_rss(request,obs,input)
+	else:
+		data = {'n':n,'input':input,'object':object,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+		if input['slideshow']:
+			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
+		else:
+			return render_to_response('faulkes/object.html', data,context_instance=RequestContext(request))
+
+
 def view_user(request,userid):
 	input = input_params(request)
 
@@ -551,10 +738,16 @@ def view_user(request,userid):
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
 
+	if int(request.GET.get('page','1')) == 1:
+		# Bin the observations by month for the past year
+		input = binMonths(obs,input,24)
+
 	if(n > n_per_page):
 		obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
 	else:
 		obs = build_observations(obs)
+
+
 
 	try:
 		uri = Schooluri.objects.get(usr_id=u).uri
@@ -573,7 +766,7 @@ def view_user(request,userid):
 	elif input['doctype'] == "rss":
 		return view_rss(request,obs,input)
 	else:
-		data = {'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+		data = {'input':input,'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', data,context_instance=RequestContext(request))
 		else:
@@ -1123,7 +1316,7 @@ def build_observations(obs):
 
 # n = total number of observations
 # page = the current page
-def build_pager(request,n):
+def build_pager(request,n,avm=''):
 	if(n < n_per_page):
 		return { 'next': '','prev':'','html':'','page':0 }
 	else:
@@ -1137,6 +1330,15 @@ def build_pager(request,n):
 				qstring = 'page=1'
 			else:
 				qstring = qstring+'&page=1'
+
+		if avm != '':
+			m = re.search('avm=', qstring)
+			if not(m):
+				if qstring=='':
+					qstring = 'avm=%s' % str(avm)
+				else:
+					qstring = qstring+'&avm=%s' % str(avm)
+			qstring = re.sub(r"avm=[^\&]+",'avm=%s' % str(avm),qstring)
 
 		start = 1
 		if page > start+4:
@@ -1252,7 +1454,7 @@ def view_json(request,obs,config):
 	if 'description' in config:
 		response["desc"] = config['description']
 	if 'link' in config:
-		response["link"] = config['link']
+		response["link"] = base_url+config['link']
 	if 'title' in config:
 		response["title"] = config['title']
 	if 'pager' in config:
@@ -1267,6 +1469,8 @@ def view_json(request,obs,config):
 		response["observations"] = config['observations']
 	if 'live' in config:
 		response["live"] = config['live']
+	if 'exposure' in config:
+		response["exposure"] = config['exposure']
 	
 	s = simplejson.dumps(response, indent=8,sort_keys=True)
 	output = '\n'.join([l.rstrip() for l in  s.splitlines()])
@@ -1498,6 +1702,37 @@ def hexangletodec(value):
 def observation_URL(tel,obs):
 	telescope = telescope_details(tel)
 	return telescope.site+'/'+telescope.code+"/"+obs
+
+# Bin the observations by month for the specified number of bins
+def binMonths(obs,input,bins):
+	now = datetime.utcnow()
+	binned = [0 for num in range(bins)]
+	values = [{'count':0,'year':0,'m':0,'month':''} for num in range(bins)]
+	for num in range(bins):
+		m = now.month - num
+		values[num]['year'] = now.year+((m-1)/12)		
+		while m < 1:
+			m += 12
+		values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
+		values[num]['m'] = m
+	e = 0
+	for o in obs:
+		try:
+			date = parsetime(o['whentaken'])
+		except:
+			date = parsetime(o.whentaken)
+			e += o.exposuresecs
+		month = date.month - 12*(now.year-date.year)
+		m = now.month-month
+		if (m < bins):
+			binned[m] = binned[m] + 1
+			values[m]['count'] = binned[m]
+	input['bins'] = values
+	input['exposuretime'] = e
+	input['binmax'] = max(binned)
+	if input['binmax'] == 0:
+		input['binmax'] = 1
+	return input
 
 def unknown(request):
     return render_to_response('faulkes/404.html', context_instance=RequestContext(request))

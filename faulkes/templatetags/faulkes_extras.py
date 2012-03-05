@@ -16,14 +16,14 @@ def degreestodms(value):
 	if not(value):
 		return ""
 	if(value < 0):
-		sign = -1
+		sign = "-"
 	else:
-		sign = 1
+		sign = ""
 	value = abs(value)
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return "%s:%02d:%05.2f" % (sign*d,m,s)
+	return "%s%02d:%02d:%05.2f" % (sign,d,m,s)
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal hours minutes and seconds"
@@ -34,6 +34,53 @@ def degreestohms(value):
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
 	return "%02d:%02d:%05.2f" % (d,m,s)
+
+def niceduration(value):
+	if not(value):
+		return ""
+	if value < 180:
+		return str(value)+' seconds'
+	elif value < 90*60:
+		m = int(value/60)
+		s = int(value - m*60)
+		if s == 0:
+			return str(m)+' minutes'
+		else:
+			return str(m)+' minutes '+str(s)+' seconds'
+	elif value < 86400:
+		h = int(value/3600)
+		m = int((value-(h*3600))/60)
+		if h == 1:
+			return '1 hour '+str(m)+' minutes'
+		else:
+			return str(h)+' hours '+str(m)+' minutes'
+	elif value < 2*86400:
+		d = int(value/86400)
+		h = int((value-(d*86400))/3600)
+		if h == 0:
+			return '1 day'
+		elif h == 1:
+			return '1 day 1 hour'
+		else:
+			return '1 day '+str(h)+' hours'
+	elif value < 365.25*86400:
+		d = int(value/86400)
+		h = int((value-(d*86400))/3600)
+		if h == 0:
+			return str(d)+' days'
+		elif h == 1:
+			return str(d)+' days 1 hour'
+		else:
+			return str(d)+' days '+str(h)+' hours'
+	else:
+		c = (365.25*86400)
+		y = int(value /c)
+		d = int((value-y*c)/86400)
+		if y == 1:
+			return '1 year '+str(d)+' days'
+		else:
+			return str(y)+' years '+str(d)+' days'
+	
 
 def relativetime(value):
 	if not(value):
@@ -94,6 +141,9 @@ def isodatestamp(value):
 def lowercase(value):
 	return value.lower()
 
+def negative(value, arg):
+	return round(value)-round(arg)
+    
 register.filter('degreestohours', degreestohours)
 register.filter('hourstodegrees', hourstodegrees)
 register.filter('degreestodms', degreestodms)
@@ -101,3 +151,5 @@ register.filter('degreestohms', degreestohms)
 register.filter('datestamp', datestamp)
 register.filter('isodatestamp', isodatestamp)
 register.filter('lowercase', lowercase)
+register.filter('negative', negative)
+register.filter('niceduration', niceduration)

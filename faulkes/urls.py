@@ -12,10 +12,18 @@ urlpatterns = patterns('rtiadminsite.faulkes.views',
 	(r'^user/(?P<userid>\d+)','view_user'),
 	(r'^user/(?P<username>[a-zA-Z\.]+)','view_username'),
 	(r'^user','index'),
+	(r'^u/(?P<userid>\d+)','view_user'),
+	(r'^u/(?P<username>[a-zA-Z\.]+)','view_username'),
+
+	(r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)','view_object'),
+	(r'^object','index'),
+	(r'^o/(?P<object>[a-zA-Z \+\-\.0-9]+)','view_object'),
 
 	(r'^category/(?P<avm>[0-9\.]+)','view_avm'),
 	(r'^category/(?P<category>\w+)','view_category'),
 	(r'^category','view_category_list'),
+	(r'^c/(?P<avm>[0-9\.]+)','view_avm'),
+	(r'^c/(?P<category>\w+)','view_category'),
 
 	(r'^map','view_map'),
 
