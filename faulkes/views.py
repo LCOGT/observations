@@ -1587,10 +1587,17 @@ def parsetime(value):
 
 def degreestodms(value):
 	"Converts decimal degrees to decimal degrees minutes and seconds"
+	if not(value):
+		return ""
+	if(value < 0):
+		sign = "-"
+	else:
+		sign = ""
+	value = abs(value)
 	d = int(value)
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
-	return str(d)+':'+str(m)+':'+"{0:05.2f}".format(s)
+	return "%s%02d:%02d:%05.2f" % (sign,d,m,s)
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal degrees minutes and seconds"
