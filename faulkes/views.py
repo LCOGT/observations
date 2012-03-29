@@ -1291,7 +1291,7 @@ def build_observations(obs):
 			o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
 			o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
 		else:
-			o['fullimage_url'] = "http://rti.faulkes-telescope.com/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
+			o['fullimage_url'] = "http://rti.lcogt.net/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
 			o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
 		o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
 		o['licenseimage'] = 'cc-by-nc.png'
