@@ -134,7 +134,7 @@ def isodatestamp(value):
 		dt = parsetime(value)
 	else:
 		dt = datetime()
-	return dt.strftime("%Y-%M-%DT%H:%M:%S+00:00");
+	return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00");
 
 
 
