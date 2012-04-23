@@ -3,8 +3,8 @@
 
 {% block script-content %}
 	<meta http-equiv="X-UA-Compatible" content="IE=9" />
-	<!--[if lt IE 9]><script src="{{MEDIA_URL}}js/excanvas.min.js" type="text/javascript"></script><![endif]-->
-	<script type="text/javascript" src="{{MEDIA_URL}}js/rti_archive_virtualsky.js"></script>
+	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
+	<script type="text/javascript" src="http://lcogt.net/virtualsky/embed/virtualsky-0.3.8.js"></script>
 	<script>
 
 	function spinOff(){
@@ -12,7 +12,7 @@
 		if(typeof timer_az!='undefined') clearTimeout(timer_az);
 	}
 	window.onload = function(){
-		planetarium = new VirtualSky({id:'starmap',projection:'stereo',latitude:{{ site.latitude }},longitude:{{ site.longitude }},az:{% if site.latitude > 0 %}180{% else %}0{% endif %},gridlines_az:true,callback:{mouseenter:spinOff}});
+		planetarium = $.virtualsky({id:'starmap',projection:'stereo',latitude:{{ site.latitude }},longitude:{{ site.longitude }},az:{% if site.latitude > 0 %}180{% else %}0{% endif %},gridlines_az:true,callback:{mouseenter:spinOff}});
 		planetarium.draw();
 		planetarium.az_step = -0.1;
 		planetarium.moveIt();
