@@ -455,7 +455,7 @@ def search(request):
 		if input['slideshow']:
 			return render_to_response('faulkes/slideshow.html', {'input':input,'obs':obs,'n':n,'link':input['link']},context_instance=RequestContext(request))
 		else:
-			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
+			return render_to_response('faulkes/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'filters':filter_list(),'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
 
 
 
@@ -995,7 +995,7 @@ def view_observation(request,code,tel,obs):
 		return broken(request,"There was a problem finding the requested observation in the database.")
 
 	# Let's try to work out if this is from a crawler. If not we'll assume a real person.
-	BotNames=['Googlebot','Slurp','Twiceler','Spider','spider','Crawler','crawler','Bot','bot','robot']
+	BotNames=['alexa', 'appie', 'Ask Jeeves', 'Baiduspider', 'bingbot', 'Butterfly', 'crawler', 'facebookexternalhit', 'FAST', 'Feedfetcher-Google', 'Firefly', 'froogle', 'Gigabot', 'girafabot', 'Googlebot', 'InfoSeek', 'inktomi', 'looksmart', 'Me.dium', 'Mediapartners-Google', 'msnbot', 'NationalDirectory', 'rabaz', 'Rankivabot', 'Scooter', 'Slurp', 'Sogou web spider', 'Spade', 'TechnoratiSnoop', 'TECNOSEEK', 'Teoma', 'TweetmemeBot', 'Twiceler', 'Twitturls', 'URL_Spider_SQL', 'WebAlta Crawler', 'WebBug', 'WebFindBot', 'www.galaxy.com', 'ZyBorg']
 	request.is_crawler=False
 	try:
 		user_agent=request.META.get('HTTP_USER_AGENT',None)
@@ -1272,6 +1272,7 @@ def build_observations(obs):
 		o['raval'] = ob.raval*15
 		o['decval'] = ob.decval
 		o['filter'] = ob.filter
+		o['filterprops'] = filter_props(ob.filter)
 		o['exposuresecs'] = ob.exposuresecs
 		o['defaultexpsecs'] = ob.defaultexpsecs
 		o['skyobjecttype'] = ob.skyobjecttype
@@ -1625,59 +1626,43 @@ def datestamp_basic(value):
 def l(txt,lnk):
 	return "<a href=\"http://lcogt.net/"+lnk+"\">"+txt+"</a>";
 
+def filter_list():
+	return [ {'code':'CC', 'name':'Air', 'node': 'node/31'},
+			{'code':'RGB', 'name':'Color', 'node': ""},
+			{'code':'RGB+ND', 'name':"Color + Neutral Density", 'node': ""},
+			{'code':'RGB_ND', 'name':"BVr' +Neutral Dens", 'node': ""},
+			{'code':'Red', 'name':"Red", 'node': ""},
+			{'code':'Green', 'name':"Green", 'node': ""},
+			{'code':'Blue', 'name':"Blue", 'node': ""},
+			{'code':'CA', 'name':'Hydrogen Alpha', 'node': 'node/51'},
+			{'code':'HB', 'name':"Hydrogen Beta", 'node': "node/53"},
+			{'code':'CO', 'name':'Oxygen III', 'node': 'node/34'},
+			{'code':'CB', 'name':'Bessell B', 'node': 'node/36'},
+			{'code':'CV', 'name':"Bessell V", 'node': "node/37"},
+			{'code':'CR', 'name':'Bessell R', 'node': "node/43"},
+			{'code':'BI', 'name':"Bessell I", 'node': ""},
+			{'code':'CU', 'name':"SDSS u'", 'node': "node/42"},
+			{'code':'SR', 'name':"SDSS r'", 'node': ""},
+			{'code':'CI', 'name':"SDSS i'", 'node': "node/35"},
+			{'code':'NB', 'name':"B +Neutral Dens", 'node': ""},
+			{'code':'NV', 'name':"V +Neutral Dens", 'node': ""},
+			{'code':'SG', 'name':"Sloan g'", 'node': "node/45"},
+			{'code':'SY', 'name':"Pan-STARRS Y", 'node': "node/49"},
+			{'code':'SZ', 'name':"Pan-STARRS Z", 'node': "node/48"},
+			{'code':'SO', 'name':"Solar", 'node': "node/40"},
+			{'code':'SM', 'name':"SkyMap - CaV", 'node': "node/41"},
+			{'code':'OP', 'name':"Opal", 'node': "node/50"},
+			{'code':'D5', 'name':"D51 filter", 'node': ""}]
+
 def filter_props(code):
-	if code == 'CC':
-		return ['Air','node/31']
-	elif code == 'CA':
-		return ['Hydrogen Alpha','node/51']
-	elif code == 'CB':
-		return ['Bessell B','node/36']
-	elif code == 'CO':
-		return ['Oxygen III','node/34']
-	elif code == 'RGB':
-		return ['RGB composite']
-	elif code == 'RGB_ND':
-		return ["BVr' +Neutral Dens"]
-	elif code == 'CI':
-		return ["SDSS i'","node/35"]
-	elif code == 'CR':
-		return ['Bessell R',"node/43"]
-	elif code == 'CU':
-		return ["SDSS u'","node/42"]
-	elif code == 'CV':
-		return ["Bessell V","node/37"]
-	elif code == 'NB':
-		return ["B +Neutral Dens"]
-	elif code == 'NV':
-		return ["V +Neutral Dens"]
-	elif code == 'SR':
-		return ["SDSS r'"]
-	elif code == 'SZ':
-		return ["Pan-STARRS Z","node/48"]
-	elif code == 'SG':
-		return ["Sloan g'","node/45"]
-	elif code == 'SY':
-		return ["Pan-STARRS Y","node/49"]
-	elif code == 'BI':
-		return ["Bessel I"]
-	elif code == 'HB':
-		return ["Hydrogen Beta","node/53"]
-	elif code == 'SO':
-		return ["Solar","node/40"]
-	elif code == 'SM':
-		return ["SkyMap - CaV","node/41"]
-	elif code == 'OP':
-		return ["Opal","node/50"]
-	elif code == 'D5':
-		return ["D51 filter"]
-	elif code == 'Blue':
-		return [code]
-	elif code == 'Green':
-		return [code]
-	elif code == 'Red':
-		return [code]
-	else:
-		return ["Unknown"]
+	f = filter_list();
+	try:
+		for fs in f:
+			if(fs['code'] == code):
+				return [fs['name'],fs['node']]
+		return ["Unknown",""]
+	except:
+		return ["Unknown",""]
 
 def filter_link(code):
 	try:
