@@ -995,7 +995,7 @@ def view_observation(request,code,tel,obs):
 		return broken(request,"There was a problem finding the requested observation in the database.")
 
 	# Let's try to work out if this is from a crawler. If not we'll assume a real person.
-	BotNames=['Googlebot','Slurp','Twiceler','Spider','spider','Crawler','crawler','Bot','bot','robot']
+	BotNames=['alexa', 'appie', 'Ask Jeeves', 'Baiduspider', 'bingbot', 'Butterfly', 'crawler', 'facebookexternalhit', 'FAST', 'Feedfetcher-Google', 'Firefly', 'froogle', 'Gigabot', 'girafabot', 'Googlebot', 'InfoSeek', 'inktomi', 'looksmart', 'Me.dium', 'Mediapartners-Google', 'msnbot', 'NationalDirectory', 'rabaz', 'Rankivabot', 'Scooter', 'Slurp', 'Sogou web spider', 'Spade', 'TechnoratiSnoop', 'TECNOSEEK', 'Teoma', 'TweetmemeBot', 'Twiceler', 'Twitturls', 'URL_Spider_SQL', 'WebAlta Crawler', 'WebBug', 'WebFindBot', 'www.galaxy.com', 'ZyBorg']
 	request.is_crawler=False
 	try:
 		user_agent=request.META.get('HTTP_USER_AGENT',None)
