@@ -350,7 +350,7 @@ div.observation-metadata table td {
 div.observation-metadata td.first {
 	width: 80px;
 	text-align: right;
-	padding-left:10px;
+	padding-left:0px;
 	padding-right:0px;
 	font-weight: bold;
 }
