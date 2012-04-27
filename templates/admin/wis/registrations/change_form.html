@@ -16,24 +16,36 @@ $(document).ready(function() {
 	$('a.urilookup').click(function() {
 		var postcode = $(this).attr('pc');
 		var edurl = "http://services.data.gov.uk/education/sparql";
-		var sparql = "http://services.data.gov.uk/education/sparql?query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+school%3A+%3Chttp%3A%2F%2Feducation.data.gov.uk%2Fdef%2Fschool%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0ASELECT+DISTINCT+%3Fitem%0D%0AWHERE+{%0D%0A%3Fitem+rdf%3Atype+school%3ASchool+.%0D%0A++%3Fitem+school%3AestablishmentStatus+%3FestablishmentStatus+.%0D%0A++%3FestablishmentStatus+rdfs%3Alabel+%22%22%22Open%22%22%22+.%0D%0A++%3Fitem+school%3Aaddress+%3Faddress+.%0D%0A++%3Faddress+school%3Apostcode+%22%22%22SY5+7PF%22%22%22+.%0D%0A%0D%0A}%0D%0A+%0D%0ALIMIT+10%0D%0AOFFSET+0&output=json&callback=?";
+		//var sparql = "prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> prefix sch-ont: <http://education.data.gov.uk/def/school/> SELECT * WHERE { ?school a sch-ont:School; sch-ont:establishmentName ?name; geo:lat ?lat ; geo:long ?long. OPTIONAL { ?school sch-ont:address ?address . ?address sch-ont:postcode ?postcode. OPTIONAL { ?address sch-ont:town ?town . } } FILTER (?postcode = '"+postcode+"') } ORDER BY ?name";
+		var sparql = "http://services.data.gov.uk/education/sparql?query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+school%3A+%3Chttp%3A%2F%2Feducation.data.gov.uk%2Fdef%2Fschool%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0ASELECT+%3Fitem+%3FestablishmentName%0D%0AWHERE+{%0D%0A%3Fitem+rdf%3Atype+school%3ASchool+.%0D%0A++%3Fitem+school%3AestablishmentStatus+%3FestablishmentStatus+.%0D%0A++%3Fitem+school%3AestablishmentName+%3FestablishmentName+.%0D%0A++%3FestablishmentStatus+rdfs%3Alabel+%22%22%22Open%22%22%22+.%0D%0A++%3Fitem+school%3Aaddress+%3Faddress+.%0D%0A++%3Faddress+school%3Apostcode+%22%22%22"+postcode+"%22%22%22+.%0D%0A%0D%0A}%0D%0A+%0D%0ALIMIT+10%0D%0AOFFSET+0&output=json&callback=?";
 		// Bug fix for reading local JSON file in FF3
 		$.ajaxSetup({async:false,'beforeSend': function(xhr){ if (xhr.overrideMimeType) xhr.overrideMimeType("text/plain"); } });
 		$('#schooluri').append('<div id="progress"><img src="/observations/media/admin/img/ajax-loader.gif"><\/div>');
 		$.getJSON(sparql,function(data){
-			if (typeof data.results=="object" && typeof data.results.bindings=="object" && data.results.bindings.length == 1){
-				item = data.results.bindings[0].item;
-				var line = '<a href="#" urn="'+item.value+'" class="loadurn">Found!<\/a><br \/>';
-				$('#schooluri').append(line);
-				$('input:text[name=schooluri_set-0-uri]').val(item.value);
+			if (typeof data.results=="object" && typeof data.results.bindings=="object"){
+				if(data.results.bindings.length == 1){
+					item = data.results.bindings[0].item;
+					var line = '<div class="sparqlresult"><a href="#" urn="'+item.value+'" class="loadurn">Found!<\/a><br \/><\/div>';
+					$('#schooluri').append(line);
+					$('input:text[name=schooluri_set-0-uri]').val(item.value);
+				}else{
+					var line = '<div class="sparqlresult"><br />There are multiple schools with this postcode:<ul>';
+					for(var i=0; i < data.results.bindings.length; i++){
+						line += '<li><a href="'+data.results.bindings[i].item.value+'" target="_other">'+data.results.bindings[i].establishmentName.value+'<\/a> (<a href="#" urn="'+data.results.bindings[i].item.value+'" class="loadurn">select this<\/a>)<\/li>';
+					}
+					line += '<\/ul><\/div>';
+					$('#schooluri').append(line);
+					//$('input:text[name=schooluri_set-0-uri]').val(item.value);
+				}
 			}else{
-				var line = "No unique result found :-(";
+				var line = "No results found. :-(";
 				$('#schooluri').append(line);
 			}
 			$('#progress').remove();
 			$('a.loadurn').click(function() {
 				var urn = $(this).attr('urn');
 				$('input:text[name=schooluri_set-0-uri]').val(urn);
+				$('.sparqlresult').html('Updated!');
 			});
 		});
 	});
