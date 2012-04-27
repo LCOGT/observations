@@ -305,11 +305,7 @@ def search(request):
 	months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 	days = range(1,32)
 	ago = now + timedelta(-30)
-<<<<<<< .mine
-	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq')}
-=======
 	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax','')}
->>>>>>> .r5170
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
