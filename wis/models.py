@@ -203,7 +203,7 @@ class StatusUpdate(models.Model):
         
 class Schooluri(models.Model):
     usr_id = models.ForeignKey(Registrations,db_column='usr_id')
-    uri = models.URLField('URI', blank=True, verify_exists=True,db_column='uri')
+    uri = models.URLField('URI', blank=True, verify_exists=False,db_column='uri')
     class Meta:
         db_table = u'schooluri'
         verbose_name = u'school uri'
