@@ -58,7 +58,7 @@ $(document).ready(function() {
 	 	var oldmins = $("span#mins").text();
 	 	var newmins = parseInt(mins) + parseInt(oldmins);
 	 	var reg = $("#regid").attr('regid');
-	    $.post("{% url rtiadminsite.wis.views.addcredit %}", {schoolid: reg ,peakmins: mins,reason:reason}, function(data){
+	    $.post("{% url rtiadminsite.wis.views.addcredit %}", {schoolid: reg ,peakmins: mins,reason:reason,csrfmiddlewaretoken:'{{ csrf_token }}'}, function(data){
 	        $("#hist").prepend(data);
 	  });
 	   $("span#mins ").text(newmins);
@@ -66,7 +66,7 @@ $(document).ready(function() {
   
   $('a.bookedslots').click(function(){
      var reg = $("#regid").attr('regid');
-       $.post("{% url rtiadminsite.wis.views.slots_by_user %}", {userid: reg}, function(data){
+       $.post("{% url rtiadminsite.wis.views.slots_by_user %}", {userid: reg,csrfmiddlewaretoken:'{{ csrf_token }}'}, function(data){
 	        $("#bookings").html(data);
 	  });
 	  $(".toggle_button").show();
