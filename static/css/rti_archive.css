@@ -152,6 +152,7 @@ ul.observation-results li {
 	padding:0px;
 	display: inline;
 	float: left;
+	clear: none;
 	list-style: none!important;
 	background-image: url("");
 }
@@ -457,6 +458,21 @@ ol ol { list-style-type: decimal; }
 	ul.stream li a { display: inline; }
 	ul.stream img { max-width: 100%;}
 	.exposureplot { width: 100%; }
+
+	ul.observation-results li { width: 25%; margin-right: 0px; }
+	ul.observation-results li:nth-child(4n+1) { clear: both; }
+	.thumbnail {
+		width: 100%;
+		height: auto;
+		text-align: center;
+	}
+	.thumb img {
+		max-width: 95%;
+		width: 95%;
+		max-height: none;
+		max-height: auto;
+	}
+	.thumb a.more-info-hint { right: 2.5%; max-width: 50%; }
 }
 @media (max-width: 800px), (max-device-width: 800px) {
 	.fouroften, .sixoften { width: 100%; display: block; }
@@ -465,10 +481,14 @@ ol ol { list-style-type: decimal; }
 	.temporalstats { margin-right:0px; width: 100%; }
 	.temporalitem { width: 8.33%; font-size: 0.9em; }
 	.temporalnum,.temporalbar,.temporaltxt { width: 100%; padding-right: 0px; }
+	ul.observation-results li { width: 33%; margin-right: 0px; }
+	ul.observation-results li:nth-child(4n+1) { clear: none; }
+	ul.observation-results li:nth-child(3n+1) { clear: both; }
 }
 
 @media (max-width: 480px), (max-device-width: 480px) {
 	ul.observation-results li { width: 50%; margin-right: 0px; }
+	ul.observation-results li:nth-child(3n+1) { clear: none; }
 	ul.observation-results li:nth-child(2n+1) { clear: both; }
 	.thumbnail {
 		width: 100%;
@@ -481,7 +501,6 @@ ol ol { list-style-type: decimal; }
 		max-height: none;
 		max-height: auto;
 	}
-	.thumb a.more-info-hint { right: 2.5%; }
 	.lastcol { margin-right: 0px; }
 	.fouroften, .sixoften { width: 100%; display: block; }
 	.observation-metadata { clear: both; }
