@@ -94,7 +94,7 @@ centreDiv = function(el){
 
 // pd = parsed date
 function relative_time_short(pd) {
-	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();//(new Date()).getTime()-19353286615);
+	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
 	var dt = parseInt((relative_to.getTime() - pd) / 1000);
 	if (dt < 60) return 'seconds ago';
 	else if(dt < 120) return 'a minute ago';

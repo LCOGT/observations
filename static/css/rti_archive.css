@@ -481,6 +481,7 @@ ol ol { list-style-type: decimal; }
 		max-height: none;
 		max-height: auto;
 	}
+	.thumb a.more-info-hint { right: 2.5%; }
 	.lastcol { margin-right: 0px; }
 	.fouroften, .sixoften { width: 100%; display: block; }
 	.observation-metadata { clear: both; }
