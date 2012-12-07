@@ -5,7 +5,7 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>Welcome. This part of our site aims to ensure that every observation taken by a public user of our network has a permanent web presence. You can see the most recent and popular observations below, search by observation title, or browse by site or telescope.</p>
+							<p>Welcome. This part of our site aims to ensure that every observation taken by a public user of our network has a permanent web presence. You can see the most recent and popular observations below, <a href="{% url rtiadminsite.faulkes.views.index %}search">search</a> by title, or browse <a href="#bysite">by site</a>, <a href="#bytelescope">telescope</a> or <a href="#bycategory">category</a>.</p>
 						</div>
 
 						<div class="row">

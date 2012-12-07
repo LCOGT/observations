@@ -99,7 +99,7 @@
 						<div class="row rowlast gray-7-grad">
 							<div class="sixcol lastcol">
 {% if sites %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bysite">
 									<div class="padder">
 
 
@@ -111,7 +111,7 @@
 								</div>
 {% endif %}
 {% if telescopes %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bytelescope">
 									<div class="padder">
 										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
 										<ul>
@@ -121,7 +121,7 @@
 								</div>
 {% endif %}
 {% if categories %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bycategory">
 									<div class="padder">
 										<h2>{% block categories-list-title %}<a href="{% url rtiadminsite.faulkes.views.index %}category/">By category</a>:{% endblock %}</h2>
 										<ul>
