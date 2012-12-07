@@ -27,15 +27,12 @@ $(document).ready(function(){
 		else if($(this).parent().parent().parent().hasClass('closeable')) el = $(this).parent().parent().parent()
 		if(el) el.slideUp("slow")
 	});
+
 	// Javascript for results thumbnails
 	$(".observation-results li").each(function(index) {
-		var d = relative_time_short(new Date($(this).find('time').attr('datetime')));
-		$(this).find('.thumbnail a').after('<a href="" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info">'+d+'</a>')
-		//$(this).find('.thumbnail').mouseover({idx:index},function(e){
-		//	$(this).find('.more-info-hint').clearQueue().css({display:'inline-block'}).fadeIn("fast");
-		//}).mouseout({idx:index},function(e){
-		//	$(this).find('.more-info-hint').clearQueue().delay(500).fadeOut("slow").css({display:'inline-block'});
-		//});
+		var d = $(this).find('time').attr('datetime');
+		var r = relative_time_short(new Date(d));
+		$(this).find('.thumbnail a').after('<a href="" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info"><time datetime="'+d+'">'+r+'</time></a>')
 
 		$("#more-info-hint-"+index).fadeIn(1000).bind('click',{idx:index,img:$(this).find('img').attr('src'),link:$(this).find('a').attr('href'),observer:$(this).find('.observer').attr('title')},function(event){
 			if($('.show-details').size() == 0) $('body').append('<div class="show-details"></div>');
@@ -49,10 +46,21 @@ $(document).ready(function(){
 				$('.show-details').fadeOut("slow");
 			});
 			return false;
-		})//.mouseover(function(e){
-		//	$(this).clearQueue();
-		//}).delay(2000).clearQueue().fadeOut(6000).css({display:'inline-block'});
+		})
 	});
+
+	function updateTime(el){
+		var attr = (el.attr('datetime')) ? el.attr('datetime') : el.attr('title');
+		if(!attr) return;
+		var d = new Date(attr);
+		if(d) el.html(relative_time_short(d));
+	}
+	function updateTimes(el){
+		if(!el) return;
+		if(typeof el!=="object") el = $('.more-info-hint time');
+		el.each(function(i){ updateTime($(this)); });
+	}
+	ticker = setInterval(updateTimes,30000);
 
 	$(".observation-results li .observer").each(function(){
 		var html = $(this).html()
@@ -87,7 +95,7 @@ centreDiv = function(el){
 
 // pd = parsed date
 function relative_time_short(pd) {
-	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
+	var relative_to = (arguments.length > 1) ? arguments[1] : new Date((new Date()).getTime()-19353286615);
 	var dt = parseInt((relative_to.getTime() - pd) / 1000);
 	if (dt < 60) return 'seconds ago';
 	else if(dt < 120) return 'a minute ago';
