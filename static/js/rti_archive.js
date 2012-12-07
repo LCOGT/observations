@@ -56,7 +56,6 @@ $(document).ready(function(){
 		if(d) el.html(relative_time_short(d));
 	}
 	function updateTimes(el){
-		if(!el) return;
 		if(typeof el!=="object") el = $('.more-info-hint time');
 		el.each(function(i){ updateTime($(this)); });
 	}
