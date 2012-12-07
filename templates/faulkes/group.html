@@ -28,7 +28,7 @@
 								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
 									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
-					
+
 									<div class='more-info'>
 										<div class='name'>Title: <span property='dc:title'>{{ o.skyobjectname }}</span></div>
 										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec.: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>

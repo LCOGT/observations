@@ -29,15 +29,15 @@ $(document).ready(function(){
 	});
 	// Javascript for results thumbnails
 	$(".observation-results li").each(function(index) {
-
-		$(this).find('.thumbnail a').after('<a href="" class="more-info-hint" id="more-info-hint-'+index+'">i</a>')
+		var d = relative_time_short(new Date($(this).find('time').attr('datetime')));
+		$(this).find('.thumbnail a').after('<a href="" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info">'+d+'</a>')
 		//$(this).find('.thumbnail').mouseover({idx:index},function(e){
 		//	$(this).find('.more-info-hint').clearQueue().css({display:'inline-block'}).fadeIn("fast");
 		//}).mouseout({idx:index},function(e){
 		//	$(this).find('.more-info-hint').clearQueue().delay(500).fadeOut("slow").css({display:'inline-block'});
 		//});
 
-		$("#more-info-hint-"+index).bind('click',{idx:index,img:$(this).find('img').attr('src'),link:$(this).find('a').attr('href'),observer:$(this).find('.observer').attr('title')},function(event){
+		$("#more-info-hint-"+index).fadeIn(1000).bind('click',{idx:index,img:$(this).find('img').attr('src'),link:$(this).find('a').attr('href'),observer:$(this).find('.observer').attr('title')},function(event){
 			if($('.show-details').size() == 0) $('body').append('<div class="show-details"></div>');
 			var img = event.data.img.replace("_120.jpg","_150.jpg");
 			var img_full = event.data.img.replace("_120.jpg",".jpg");
@@ -83,4 +83,27 @@ centreDiv = function(el){
 	var wide = $(window).width();
 	var tall = $(window).height();
 	$(el).css({left:(wide-$(el).outerWidth())/2,top:($(window).scrollTop()+(tall-$(el).outerHeight())/2)});
+}
+
+// pd = parsed date
+function relative_time_short(pd) {
+	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
+	var dt = parseInt((relative_to.getTime() - pd) / 1000);
+	if (dt < 60) return 'seconds ago';
+	else if(dt < 120) return 'a minute ago';
+	else if(dt < (45*60)) return (parseInt(dt / 60)).toString() + ' minutes ago';
+	else if(dt < (90*60)) return 'an hour ago';
+	else if(dt < (48*60*60)) {
+		h = (parseInt(dt / 3600)).toString()
+		if(h == 1) return 'an hour ago';
+		else return ''+ h + ' hours ago';
+	}else if(dt < (30*86400)) {
+		return (parseInt(dt / 86400)).toString() + ' days ago';
+	}else{
+		var mons = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+		y = pd.getYear()+'';
+		if(y.length < 4) y = (y-0+1900);
+		if(dt < (180*86400)) return pd.getDate()+' '+mons[pd.getMonth()];
+		else return pd.getDate()+' '+mons[pd.getMonth()]+' '+y;
+	}
 }

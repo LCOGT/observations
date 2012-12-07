@@ -110,6 +110,10 @@ p.telescope, p.date, p.observer {
 	float:left;
 	display: none;
 }
+#result .showinfo {
+	margin: 8px 4px 4px 4px;
+	display: block;
+}
 #result .scroller {
 	z-index:1;
 	/* Fallback for web browsers that doesn't support RGBa */
