@@ -234,7 +234,7 @@ class SlotAdmin(admin.ModelAdmin):
     list_display = ['slotstamp','start_time','end_time','get_schoolid','get_org','get_username','get_schoolemail','colour_scope','tag']
     
     ordering = ['start','telid']
-    list_filter = ['telid','tag']
+    list_filter = ['telid','tag__name']
     fieldsets = ( 
                 ('Editable slot info',{
                   'fields' : ('schoolid','cancelreason','notes')
@@ -274,30 +274,33 @@ class SlotAdmin(admin.ModelAdmin):
     ftp_book_slot.short_description = "Book slots to 'Faulkes' account (136)"
     
     def custom_ftp_email(self,request,queryset):
-      ms = EmailMessage.objects.get(code='cust1') #
-      for obj in queryset:
-         message = "FTP custom email sent to '%s'" % (obj.schoolid.schoolname)
-         LogEntry.objects.log_action(
-             user_id         = request.user.pk, 
-             content_type_id = ContentType.objects.get_for_model(obj).pk,
-             object_id       = obj.pk,
-             object_repr     = smart_unicode(obj), 
-             action_flag     = CHANGE,
-             change_message  = message
-         )
-         if obj.schoolid.usertype in userlist:
-             sub      = "%s :: %s" % (obj.schoolid.teachername,ms.subject)
-             mess = ms.message % (obj.schoolid.teachername,date_full_format(obj.start),SCOPE_CHOICES[obj.telid-1][1] )
-             mess += email_footer[ms.footer]
-             email_from = email_sender[ms.footer]
-             send_mail(sub, mess, email_from, [obj.schoolid.contactemailaddress])
-         obj.schoolid.peakrtiminsavailable = int(obj.schoolid.peakrtiminsavailable) + 30
-         obj.schoolid.save()
-      if len(queryset) == 1:
-          message_bit = "1 user emailed with custom email"
-      else:
-          message_bit = "%s users emailed with custom email" % len(queryset)
-      self.message_user(request,"%s successfully" % message_bit)
+        try:
+            ms = EmailMessage.objects.get(code='cust1') 
+            for obj in queryset:
+                message = "FTP custom email sent to '%s'" % (obj.schoolid.schoolname)
+                LogEntry.objects.log_action(
+                 user_id         = request.user.pk, 
+                 content_type_id = ContentType.objects.get_for_model(obj).pk,
+                 object_id       = obj.pk,
+                 object_repr     = smart_unicode(obj), 
+                 action_flag     = CHANGE,
+                 change_message  = message
+                )
+                if obj.schoolid.usertype in userlist:
+                    sub      = "%s :: %s" % (obj.schoolid.teachername,ms.subject)
+                    mess = ms.message % (obj.schoolid.teachername,date_full_format(obj.start),SCOPE_CHOICES[obj.telid-1][1] )
+                    mess += email_footer[ms.footer]
+                    email_from = email_sender[ms.footer]
+                    send_mail(sub, mess, email_from, [obj.schoolid.contactemailaddress])
+                obj.schoolid.peakrtiminsavailable = int(obj.schoolid.peakrtiminsavailable) + 30
+                obj.schoolid.save()
+            if len(queryset) == 1:
+                message_bit = "1 user emailed with custom email"
+            else:
+                message_bit = "%s users emailed with custom email" % len(queryset)
+            self.message_user(request,"%s successfully" % message_bit)
+        except:
+            self.message_user(request,"There was an error sending the message. Have you changed the text recently?")
     custom_ftp_email.short_description = "FTP send customizable email"
         
     def refund_slot_email(self,request,queryset):
