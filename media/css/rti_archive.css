@@ -152,10 +152,11 @@ ul.observation-results li {
 	padding:0px;
 	display: inline;
 	float: left;
+	clear: none;
 	list-style: none!important;
 	background-image: url("");
 }
-.thumb { margin: 0px 0px 16px 0px!important; line-height: 1em; }
+.thumb { margin: 0px 0px 16px 0px!important; line-height: 1em; position: relative; }
 .onerow { margin: 0px 0px 0px 0px!important;}
 .thumbnail {
 	display:block;
@@ -176,30 +177,26 @@ li.end-of-line {
 	padding:0px;
 }
 .thumb a.more-info-hint {
-	float:right;
-	font-family: serif;
-	font-style: italic;
 	font-weight: bold;
-	background-color: white;
-	color: black;
+	text-align: right;
+	background-color: #3366dd;
+	color: white;
 	font-size: 0.8em;
 	line-height: 1em;
-	padding: 0.25em 0.65em 0.25em 0.65em;
+	padding: 4px;
 	position:absolute;
-	margin-top: 0.3em;
-	margin-left:-2em;
-	border-radius: 1em;
-	-moz-border-radius: 1em;
-	-webkit-border-radius: 1em;
-	box-shadow:1px 1px 5px #000;
-	-moz-box-shadow:1px 1px 5px #000;
-	-webkit-box-shadow:1px 1px 5px #000;
+	right: 0px;
 	text-decoration: none;
-	display: inline-block;
+	display: none;
+	opacity: 0.70;
+	filter:alpha(opacity=70);
 }
 .thumb a.more-info-hint:hover {
-	font-size:1.1em;
 	text-decoration: none;
+}
+.thumb:hover a.more-info-hint {
+	opacity: 1.0;
+	filter:alpha(opacity=100);
 }
 .thumb p {
 	margin: 4px 0px 0px 0px!important;
@@ -231,7 +228,7 @@ li.end-of-line {
 }
 div.show-details {
 	display:none;
-	border: 10px solid #999;
+	border: 0px solid #999;
 	background: white;
 	position:absolute;
 	width: 500px;
@@ -241,21 +238,20 @@ div.show-details {
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
-	padding: 16px;
+	padding: 32px;
 	font-size: 1em;
 }
 div.show-details-close {
-	border-radius: 0.4em;
-	-moz-border-radius: 0.4em;
-	-webkit-border-radius: 0.4em;
-	border: 1px solid #bbb;
-	color: #bbb;
-	min-width:1.5em;
-	min-height:1em;
+	border: 0px solid #bbb;
+	color: #808080;
+	font-weight: bold;
+	line-height: 1em;
 	text-align:center;
 	cursor: pointer;
 	float: right;
-	margin: 0px 0px 5px 5px;
+	padding: 4px 8px;
+	margin-right: -8px;
+	margin-top: -4px;
 }
 div.show-details-close:hover { color: #444; background-color: #eee; }
 div.show-details img {
@@ -350,7 +346,7 @@ div.observation-metadata table td {
 div.observation-metadata td.first {
 	width: 80px;
 	text-align: right;
-	padding-left:10px;
+	padding-left:0px;
 	padding-right:0px;
 	font-weight: bold;
 }
@@ -462,6 +458,21 @@ ol ol { list-style-type: decimal; }
 	ul.stream li a { display: inline; }
 	ul.stream img { max-width: 100%;}
 	.exposureplot { width: 100%; }
+
+	ul.observation-results li { width: 25%; margin-right: 0px; }
+	ul.observation-results li:nth-child(4n+1) { clear: both; }
+	.thumbnail {
+		width: 100%;
+		height: auto;
+		text-align: center;
+	}
+	.thumb img {
+		max-width: 95%;
+		width: 95%;
+		max-height: none;
+		max-height: auto;
+	}
+	.thumb a.more-info-hint { right: 2.5%; max-width: 50%; }
 }
 @media (max-width: 800px), (max-device-width: 800px) {
 	.fouroften, .sixoften { width: 100%; display: block; }
@@ -470,10 +481,14 @@ ol ol { list-style-type: decimal; }
 	.temporalstats { margin-right:0px; width: 100%; }
 	.temporalitem { width: 8.33%; font-size: 0.9em; }
 	.temporalnum,.temporalbar,.temporaltxt { width: 100%; padding-right: 0px; }
+	ul.observation-results li { width: 33%; margin-right: 0px; }
+	ul.observation-results li:nth-child(4n+1) { clear: none; }
+	ul.observation-results li:nth-child(3n+1) { clear: both; }
 }
 
 @media (max-width: 480px), (max-device-width: 480px) {
 	ul.observation-results li { width: 50%; margin-right: 0px; }
+	ul.observation-results li:nth-child(3n+1) { clear: none; }
 	ul.observation-results li:nth-child(2n+1) { clear: both; }
 	.thumbnail {
 		width: 100%;

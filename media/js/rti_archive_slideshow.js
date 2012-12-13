@@ -154,10 +154,11 @@ Slideshow.prototype.updateObservations = function(){
 	}
 	this.desc = this.data.desc;
 	if($('#'+this.id+' .thumbnails').length == 0){
-		$('#'+this.id).append('<div class="info" style="display:none;"></div><div class="controls"><div class="play" title="Play"></div><div class="stop" title="Pause"></div><form><radio><input type="radio" name="speed" value="5000" checked /> Slow<br /><input type="radio" name="speed" value="2000" /> Fast</form></div><div class="scroller"><div class="scrollLeft"></div><div class="scrollRight"></div><div class="thumbnails"><ul></ul></div></div>');
+		$('#'+this.id).append('<div class="info" style="display:none;"></div><div class="controls"><div class="play" title="Play"></div><div class="stop" title="Pause"></div><form><radio><input type="radio" name="speed" value="5000" checked /> Slow<br /><input type="radio" name="speed" value="2000" /> Fast</form><a href="#" class="showinfo" title="Press i">Show info</a></div><div class="scroller"><div class="scrollLeft"></div><div class="scrollRight"></div><div class="thumbnails"><ul></ul></div></div>');
 
 		$("input[name=speed]").bind('change',{s:this},function(e){ e.data.s.pause = $('input[name=speed]:checked').val(); });
 		$('#'+this.id+' .play').bind('click',{s:this},function(e){ e.data.s.start(); });
+		$('#'+this.id+' .showinfo').bind('click',{s:this},function(e){ e.preventDefault(); e.data.s.toggleInfo(); });
 		$('#'+this.id+' .stop').bind('click',{s:this},function(e){ e.data.s.stop(); });
 		$('#'+this.id+' .scroller, #'+this.id+' .controls').bind('mouseover',{s:this},function(e){ e.data.s.hideable = false; }).bind('mouseleave',{s:this},function(e){ e.data.s.hideable = true; });
 		$('#'+this.id+' .scrollLeft').bind('click',{slides:this},function(e){
