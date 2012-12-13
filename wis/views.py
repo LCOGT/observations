@@ -13,6 +13,7 @@ from django.core import urlresolvers
 from django.contrib.admin.models import LogEntry, CHANGE
 from datetime import date,timedelta,datetime
 from string import replace
+import re
 
 def emailtext(request,userid,messid):
     passlist = ('pass1','pass2','pass3')
@@ -100,25 +101,79 @@ def update_alerts(request):
     # Add datetime of last entry in Alerts
     return render_to_response('alerts_update.html',{'alerts':als,'start':starttime})
 
-def slot_search(request,mode):
+def slot_search(request):
     data = request.GET
-    tels = ('Faulkes Telescope North','Faulkes Telescope South')
+    telnames = [{    'id'    : 1,
+                    'code'  : 'FTN',
+                    'name'  : 'Faulkes Telescope North',
+                },{ 'id'    : 2,
+                    'code'  : 'FTS',
+                    'name'  : 'Faulkes Telescope South',
+                }]
+                
     if data:
+        callback = request.GET.get('callback','')
+        # Sanitise the callback to stop any dodgy Javascript
+        callback = re.sub(r"[^\w]",'',callback)
         start = data.get('start','')
         end = data.get('end','')
         tag = data.get('tag','')
-        tel = data.get('telid','')
-        s = "%s000000" % start
-        e = "%s235959" % end
+        telid = data.get('telid','')
+        telname = data.get('telescope','')
+        if len(start) == 8:
+            # Guess that date format is RTI simple ISO
+            s = "%s000000" % start
+            s = datetime.strptime(s,'%Y%m%d%H%M%S')
+        elif len(start) == 10:
+            # Guess that date format is ISO
+            s = "%sT00:00:00" % start
+            s = datetime.strptime(s,'%Y-%m-%dT%H:%M:%S')
+        elif len(start) == 16:
+            s = "%s:00" % start
+            s = datetime.strptime(s,'%Y-%m-%dT%H:%M:%S')
+        elif len(start) == 19:
+            s = datetime.strptime(start,'%Y-%m-%dT%H:%M:%S')
+        elif len(start) == 20:
+            s = datetime.strptime(start,'%Y-%m-%dT%H:%M:%SZ')
+        if len(end) == 8:
+            # Guess that date format is RTI simple ISO
+            e = "%s235959" % end
+            e = datetime.strptime(e,'%Y%m%d%H%M%S')
+        elif len(end) == 10:
+            # Guess that date format is ISO
+            e = "%sT23:59:59" % end
+            e = datetime.strptime(e,'%Y-%m-%dT%H:%M:%S')
+        elif len(end) == 16:
+            e = "%s:59" % end
+            e = datetime.strptime(e,'%Y-%m-%dT%H:%M:%S')
+        elif len(end) == 19:
+            e = datetime.strptime(end,'%Y-%m-%dT%H:%M:%S')
+        elif len(end) == 20:
+            e = datetime.strptime(end,'%Y-%m-%dT%H:%M:%SZ')
 
-        slots = Slots.objects.filter(start__gte=s,end__lte=e,admincancelled='N',usercancelled='N').order_by('start')
+        startdate = datetime.strftime(s,'%Y%m%d%H%M%S')
+        enddate = datetime.strftime(e,'%Y%m%d%H%M%S')
+        print startdate,enddate
+        slots = Slots.objects.filter(start__gte=startdate,end__lte=enddate,admincancelled='N',usercancelled='N').order_by('start')
+        print slots.count()
         if tag:
             slots = slots.filter(tag=tag)
-        if tel:
-            slots = slots.filter(telid=int(tel))
+        if telid or telname:
+            if telname:
+                telescope = [tel for tel in telnames if tel['code'] == telname.upper()][0]
+            if telid:
+                try:
+                    telescope =  telnames[int(telid)-1]
+                except:
+                    return HttpResponse("Invalid telescope ID",mimetype='application/javascript')
+            slots = slots.filter(telid=telescope['id'])
+            tel_list = [telescope]
+        else:
+            tel_list = telnames
         bookings = []
-        for t in (1,2):
-            slottel = slots.filter(telid=t)
+        for t in tel_list:
+            print t
+            slottel = slots.filter(telid=t['id'])
             slotlist = []
             if slottel.count() != 0:
                 for s in slottel:
@@ -126,16 +181,20 @@ def slot_search(request,mode):
                         school = 'None'
                     else:
                         school = "%s" % s.schoolid
-                    slot = {'start'  : datetime.strptime(s.start,'%Y%m%d%H%M%S').isoformat(),
-                            'end'    : datetime.strptime(s.end,'%Y%m%d%H%M%S').isoformat(),
+                    slot = {'start'  : "%sZ" % datetime.strptime(s.start,'%Y%m%d%H%M%S').isoformat(),
+                            'end'    : "%sZ" % datetime.strptime(s.end,'%Y%m%d%H%M%S').isoformat(),
                             'booked' : school,
                             'tag'    : s.tag.name,
                             }
                     slotlist.append(slot)
-            bookings.append({'telescope' : tels[t-1], 'slots' : slotlist})
+            bookings.append({'telescope' : t['name'], 'slots' : slotlist,'code':t['code']})
+        if callback:
+            resp = callback+"("+simplejson.dumps(bookings,indent=2)+")"
+        else:
+            resp = simplejson.dumps(bookings,indent=2)
     else:
-        bookings = "No information supplied"
-    return HttpResponse(simplejson.dumps(bookings,indent=2),mimetype='application/javascript')
+        resp = "No information supplied"
+    return HttpResponse(resp,mimetype='application/javascript')
             
 
 def slots_by_user(request):
