@@ -5,7 +5,7 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>Welcome. This part of our site aims to ensure that every observation taken by a public user of our network has a permanent web presence. You can see the most recent and popular observations below, search by observation title, or browse by site or telescope.</p>
+							<p>Welcome. This part of our site aims to ensure that every observation taken by a public user of our network has a permanent web presence. You can see the most recent and popular observations below, <a href="{% url rtiadminsite.faulkes.views.index %}search">search</a> by title, or browse <a href="#bysite">by site</a>, <a href="#bytelescope">telescope</a> or <a href="{% url rtiadminsite.faulkes.views.index %}category/">category</a>.</p>
 						</div>
 
 						<div class="row">
@@ -22,7 +22,7 @@
 										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
 										<div class='telescope'>Telescope: {{ o.telescope.name }}</div>					
 										<div class='filter'>Filter: <{% if o.filterprops.1 %}a href="http://lcogt.net/{{ o.filterprops.1 }}"{% else %}span{% endif %} title="{{ o.filter }}">{{ o.filterprops.0 }}</{% if o.filterprops.1 %}a{% else %}span{% endif %}></div>
-										<div class='exposure'>Exposure: {{ o.exposuresecs }} s</div>
+										<div class='exposure'>Exposure: {{ o.exposuresecs }} s (total)</div>
 										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
 
 									</div>
@@ -45,7 +45,7 @@
 										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
 										<div class='telescope'>Telescope: {{ o.telescope.name }}</div>					
 										<div class='filter'>Filter: <{% if o.filterprops.1 %}a href="http://lcogt.net/{{ o.filterprops.1 }}"{% else %}span{% endif %} title="{{ o.filter }}">{{ o.filterprops.0 }}</{% if o.filterprops.1 %}a{% else %}span{% endif %}></div>
-										<div class='exposure'>Exposure: {{ o.exposuresecs }} s</div>
+										<div class='exposure'>Exposure: {{ o.exposuresecs }} s (total)</div>
 										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
 
 									</div>
@@ -68,7 +68,7 @@
 										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
 										<div class='telescope'>Telescope: {{ o.telescope.name }}</div>					
 										<div class='filter'>Filter: <{% if o.filterprops.1 %}a href="http://lcogt.net/{{ o.filterprops.1 }}"{% else %}span{% endif %} title="{{ o.filter }}">{{ o.filterprops.0 }}</{% if o.filterprops.1 %}a{% else %}span{% endif %}></div>
-										<div class='exposure'>Exposure: {{ o.exposuresecs }} s</div>
+										<div class='exposure'>Exposure: {{ o.exposuresecs }} s (total)</div>
 										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
 
 									</div>

@@ -24,7 +24,8 @@ urlpatterns = patterns('',
     (r'rtiadmin/wis/registrations/(?P<userid>\w+)/email/(?P<messid>\d+)/$','rtiadminsite.wis.views.emailtext'),
     (r'rtiadmin/slots/all/$','rtiadminsite.wis.views.slots_by_user'),
     (r'rtiadmin/userstats/$','rtiadminsite.wis.views.user_stats'),
-    (r'^rtiadmin/slotsearch/(?P<mode>\w+)$','rtiadminsite.wis.views.slot_search'),
+    #(r'^rtiadmin/slotsearch/(?P<mode>\w+)$','rtiadminsite.wis.views.slot_search'),
+    (r'^rtiadmin/slotsearch/$','rtiadminsite.wis.views.slot_search'),
     (r'^rtiadmin/', include(admin.site.urls)),
     )
 

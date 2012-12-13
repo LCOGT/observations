@@ -868,6 +868,7 @@ def view_category(request,category):
 	obs = []
 	for o in obstats:
 		obs.append(o.imagearchive)
+
 	obs = build_observations(obs)
 	
 
@@ -1566,9 +1567,9 @@ def relativetime(value):
 			return 'about %s years ago' % h
 	elif delta.days > 60:
 		return 'about %s months ago' % int(delta.days/30)
-	elif delta.days > 2:
-		return "%s days ago" % int(delta.days)
-	elif delta.seconds > (86400):
+	elif delta.days >= 2:
+		return "%s days ago" % int(round(delta.days+delta.seconds/86400.0))
+	elif delta.seconds+(delta.days*86400) > (86400):
 		return '1 day ago'
 	elif delta.seconds > (5400):
 		h = round(delta.seconds / 3600)

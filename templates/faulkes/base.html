@@ -34,7 +34,7 @@
 			<div id="lcogt-bar">
 				{% block login %}<div id="login" class="block"></div>{% endblock %}
 				<div>
-					<a href="http://lcogt.net/" title="LCOGT Home" rel="home">Las Cumbres Observatory Global Telescope Network</a>
+					<a href="http://lcogt.net/" title="LCOGT Home" rel="home"><span class="l">L</span><span class="wide">as </span><span class="c">C</span><span class="wide">umbres </span><span class="o">O</span><span class="wide">bservatory </span><span class="g">G</span><span class="wide">lobal </span><span class="t">T</span><span class="wide">elescope Network</span></a>
 				</div>
 			</div>
 
@@ -99,7 +99,7 @@
 						<div class="row rowlast gray-7-grad">
 							<div class="sixcol lastcol">
 {% if sites %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bysite">
 									<div class="padder">
 
 
@@ -111,7 +111,7 @@
 								</div>
 {% endif %}
 {% if telescopes %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bytelescope">
 									<div class="padder">
 										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
 										<ul>
@@ -121,7 +121,7 @@
 								</div>
 {% endif %}
 {% if categories %}
-								<div class="nogaps twocol">
+								<div class="nogaps twocol" id="bycategory">
 									<div class="padder">
 										<h2>{% block categories-list-title %}<a href="{% url rtiadminsite.faulkes.views.index %}category/">By category</a>:{% endblock %}</h2>
 										<ul>
