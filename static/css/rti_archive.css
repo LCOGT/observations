@@ -520,4 +520,18 @@ div.time {
 	.pager a { padding: 4px 0.25em; }
 	div.show-details { max-width: 85%; border: 1px solid #999999; }
 	div.searchbox { margin-top: 16px; float: none;  text-align: center; }
+	div.searchbox input.searchbox {
+		width: 7.5em;
+		clear: both;
+		margin-bottom: 8px;
+	}
+
+}
+@media (max-width: 320px), (max-device-width: 320px) {
+	div.searchbox input.searchbox, div.searchboxbig input.searchbox, div.searchbox .searchbtn, div.searchboxbig .searchbtn {
+		-webkit-border-radius: 8px;
+		-moz-border-radius: 8px;
+		border-radius: 8px;
+		margin-bottom: 8px;
+	}
 }
