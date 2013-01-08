@@ -481,6 +481,12 @@ div.time {
 		max-height: auto;
 	}
 	.thumb a.more-info-hint { right: 2.5%; max-width: 50%; }
+	div.time {
+		float: none;
+		margin-top: 0px;
+		margin-bottom: 8px;
+	}
+
 }
 @media (max-width: 800px), (max-device-width: 800px) {
 	.fouroften, .sixoften { width: 100%; display: block; }
