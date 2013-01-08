@@ -448,7 +448,14 @@ ol ol { list-style-type: decimal; }
 .temporaltxt { border-top:1px solid #808080; padding-top:2px;padding-right:4px;font-size:0.8em;display:inline-block;height:2em;width:34px;text-align:center;vertical-align:top;color:#606060; }
 .startyear { border-left: 1px solid #606060; width:33px; }
 .temporalbar, .exposurebar { background-color: #3366dd; color: white; }
+div.time {
+	color: #808080;
+	float: right;
+	margin-top: -1.6em;
+	padding: 0;
+}
 
+/* Responsive styling */
 @media (max-width: 1024px), (max-device-width: 1024px) { 
 	.fouroften, .sixoften { max-width: 100%; }
 	.sixoften { width: 58%; margin-right: 2%; }

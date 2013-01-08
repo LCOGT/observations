@@ -10,7 +10,8 @@
 
 						<div class="row">
 							<h2><a href="{% url rtiadminsite.faulkes.views.index %}recent/">Most recent observations</a></h2>
-							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<div class="time"></div>
+							<ul class="observation-results" data-json="{% url rtiadminsite.faulkes.views.index %}search.json" data-update="add" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% for o in latest %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
 								<div class='thumb' about='{{ o.link_obs }}'>

@@ -12,7 +12,7 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} has been using the network since {{ start }}. They have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was {{ mostrecent }}.{% endif %}</p>
+							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} has been using the network since {{ start }}. They have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was <span class="mostrecent">{{ mostrecent }}</span>.{% endif %}</p>
 {% if input.bins %}
 							<p class="skip-link"><em><a href="#results">Skip to observations</a></em></p>
 							<div class="gray-7-bg closeable">
@@ -34,7 +34,7 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul id='results' class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul id='results' class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% for o in obs %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
 								<div class='thumb' about='{{ o.link_obs }}'>
