@@ -141,14 +141,14 @@ ul.rti-fits-list {
 
 
 /* CSS for results thumbnails */
-ul.observation-results {
+.observation-results {
     overflow:auto;
 	list-style: none!important;
 	list-style-type: none!important;
 	margin: 0px;
 	padding: 0px;
 }
-ul.observation-results li {
+.observation-results li {
 	padding:0px;
 	display: inline;
 	float: left;
@@ -467,8 +467,8 @@ div.time {
 	ul.stream img { max-width: 100%;}
 	.exposureplot { width: 100%; }
 
-	ul.observation-results li { width: 25%; margin-right: 0px; }
-	ul.observation-results li:nth-child(4n+1) { clear: both; }
+	.observation-results li { width: 25%; margin-right: 0px; }
+	.observation-results li:nth-child(4n+1) { clear: both; }
 	.thumbnail {
 		width: 100%;
 		height: auto;
@@ -480,6 +480,7 @@ div.time {
 		max-height: none;
 		max-height: auto;
 	}
+	
 	.thumb a.more-info-hint { right: 2.5%; max-width: 50%; }
 	div.time {
 		float: none;
@@ -495,15 +496,15 @@ div.time {
 	.temporalstats { margin-right:0px; width: 100%; }
 	.temporalitem { width: 8.33%; font-size: 0.9em; }
 	.temporalnum,.temporalbar,.temporaltxt { width: 100%; padding-right: 0px; }
-	ul.observation-results li { width: 33%; margin-right: 0px; }
-	ul.observation-results li:nth-child(4n+1) { clear: none; }
-	ul.observation-results li:nth-child(3n+1) { clear: both; }
+	.observation-results li { width: 33%; margin-right: 0px; }
+	.observation-results li:nth-child(4n+1) { clear: none; }
+	.observation-results li:nth-child(3n+1) { clear: both; }
 }
 
 @media (max-width: 480px), (max-device-width: 480px) {
-	ul.observation-results li { width: 50%; margin-right: 0px; }
-	ul.observation-results li:nth-child(3n+1) { clear: none; }
-	ul.observation-results li:nth-child(2n+1) { clear: both; }
+	.observation-results li { width: 50%; margin-right: 0px; }
+	.observation-results li:nth-child(3n+1) { clear: none; }
+	.observation-results li:nth-child(2n+1) { clear: both; }
 	.thumbnail {
 		width: 100%;
 		height: auto;
@@ -540,4 +541,12 @@ div.time {
 		border-radius: 8px;
 		margin-bottom: 8px;
 	}
+}
+@media (max-width: 280px), (max-device-width: 280px) {
+	.observation-results li { width: 100%; margin-right: 0px; clear: both; }
+	.observation-results .thumbnail { width: 100%; height: auto; text-align: center; }
+	.observation-results .thumb img { max-width: 100%; width: 100%; max-height: none; max-height: auto; }
+	.observation-results li:nth-child(1n) .thumb .more-info-hint { right: 0%; max-width: 50%; }
+	.observation-results .thumb p { display: none; }
+
 }
