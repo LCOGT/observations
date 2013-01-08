@@ -416,9 +416,10 @@ ul.stream li.current img {
 .Spatial-Equinox,.Spatial-CoordinateFrame { display: none; }
 .pager {
 	display:block;
-	height: 16px;
+	height: auto;
 	text-align: center;
 	margin-bottom: 8px;
+	line-height: 2em;
 }
 .pager .older { float: right; }
 .pager a {
