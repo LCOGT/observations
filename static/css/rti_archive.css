@@ -501,7 +501,7 @@ div.time {
 	.observation-results li:nth-child(3n+1) { clear: both; }
 }
 
-@media (max-width: 480px), (max-device-width: 480px) {
+@media (max-width: 500px), (max-device-width: 500px) {
 	.observation-results li { width: 50%; margin-right: 0px; }
 	.observation-results li:nth-child(3n+1) { clear: none; }
 	.observation-results li:nth-child(2n+1) { clear: both; }
