@@ -487,7 +487,7 @@ div.time {
 		max-height: auto;
 	}
 	
-	.thumb a.more-info-hint { right: 2.5%; max-width: 90%; }
+	.thumb a.more-info-hint { right: 2.5%; max-width: 90%; line-height: 1.5em; padding: 4px 8px; }
 	div.time {
 		float: none;
 		margin-top: 0px;
@@ -534,7 +534,6 @@ div.time {
 	div.show-details div, div.show-details time { margin-top: 4px; display: block; }
 	div.show-details-close { margin-top: -8px!important; margin-right: -8px!important; padding: 8px 12px; }
 	div.show-details img { float: none; }
-	.thumb a.more-info-hint { line-height: 1.5em; padding: 4px 8px; }
 	div.searchbox { margin-top: 16px; float: none;  text-align: center; }
 	div.searchbox input.searchbox {
 		width: 7.5em;
@@ -557,7 +556,7 @@ div.time {
 	.observation-results li { width: 100%; margin-right: 0px; clear: both; }
 	.observation-results .thumbnail { width: 100%; height: auto; text-align: center; }
 	.observation-results .thumb img { max-width: 100%; width: 100%; max-height: none; max-height: auto; }
-	.observation-results li:nth-child(1n) .thumb .more-info-hint { right: 0%; max-width: 50%; }
+	.observation-results li:nth-child(1n) .thumb .more-info-hint { right: 0%; }
 	.observation-results .thumb p { display: none; }
 
 }
