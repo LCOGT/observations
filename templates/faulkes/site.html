@@ -42,7 +42,7 @@
 
 {% block main-content %}
 						<div class="row {% if n < 1 %}lastrow{% endif %}">
-							<p>{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}:{% else %}We have not yet taken any public observations from this site.{% endif %}</p>
+							<p>{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}.{% else %}We have not yet taken any public observations from this site.{% endif %} You can also check out the latest <a href="http://lcogt.net/weather/{{ site.code }}">weather status at {{ site.name }}</a>.</p>
 							{% if input.pager.start < 1 %}<div id="starmap" class="sixcol" style="height:300px;"></div>{% endif %}
 						</div>{% if n > 1 %}
 						<div class="row lastrow">
