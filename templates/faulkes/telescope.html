@@ -42,6 +42,7 @@
 						<div class="row">
 							<p>Below are the most recent observations taken by {% if telescope.drupalnode %}<a href="http://lcogt.net/node/{{ telescope.drupalnode }}">{{ telescope.name }}</a>{% else %}{{ telescope.name }}{% endif %} based at {%if telescope.site.drupalnode %}<a href="http://lcogt.net/node/{{ telescope.site.drupalnode }}">{{ telescope.site.name }}</a>{% else %}{{ telescope.site.name }}{% endif %}:</p>
 							{% if input.pager.start < 1 %}<div id="starmap" class="sixcol" style="height:300px;"></div>{% endif %}
+{% include "faulkes/summary.html" with input=input user=user %}
 						</div>
 						<div class="row">
 							{% if pager %}
