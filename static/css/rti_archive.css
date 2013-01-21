@@ -198,13 +198,16 @@ li.end-of-line {
 	opacity: 1.0;
 	filter:alpha(opacity=100);
 }
-.thumb p {
-	margin: 4px 0px 0px 0px!important;
+.thumb .thumb-caption {
 	padding: 0px;
 	text-align: center;
 	font-size:0.9em;
+	width: 90%;
+	margin: auto; 
+	margin-top: 4px;
 }
 .thumb .more-info { display: none; }
+.thumb .ellipsis { white-space:nowrap; overflow: hidden; text-overflow: ellipsis; }
 #virtualskyinfobox{
 	font-size: 12px;
 	display:none;

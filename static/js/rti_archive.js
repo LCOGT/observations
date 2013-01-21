@@ -111,15 +111,6 @@ $(document).ready(function(){
 		// Javascript for results thumbnails
 		$(".observation-results li").each(function(index) {
 			addMoreInfoHint($(this),index);
-			$(this).find(".observer").each(function(){
-				var html = $(this).html()
-				if(html.length > 13) $(this).html(html.substring(0,11)+"...");
-			});
-			$(this).find(".title").each(function(){
-				var html = $(this).html()
-				if(html.length > 17) $(this).html(html.substring(0,15)+"...");
-			});
-
 		});
 	}
 	function makeObservation(o){
@@ -127,7 +118,7 @@ $(document).ready(function(){
 		out += '<li class="onecol">';
 		out += '	<div class="thumb" about="'+o.about+'">';
 		out += '		<span class="thumbnail"><a href="'+o.about+'"><img src="'+o.image.thumb+'" alt="'+o.label+'" /></a></span>';
-		out += '		<p><span class="title" property="UCD:obs" title="'+o.label+'">'+o.label+'</span><br />By <a href="'+o.observer.about+'" class="observer" title="'+o.observer.label+'" property="UCD:obs.observer">'+o.observer.label+'</a></p>';
+		out += '		<div class="thumb-caption"><div class="title ellipsis" property="UCD:obs" title="'+o.label+'">'+o.label+'</div><div class="ellipsis">By <a href="'+o.observer.about+'" class="observer" title="'+o.observer.label+'" property="UCD:obs.observer">'+o.observer.label+'</a></div></div>';
 		out += '		<div class="more-info">';
 		out += '			<div class="name">Title: <span property="dc:title">'+o.label+'</span></div>';
 		out += '			<div class="position">RA: '+o.ra+', Dec: '+o.dec+'<br /><span style="font-size:0.7em;">(View coordinates in <a href="http://server1.wikisky.org/v2?ra='+o.ra+'&amp;de='+o.dec+'&amp;zoom=6&amp;img_source=astrophoto">Wikisky</a> or <a href="http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra='+o.ra+'&amp;dec='+o.dec+'&amp;zoom=3">WorldWideTelescope</a>)</span></div>';
