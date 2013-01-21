@@ -39,10 +39,10 @@ $(document).ready(function(){
 		var link = li.find('a').attr('href');
 		var observer = li.find('.observer').attr('title');
 		
-		if($('.show-details').size() == 0) $('body').append('<div class="show-details"></div>');
+		if($('.show-details').size() == 0) $('body').append('<div class="show-details"><div class="show-details-inner"></div></div>');
 		var img = img.replace("_120.jpg","_150.jpg");
 		var img_full = img.replace("_120.jpg",".jpg");
-		$('.show-details').html('<div class="show-details-close">&times;</div><a href="'+link+'" title="Click for full size version"><img src="'+img+'" style="width:150px;height:150px;" /></a>'+$('.observation-results li .more-info').eq(idx).html()+'<div class="observer">Observer: <a href="'+$('a.observer').eq(idx).attr('href')+'">'+observer+'</a></div>');
+		$('.show-details-inner').html('<div class="show-details-close">&times;</div><a href="'+link+'" title="Click for full size version"><img src="'+img+'" style="width:150px;height:150px;" /></a>'+$('.observation-results li .more-info').eq(idx).html()+'<div class="observer">Observer: <a href="'+$('a.observer').eq(idx).attr('href')+'">'+observer+'</a></div>');
 		centreDiv('.show-details');
 		if ($('.show-details').is(':visible')) $('.show-details').fadeOut("fast");
 		else $('.show-details').fadeIn("fast");
