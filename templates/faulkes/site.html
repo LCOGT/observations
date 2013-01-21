@@ -41,21 +41,19 @@
 {% block sites-list-title %}Other sites:{% endblock %}
 
 {% block main-content %}
-						<div class="row">
-							<p>{% if telescopes %}{% else %}There are currently no operational telescopes at {{ site.name }}. {% endif %}{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}:{% else %}We have not yet taken any public observations from this site.{% endif %}</p>
+						<div class="row {% if n < 1 %}lastrow{% endif %}">
+							<p>{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}:{% else %}We have not yet taken any public observations from this site.{% endif %}</p>
 							{% if input.pager.start < 1 %}<div id="starmap" class="sixcol" style="height:300px;"></div>{% endif %}
-						</div>
+						</div>{% if n > 1 %}
 						<div class="row lastrow">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-
 							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-
-						</div>
+						</div>{% endif %}
 {% endblock %}
