@@ -60,10 +60,10 @@ Slideshow.prototype.reposition = function(){
 	var l = (($(window).width()-$(window).height())/2);
 	$('#'+this.id+' .controls').css({'right':'0px'});
 	$('#'+this.id+' .bigpicture img').css({'height':$(window).height()});
-	$('#'+this.id+' .bigpicture').css({'padding-left':l+'px'});
+	$('#'+this.id+' .bigpicture').css({'padding-left':(l >= 0 ? l : 0)+'px','margin-left':(l < 0 ? l : 0)+'px'});
 	var w = $(window).width()-($('#'+this.id+' .scrollLeft').outerWidth()+$('#'+this.id+' .scrollRight').outerWidth())-25;
 	$('#'+this.id+' .thumbnails').css({width:w+'px'});
-	$('#'+this.id+' .info').css({left:l+'px'});
+	$('#'+this.id+' .info').css({left:(l >= 0 ? l : 0)+'px'});
 	$('#'+this.id+' .loadingDiv').css({left:'5px',top:'5px'});
 }
 Slideshow.prototype.toggle = function(){
