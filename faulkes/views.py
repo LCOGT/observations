@@ -15,6 +15,7 @@ from django.contrib.admin.models import LogEntry, CHANGE
 from datetime import date,timedelta,datetime
 from string import replace
 from django.utils import simplejson
+from email.utils import parsedate_tz
 import re
 import math
 import urllib2
@@ -296,6 +297,16 @@ def view_group(request,mode):
 			return render_to_response('faulkes/group.html', data,context_instance=RequestContext(request))
 
 
+def since(request):
+	since = request.GET.get('since','')
+	if since != '':
+		try:
+			sd = parsedate_tz(since)
+			sd = "%s%02d%02d%02d%02d%02d" % (sd[0],sd[1],sd[2],sd[3],sd[4],sd[5])
+		except:
+			sd = ''
+	return sd
+
 
 def search(request):
 	input = input_params(request)
@@ -305,7 +316,7 @@ def search(request):
 	months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 	days = range(1,32)
 	ago = now + timedelta(-30)
-	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax','')}
+	form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax',''),'since':request.GET.get('since','')}
 	obs = []
 	if re.search('e.g.',form['query']):
 		form['query'] = ''
@@ -325,6 +336,10 @@ def search(request):
 			sd = "%s%02d%02d000000" % (form['syear'],form['smon'],form['sday'])
 			ed = "%s%02d%02d235959" % (form['eyear'],form['emon'],form['eday'])
 			obs = obs.filter(whentaken__gte=sd,whentaken__lte=ed)
+		if form['since'] != '':
+			sd = since(request)
+			if sd != '':
+				obs = obs.filter(whentaken__gt=sd)
 		if form['user'] != '':
 			schools = Registrations.objects.filter(schoolname__icontains=form['user']).values_list('schoolloginname',flat=True)
 			obs = obs.filter(schoolloginname__in=list(schools))
@@ -1377,7 +1392,7 @@ def build_pager(request,n,avm=''):
 		eobs = sobs + n_per_page
 		if eobs > n:
 			eobs = n
-		return { 'next':next,'prev':prev,'html':output,'start': sobs,'end':eobs}
+		return { 'next':next,'prev':prev,'html':output,'start': sobs,'end':eobs,'page':page }
 
 
 def build_observations_json(obs):

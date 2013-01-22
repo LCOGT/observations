@@ -1,9 +1,8 @@
 {% load extra_options %}
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-
 <head>
+{% block headercomment %}{% endblock %}
 	<title>{%block header %}{%endblock%} | LCOGT</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="DC.Title" content="Las Cumbres Observatory Global Telescope Network" />
@@ -32,7 +31,8 @@
 	<div id="page-wrapper">
 		<div id="page">
 			<div id="lcogt-bar">
-				{% block login %}<div id="login" class="block"></div>{% endblock %}
+				{% block login %}<div id="login" class="block"></div>
+{% endblock %}
 				<div>
 					<a href="http://lcogt.net/" title="LCOGT Home" rel="home"><span class="l">L</span><span class="wide">as </span><span class="c">C</span><span class="wide">umbres </span><span class="o">O</span><span class="wide">bservatory </span><span class="g">G</span><span class="wide">lobal </span><span class="t">T</span><span class="wide">elescope Network</span></a>
 				</div>
@@ -140,7 +140,7 @@
 
 					<div class="clear-block"></div>
 					<div id="footer">
-						Copyright &copy; 2012 Las Cumbres Observatory Global Telescope Network. All rights reserved.
+						Copyright &copy; 2013 Las Cumbres Observatory Global Telescope Network. All rights reserved.
 						<ul class="menu">
 							<li class="first leaf"><a title="Contact LCOGT" href="http://lcogt.net/contact">Contact</a></li>
 							<li class="leaf"><a href="http://lcogt.net/images">Image Galleries</a></li>

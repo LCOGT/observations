@@ -22,3 +22,10 @@
 					</div>
 {% endif %}
 {% endblock %}
+
+{% block headercomment %}	<!--
+		The observations included in this page are also available in these formats:
+		JSON - {% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}
+		RSS - {% url rtiadminsite.faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}
+		Google Earth - {% url rtiadminsite.faulkes.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}
+	-->{% endblock %}

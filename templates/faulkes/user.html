@@ -12,21 +12,8 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} has been using the network since {{ start }}. They have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was {{ mostrecent }}.{% endif %}</p>
-{% if input.bins %}
-							<p class="skip-link"><em><a href="#results">Skip to observations</a></em></p>
-							<div class="gray-7-bg closeable">
-								<div class="padded">
-									<h2>Summary</h2>
-									<div class="temporalplot">
-										<div class="temporalbars">
-{% for b in input.bins reversed %}											<div class="temporalitem"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 80 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?user={{user}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 80 %}px;"></div><div class="temporaltxt{% if b.m = 1 %} startyear{% endif %}" style="{% if forloop.last %}padding-right:0px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div></div>{% endfor %}
-											<div style="clear:both;"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-{% endif %}
+							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} has been using the network since {{ start }}. They have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was <span class="mostrecent">{{ mostrecent }}</span>.{% endif %}</p>
+{% include "faulkes/summary.html" with input=input user=user %}
 						</div>
 						<div class="row lastrow">
 {% block list %}
@@ -34,24 +21,8 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul id='results' class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% for o in obs %}
-							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
-								<div class='thumb' about='{{ o.link_obs }}'>
-									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
-									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
-					
-									<div class='more-info'>
-										<div class='name'>Title: <span property='dc:title'>{{ o.skyobjectname }}</span></div>
-										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
-										<div class='telescope'>Telescope: {{ o.telescope.name }}</div>					
-										<div class='filter'>Filter: {{ o.filter }}</div>
-										<div class='exposure'>Exposure: {{ o.exposuresecs }} s (total)</div>
-										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
-									</div>
-								</div>
-							</li>
-{% endfor %}
+							<ul id='results' class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>

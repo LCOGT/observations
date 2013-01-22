@@ -1,12 +1,12 @@
 {% extends 'faulkes/base.html' %}
 {% load faulkes_extras %}
 
+
 {% block script-content %}
 	<meta http-equiv="X-UA-Compatible" content="IE=9" />
 	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
-	<script type="text/javascript" src="http://lcogt.net/virtualsky/embed/virtualsky-0.3.8.js"></script>
-	<script>
-
+	<script type="text/javascript" src="http://lcogt.net/virtualsky/embed/virtualsky.min.js"></script>
+	<script type="text/javascript">
 	function spinOff(){
 		planetarium.az_step = 0;
 		if(typeof timer_az!='undefined') clearTimeout(timer_az);
@@ -19,28 +19,12 @@
 		$.getJSON('{{ link }}.json?callback=?',function(data) {
 			var obs = data.observation;
 			for(var i = 0; i < obs.length ; i++){
-				relative = relative_time(new Date(Date.parse(obs[i].time.creation)))
+				relative = relative_time_short(new Date(Date.parse(obs[i].time.creation)))
 				a = planetarium.addPointer({ra:obs[i].ra,dec:obs[i].dec,label:obs[i].label+' ('+relative+')',img:obs[i].image.thumb,url:obs[i]._about,credit:obs[i].observer.label,colour:'rgb(255,255,255)'})
 			}
 			planetarium.draw();
 		});
 	};
-	
-	function relative_time(parsed_date) {
-		var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
-		var delta = parseInt((relative_to.getTime() - parsed_date) / 1000);
-		//delta = delta - (relative_to.getTimezoneOffset() * 60);
-		if (delta < 60) return 'less than a minute ago';
-		else if(delta < 120) return 'about a minute ago';
-		else if(delta < (45*60)) return (parseInt(delta / 60)).toString() + ' minutes ago';
-		else if(delta < (90*60)) return 'about an hour ago';
-		else if(delta < (24*60*60)) {
-			h = (parseInt(delta / 3600)).toString()
-			if(h == 1) return 'about ' + h + ' hour ago';
-			else return 'about ' + h + ' hours ago';
-		} else if(delta < (48*60*60)) return '1 day ago';
-		else return (parseInt(delta / 86400)).toString() + ' days ago';
-	}
 	</script>
 {% endblock %}
 
@@ -57,38 +41,19 @@
 {% block sites-list-title %}Other sites:{% endblock %}
 
 {% block main-content %}
-						<div class="row">
-							<p>{% if telescopes %}{% else %}There are currently no operational telescopes at {{ site.name }}. {% endif %}{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}:{% else %}We have not yet taken any public observations from this site.{% endif %}</p>
+						<div class="row {% if n < 1 %}lastrow{% endif %}">
+							<p>{% if n > 1 %}Below are the most recent observations taken from {%if site.drupalnode %}<a href="http://lcogt.net/node/{{ site.drupalnode }}">{{ site.name }}</a>{% else %}{{ site.name }}{% endif %}.{% else %}We have not yet taken any public observations from this site.{% endif %} You can also check out the latest <a href="http://lcogt.net/weather/{{ site.code }}">weather status at {{ site.name }}</a>.</p>
 							{% if input.pager.start < 1 %}<div id="starmap" class="sixcol" style="height:300px;"></div>{% endif %}
-						</div>
+						</div>{% if n > 1 %}
 						<div class="row lastrow">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-
-							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% for o in obs %}
-							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
-								<div class='thumb' about='{{ o.link_obs }}'>
-									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
-									<p><span class="title" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</span><br />By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></p>
-					
-									<div class='more-info'>
-										<div class='name'>Title: <span property='dc:title'>{{ o.skyobjectname }}</span></div>
-										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
-										<div class='telescope'>Telescope: {{ o.telescope.name }}</div>					
-										<div class='filter'>Filter: {{ o.filter }}</div>
-										<div class='exposure'>Exposure: {{ o.exposuresecs }} s</div>
-										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
-
-									</div>
-								</div>
-							</li>
-{% endfor %}
+							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-
-						</div>
+						</div>{% endif %}
 {% endblock %}
