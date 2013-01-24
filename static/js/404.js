@@ -24,7 +24,7 @@ function four0fourResize(){
 function fourOfour(img,url,observer){
 	$('#main').css({ "background":"url('"+($(window).width() > 400 ? img.about : img.thumb)+"')","background-size": "100% auto" });
 	if($('.404msg').length == 0) $('.rowfirst p').append('<span class="404msg"></span>');
-	$('.404msg').html(' To make up for your disappointment, here\'s an observation of <a href="http://lcogt.net/observations/search?query=NGC+404" class="404link">NGC 404</a> taken by <a href="'+observer.about+'">'+observer.label+'</a> using our network.');
+	$('.404msg').html(' To make up for some of your disappointment, here\'s an observation of <a href="http://lcogt.net/observations/search?query=NGC+404" class="404link">NGC 404</a> taken by <a href="'+observer.about+'">'+observer.label+'</a> using our network.');
 	$('a.404link').attr('href',url);
 	$('#main, h1').css({'color':'white'});
 	$('.404msg a').css({'color':'#dee8ff'});
