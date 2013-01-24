@@ -38,7 +38,7 @@
 {% block main-content %}
 {% if n > 0 %}
 						<div class="row">
-							<p>There are {{ n }} observations matching your search. Results are sorted with the newest observations first.</p>
+							<p>There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{% if n > 1 %} Newest observations are shown first.{% endif %}{% if input.avmcode != "" %} You could also search for <a href="{% url rtiadminsite.faulkes.views.index %}category/{{ input.avmcode }}">{{ input.avmname }}</a>.{% endif %}</p>
 						</div>
 						
 						<div class="row">
@@ -65,7 +65,6 @@
 			<div class="row">
 				<fieldset>
 					<legend>By title:</legend>
-					<!--<label for="edit-ObName">Search by title: </label>-->
 					<div class="twocol">
 						<p class="gray-5">The name of a single astronomical object e.g. &quot;<em>Orion Nebula</em>&quot;. This is a simple title search so <em>Saturn</em> would match both &quot;<em>Saturn</em>&quot; and &quot;<em>NGC7009 (Saturn Nebula)</em>&quot;.</p>
 					</div>

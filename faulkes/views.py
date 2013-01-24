@@ -450,14 +450,36 @@ def search(request):
 	input['title'] = "Search Results"
 	input['link'] = 'search'
 	input['linkquery'] = input['query']
+	input['form'] = form
 	input['description'] = 'Search results (LCOGT)'
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
+	
 
 	if(n > n_per_page):
 		obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
 	else:
 		obs = build_observations(obs)
+
+
+	# If they searched for a phrase we will guess what category these observations fit into
+	input['avmcode'] = "";
+	if(form['query'] != ""):
+		prev = "            ";
+		# Find shorted AVM code
+		for o in obs:
+			if(o['avmcode'] and len(o['avmcode']) < len(prev)):
+				input['avmcode'] = o['avmcode']
+				prev = o['avmcode']
+		input['avmcode'] = re.sub(r"\;(.*)$",'',input['avmcode'])
+		# If we are at the 4th level we'll step back up to 3rd
+		input['avmcode'] = re.sub(r"(\.[0-9]\.[0-9])\.[0-9]$",r"\1",input['avmcode'])
+		if(input['avmcode']!=""):
+			try:
+				input['avmname'] = categorylookup[input['avmcode']]
+			except:
+				input['avmname'] = "";
+
 
 	if input['doctype'] == "json":
 		return view_json(request,build_observations_json(obs),input)
@@ -876,6 +898,10 @@ def view_category(request,category):
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
 
+
+	# Work out the AVM categories above and below the current level
+	input = getCategoryLevel(avm,input)
+
 	if(n > n_per_page):
 		obstats = obstats[input['pager']['start']:input['pager']['end']]
 
@@ -913,8 +939,6 @@ def view_avm(request,avm):
 	obstats = ObservationStats.objects.filter(avmcode__regex=r'(^|;)%s' % avmtemp).order_by('-imagearchive__whentaken')#.order_by('-views')
 	n = obstats.count()
 
-	
-
 	if avm in categorylookup:
 		category = categorylookup[avm]
 	else:
@@ -927,6 +951,9 @@ def view_avm(request,avm):
 	input['perpage'] = n_per_page
 	input['pager'] = build_pager(request,n)
 
+	# Work out the AVM categories above and below the current level
+	input = getCategoryLevel(avm,input)
+
 	if(n > n_per_page):
 		obstats = obstats[input['pager']['start']:input['pager']['end']]
 
@@ -936,7 +963,6 @@ def view_avm(request,avm):
 	obs = build_observations(obs)
 
 
-	
 	if input['doctype'] == "json":
 		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
@@ -1238,6 +1264,32 @@ def input_params(request):
 	
 
 	return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
+
+
+def getCategoryLevel(avm,input):
+
+	# Work out the AVM categories above and below the current level
+	input['avmup'] = []
+	input['avmdn'] = []
+
+	if(avm):
+		avm = str(avm)
+		avmup = avm
+		if(re.search(r"\.",avmup)):
+			while(re.search(r"\.",avmup)):
+				avmup = re.sub(r"\.[0-9]$","",avmup)
+				try:
+					nm = categorylookup[avmup]
+				except:
+					nm = "";
+				input['avmup'].insert(0,{'code':avmup,'name':nm})
+		for c in categorylookup:
+			if(re.match(avm,c)):
+				print avm,c
+			if(re.match(avm,c) and c != avm and len(c)==len(avm)+2):
+				input['avmdn'].append({'code':c,'name':categorylookup[c]})
+
+	return input
 
 
 
