@@ -4,10 +4,13 @@
 {% block header %}404 Error: Missing{% endblock %}
 {% block title %}404 Error: Missing{% endblock %}
 {% block search %}{% endblock %}
+{% block script-content %}
+	<script type="text/javascript" src="{{MEDIA_URL}}js/404.js"></script>
+{% endblock %}
 
 {% block main-content %}
 	<div class="row rowfirst">
-		<p>This address does not seem to have any content. You may want to go to the <a href="/observations/">main observations page</a>.</p>
+		<p>The content you have requested has either moved or is missing.</p>
 	</div>
 
 {% endblock %}
