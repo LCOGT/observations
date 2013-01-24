@@ -459,7 +459,6 @@ def search(request):
 	else:
 		obs = build_observations(obs)
 
-
 	if input['doctype'] == "json":
 		return view_json(request,build_observations_json(obs),input)
 	elif input['doctype'] == "kml":
@@ -1489,7 +1488,7 @@ def view_json(request,obs,config):
 	if 'exposure' in config:
 		response["exposure"] = config['exposure']
 	
-	s = simplejson.dumps(response, indent=8,sort_keys=True)
+	s = simplejson.dumps(response, indent=1,sort_keys=True)
 	output = '\n'.join([l.rstrip() for l in  s.splitlines()])
 	if 'callback' in config and config['callback'] != "":
 		output = config['callback']+"("+output+")"
