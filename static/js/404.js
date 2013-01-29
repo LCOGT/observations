@@ -22,7 +22,7 @@ function four0fourResize(){
 	$('#main').css({'min-height':parseInt(h)+"px","background-position":"0 "+($(window).width() > 400 ? "center" : nh+"px")});
 }
 function fourOfour(img,url,observer){
-	$('#main').css({ "background":"url('"+($(window).width() > 400 ? img.about : img.thumb)+"')","background-size": "100% auto" });
+	$('#main').css({ "background":"url('"+($(window).width() > 400 ? img.about : img.thumb)+"')","background-color":"black","background-size": "100% auto" });
 	if($('.404msg').length == 0) $('.rowfirst p').append('<span class="404msg"></span>');
 	$('.404msg').html(' To make up for some of your disappointment, here\'s an observation of <a href="http://lcogt.net/observations/search?query=NGC+404" class="404link">NGC 404</a> taken by <a href="'+observer.about+'">'+observer.label+'</a> using our network.');
 	$('a.404link').attr('href',url);
