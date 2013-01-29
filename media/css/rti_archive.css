@@ -14,12 +14,10 @@ h1 {
 	width:360px;
 	height:300px;
 }
-
 #archive-buttons{
   clear:both;
   margin-left:50px;
 }
-
 #archive-daterange,
 #archive-objecttype,
 #archive-datetime,

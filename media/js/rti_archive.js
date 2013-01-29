@@ -3,6 +3,7 @@
 // A counter to keep track of how many js files we've loaded
 var loaded = 0;
 var obs_img = '';
+var search = '';
 
 $(document).ready(function(){
 
@@ -17,6 +18,7 @@ $(document).ready(function(){
 		}).blur(function(){
 			if($(this).val() == "") $(this).val($(this).attr('title')).css({'color':'#999'});
 		});
+		search = $('input.searchbox').closest('form').attr('action');
 	}
 	$(".closeable").prepend('<div style="float:right;" class="closer"><a href="#" class="close" title="Close">&times;</a></div>');
 	$(".closeable a.close").click(function(e){
@@ -53,7 +55,7 @@ $(document).ready(function(){
 	})
 
 
-	var lastUpdated = new Date(); //'Fri, 27 Apr 2012 11:13:06 +0000');
+	var lastUpdated = new Date(); //'Fri, 27 Apr 2012 11:22:53 +0000');
 	var timer = setInterval(updateObservations,60000);
 
 	// Get new observations
@@ -72,6 +74,7 @@ $(document).ready(function(){
 						var str = lastUpdated.toGMTString();
 						if($('.time').length > 0) $('.time').html('Updated <time datetime="'+str+'" title="'+str+'">'+str.substring(5,str.indexOf('GMT'))+'UTC</time>');
 						if(data == null) return;
+						if(typeof data.observation==="object" && !data.observation.length) data.observation = [data.observation]
 						if(data.observation.length > 0){
 							var d = new Date(data.observation[0].time.creation);
 							if($('.mostrecent').length > 0){
@@ -114,18 +117,20 @@ $(document).ready(function(){
 		});
 	}
 	function makeObservation(o){
+		var d = o.time.creation;
+		d = d.replace('+0000','UT');
 		var out = "";
 		out += '<li class="onecol">';
 		out += '	<div class="thumb" about="'+o.about+'">';
 		out += '		<span class="thumbnail"><a href="'+o.about+'"><img src="'+o.image.thumb+'" alt="'+o.label+'" /></a></span>';
 		out += '		<div class="thumb-caption"><div class="title ellipsis" property="UCD:obs" title="'+o.label+'">'+o.label+'</div><div class="ellipsis">By <a href="'+o.observer.about+'" class="observer" title="'+o.observer.label+'" property="UCD:obs.observer">'+o.observer.label+'</a></div></div>';
 		out += '		<div class="more-info">';
-		out += '			<div class="name">Title: <span property="dc:title">'+o.label+'</span></div>';
-		out += '			<div class="position">RA: '+o.ra+', Dec: '+o.dec+'<br /><span style="font-size:0.7em;">(View coordinates in <a href="http://server1.wikisky.org/v2?ra='+o.ra+'&amp;de='+o.dec+'&amp;zoom=6&amp;img_source=astrophoto">Wikisky</a> or <a href="http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra='+o.ra+'&amp;dec='+o.dec+'&amp;zoom=3">WorldWideTelescope</a>)</span></div>';
-		out += '			<div class="telescope">Telescope: '+o.instr.tel+'</div>';
+		out += '			<div class="name">Title: <a href="'+search+'?query='+o.label+'" property="dc:title">'+o.label+'</a></div>';
+		out += '			<div class="position">'+formatPosition(o.ra,o.dec)+'<br /><span style="font-size:0.7em;">(View coordinates in <a href="http://server1.wikisky.org/v2?ra='+o.ra+'&amp;de='+o.dec+'&amp;zoom=6&amp;img_source=astrophoto">Wikisky</a> or <a href="http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra='+o.ra+'&amp;dec='+o.dec+'&amp;zoom=3">WorldWideTelescope</a>)</span></div>';
+		out += '			<div class="telescope">Telescope: <a href="'+o.instr.about+'">'+o.instr.tel+'</a></div>';
 		out += '			<div class="filter">Filter: <a href="'+o.filter.about+'" title="'+o.filter.name+'">'+o.filter.name+'</a></div>';
 		out += '			<div class="exposure">Exposure: '+o.exposure+' s (total)</div>';
-		out += '			<time datetime="'+o.time.creation+'">Date: '+o.time.creation+'</time>';
+		out += '			<time datetime="'+o.time.creation+'">Date: '+d+'</time>';
 		out += '		</div>';
 		out += '	</div>';
 		out += '</li>';
@@ -142,7 +147,6 @@ $(document).ready(function(){
 		el.each(function(i){ updateTime($(this)); });
 	}
 	ticker = setInterval(updateTimes,30000);
-
 
 });
 
@@ -163,6 +167,24 @@ centreDiv = function(el){
 	var wide = $(window).width();
 	var tall = $(window).height();
 	$(el).css({left:(wide-$(el).outerWidth())/2,top:($(window).scrollTop()+(tall-$(el).outerHeight())/2)});
+}
+
+function formatPosition(ra,dec){
+	ra /= 15;
+	var ra_h = parseInt(ra);
+	var ra_m = parseInt((ra-ra_h)*60);
+	var ra_s = ((ra-ra_h-ra_m/60)*3600).toFixed(2);
+	if(ra_h < 10) ra_h = "0"+ra_h;
+	if(ra_m < 10) ra_m = "0"+ra_m;
+	if(ra_s < 10) ra_s = "0"+ra_s;
+	var dec_sign = (dec >= 0) ? "" : "-";
+	var dec_d = parseInt(Math.abs(dec));
+	var dec_m = parseInt((Math.abs(dec)-dec_d)*60);
+	var dec_s = ((Math.abs(dec)-dec_d-dec_m/60)*3600).toFixed(2);
+	if(Math.abs(dec_d) < 10) dec_d = "0"+dec_d;
+	if(dec_m < 10) dec_m = "0"+dec_m;
+	if(dec_s < 10) dec_s = "0"+dec_s;
+	return 'RA: '+ra_h+':'+ra_m+':'+ra_s+', Dec: '+dec_sign+dec_d+':'+dec_m+':'+dec_s+'';
 }
 
 // pd = parsed date
