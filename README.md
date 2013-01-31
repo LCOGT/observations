@@ -21,9 +21,10 @@ This is the part of the [LCOGT](http://lcogt.net/) site that aims to ensure ever
 * [/observations/category/5.5.2](http://lcogt.net/observations/category/5.5.2) - all results for a specific [AVM](http://www.virtualastronomy.org/avm_metadata.php) category
 * [/observations/map](http://lcogt.net/observations/map) - a heat map of observations within the past month
 
-The output format of groups of observations can be returned in a variety of formats:
+Groups of observations can be viewed in a variety of formats:
 
 * HTML - the default
+* HTML-based slideshow - add `/show` to the URL
 * [JSON](https://en.wikipedia.org/wiki/JSON) and [JSON-p](https://en.wikipedia.org/wiki/JSONP): add `.json` or `.json?callback=blah` to the URL
 * [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language): add `.kml` to the URL
 * [RSS](https://en.wikipedia.org/wiki/RSS): add `.rss` to the URL
