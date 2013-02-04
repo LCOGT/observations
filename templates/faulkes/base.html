@@ -73,12 +73,12 @@
 							</div>
 							<div class="twocol lastcol">{% block search %}
 								<div class="searchbox">
-									<form action='{% url rtiadminsite.faulkes.views.index %}search' method='GET'>
+									<form action='{% url faulkes.views.index %}search' method='GET'>
 										<input type='text' name='query' class='searchbox' title='e.g. NGC 2020' /><input type='submit' value='Search observations' class='searchbtn' />
-										<br /><span style='font-size:0.8em;'>[<a href="{% url rtiadminsite.faulkes.views.index %}search">advanced search</a>]</span>
+										<br /><span style='font-size:0.8em;'>[<a href="{% url faulkes.views.index %}search">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url rtiadminsite.faulkes.views.index %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href="{% url faulkes.views.index %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
 {% endif %}
 {% if n <= 1 %}
 									<div class="padder"></div>
@@ -105,7 +105,7 @@
 
 										<h2>{% block sites-list-title %}By site:{% endblock %}</h2>
 										<ul>
-{% for site in sites %}										<li><a href="{% url rtiadminsite.faulkes.views.index %}{{ site.code }}/">{{ site.name }}</a></li>{% endfor %}
+{% for site in sites %}										<li><a href="{% url faulkes.views.index %}{{ site.code }}/">{{ site.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>
@@ -115,7 +115,7 @@
 									<div class="padder">
 										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
 										<ul>
-{% for telescope in telescopes %}										<li><a href="{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/">{{ telescope.name }}</a></li>{% endfor %}
+{% for telescope in telescopes %}										<li><a href="{% url faulkes.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/">{{ telescope.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>
@@ -123,9 +123,9 @@
 {% if categories %}
 								<div class="nogaps twocol" id="bycategory">
 									<div class="padder">
-										<h2>{% block categories-list-title %}<a href="{% url rtiadminsite.faulkes.views.index %}category/">By category</a>:{% endblock %}</h2>
+										<h2>{% block categories-list-title %}<a href="{% url faulkes.views.index %}category/">By category</a>:{% endblock %}</h2>
 										<ul>
-{% for c in categories %}										<li><a href="{% url rtiadminsite.faulkes.views.index %}category/{{ c.link }}/">{{ c.name }}</a></li>{% endfor %}
+{% for c in categories %}										<li><a href="{% url faulkes.views.index %}category/{{ c.link }}/">{{ c.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>

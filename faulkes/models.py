@@ -1,6 +1,6 @@
 from django.db import models
 
-from rtiadminsite.wis.choices import *
+from wis.choices import *
 from datetime import datetime
 import time
 

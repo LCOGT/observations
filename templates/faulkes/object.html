@@ -6,25 +6,25 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; {{ object.name}}
+									<a href="{% url faulkes.views.index %}">Observations</a> &raquo; {{ object.name}}
 								</div>
 {% endblock %}
 
 {% block main-content %}
 						<div class="row">
-							{%if object.raval %}<p>Position: <a href="{% url rtiadminsite.faulkes.views.index %}search?RA={{ object.raval }}&DEC={{ object.decval }}&SR=3" title="Search for observations near these coordinates">RA: {{ object.raval|degreestohms }}, Dec: {{ object.decval|degreestodms }}</a>. {% endif %}{% if object.avm.code %}Category: <a href="{% url rtiadminsite.faulkes.views.index %}category/{{ object.avm.code }}">{{ object.avm.name|lowercase }}</a>. {% endif %}{%if object.raval %} Find out <a href="{{ object.service.url }}">more about {{ object.name }} from {{ object.service.name }}</a>. {% endif %}There are {{ n }} LCOGT observations tagged as {{ object.name }}.</p>
+							{%if object.raval %}<p>Position: <a href="{% url faulkes.views.index %}search?RA={{ object.raval }}&DEC={{ object.decval }}&SR=3" title="Search for observations near these coordinates">RA: {{ object.raval|degreestohms }}, Dec: {{ object.decval|degreestodms }}</a>. {% endif %}{% if object.avm.code %}Category: <a href="{% url faulkes.views.index %}category/{{ object.avm.code }}">{{ object.avm.name|lowercase }}</a>. {% endif %}{%if object.raval %} Find out <a href="{{ object.service.url }}">more about {{ object.name }} from {{ object.service.name }}</a>. {% endif %}There are {{ n }} LCOGT observations tagged as {{ object.name }}.</p>
 {% if input.exposure %}
 							<p class="skip-link"><em><a href="#results">Skip to observations</a></em></p>
 							<div class="gray-7-bg closeable">
 								<div class="padded">
 									<h2>Summary</h2>
-									{% if input.mostobservedby %}<p>{{ object.name }} was most observed by <a href="{% url rtiadminsite.faulkes.views.index %}user/{{ input.mostobservedby.id }}">{{ input.mostobservedby.name }}</a> ({{ input.mostobservedby.count }} observations)</p>{% endif %}
+									{% if input.mostobservedby %}<p>{{ object.name }} was most observed by <a href="{% url faulkes.views.index %}user/{{ input.mostobservedby.id }}">{{ input.mostobservedby.name }}</a> ({{ input.mostobservedby.count }} observations)</p>{% endif %}
 									{% if input.bins %}
 									<div class="temporalstats">
 										<p>A summary of all observations over the past year:</p>
 										<div class="temporalplot">
 											<div class="temporalbars">
-{% for b in input.bins reversed %}											<div class="temporalitem"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 60 %}px;">{% if b.count > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?query={{object.name}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 60 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div><div class="temporaltxt{% if b.m = 1 %} startyear{% endif %}" style="{% if forloop.last %}padding-right:0px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div></div>{% endfor %}
+{% for b in input.bins reversed %}											<div class="temporalitem"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 60 %}px;">{% if b.count > 0 %}<a href="{% url faulkes.views.index %}search/?query={{object.name}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 60 %}px;{% if not forloop.last %}margin-right:4px;{% endif %}"></div><div class="temporaltxt{% if b.m = 1 %} startyear{% endif %}" style="{% if forloop.last %}padding-right:0px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div></div>{% endfor %}
 												<div style="clear:both;"></div>
 											</div>
 										</div>
@@ -33,7 +33,7 @@
 									<div class="exposureplot">
 										<p>A summary of all exposure times for {{ object.name }}:</p>
 										<ul>
-											{% for range in input.exposure %}<li><div class="exposuretxt">{{ range.label }}</div><div class="exposurebar" style="width:{% widthratio range.observations input.exposuremax 60 %}%;"></div> <div class="exposurenum">{% if range.observations > 0 %}<a href="{% url rtiadminsite.faulkes.views.index %}search/?query={{object.name}}{% if range.min %}&expmin={{ range.min }}{% endif %}{% if range.max %}&expmax={{ range.max }}{% endif %}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ range.observations }}</a>{% endif %}</div></li>{% endfor %}
+											{% for range in input.exposure %}<li><div class="exposuretxt">{{ range.label }}</div><div class="exposurebar" style="width:{% widthratio range.observations input.exposuremax 60 %}%;"></div> <div class="exposurenum">{% if range.observations > 0 %}<a href="{% url faulkes.views.index %}search/?query={{object.name}}{% if range.min %}&expmin={{ range.min }}{% endif %}{% if range.max %}&expmax={{ range.max }}{% endif %}{% if object.avm.code %}&avm={{ object.avm.code }}{% endif %}">{{ range.observations }}</a>{% endif %}</div></li>{% endfor %}
 										</ul>
 									</div>
 									<div style="clear:both;"></div>

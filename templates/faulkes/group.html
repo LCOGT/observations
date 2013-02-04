@@ -7,7 +7,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; <a href="{% url rtiadminsite.faulkes.views.index %}{{ input.link }}">{{ input.title }}</a>
+									<a href="{% url faulkes.views.index %}">Observations</a> &raquo; <a href="{% url faulkes.views.index %}{{ input.link }}">{{ input.title }}</a>
 								</div>
 {% endblock %}
 
@@ -23,7 +23,7 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{% if link == 'recent' %}search{% else %}{{ link }}{% endif %}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="{% if link == 'recent' %}add{% else %}update{% endif %}" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url faulkes.views.index %}{% if link == 'recent' %}search{% else %}{{ link }}{% endif %}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="{% if link == 'recent' %}add{% else %}update{% endif %}" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 						</div>

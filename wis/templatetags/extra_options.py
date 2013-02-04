@@ -2,8 +2,8 @@ from django.template import Template, Library
 from django.contrib.admin.models import LogEntry
 from datetime import date, datetime, timedelta
 import time
-from rtiadminsite.wis.models import Registrations, Slots, EmailMessage, StatusUpdate
-from rtiadminsite.wis.choices import *
+from wis.models import Registrations, Slots, EmailMessage, StatusUpdate
+from wis.choices import *
 from string import find
 
 register = Library()

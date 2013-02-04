@@ -31,7 +31,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; <a href="{% url rtiadminsite.faulkes.views.index %}{{ telescope.site.code }}">{{ telescope.site.name }}</a> &raquo; {% if telescope.short %}{{ telescope.short }}{% else %}{{ telescope.name }}{% endif %}
+									<a href="{% url faulkes.views.index %}">Observations</a> &raquo; <a href="{% url faulkes.views.index %}{{ telescope.site.code }}">{{ telescope.site.name }}</a> &raquo; {% if telescope.short %}{{ telescope.short }}{% else %}{{ telescope.name }}{% endif %}
 								</div>
 {% endblock %}
 
@@ -49,7 +49,7 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}

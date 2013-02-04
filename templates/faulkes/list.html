@@ -1,7 +1,7 @@
 {% extends 'faulkes/base.html' %}
 
 {% block feeds %}
-	<link rel="alternate" type="application/rss+xml" title="{{ input.title }}" href="{% url rtiadminsite.faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}" />{% endblock %}
+	<link rel="alternate" type="application/rss+xml" title="{{ input.title }}" href="{% url faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}" />{% endblock %}
 
 {% block list %}
 		<ul>
@@ -15,9 +15,9 @@
 {% if n > 0 %}
 					<div class="row lastrow">
 							<p>Alternative outputs: 
-								<a title="View RSS feed" rel="alternate" type="application/xml" href="{% url rtiadminsite.faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}">RSS</a>,
-								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url rtiadminsite.faulkes.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}">Sky for Google Earth</a>, and
-								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}">JSON</a>
+								<a title="View RSS feed" rel="alternate" type="application/xml" href="{% url faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}">RSS</a>,
+								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url faulkes.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}">Sky for Google Earth</a>, and
+								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url faulkes.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}">JSON</a>
 							</p>
 					</div>
 {% endif %}
@@ -25,7 +25,7 @@
 
 {% block headercomment %}	<!--
 		The observations included in this page are also available in these formats:
-		JSON - {% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}
-		RSS - {% url rtiadminsite.faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}
-		Google Earth - {% url rtiadminsite.faulkes.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}
+		JSON - {% url faulkes.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}
+		RSS - {% url faulkes.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}
+		Google Earth - {% url faulkes.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}
 	-->{% endblock %}

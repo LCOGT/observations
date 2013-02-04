@@ -2,13 +2,13 @@
 {% for o in obs %}
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
 								<div class='thumb' about='{{ o.link_obs }}'>
-									<span class='thumbnail'><a href='{% url rtiadminsite.faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
-									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</div><div class="ellipsis">By <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></div></div>
+									<span class='thumbnail'><a href='{% url faulkes.views.index %}{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.skyobjectname }}' /></a></span>
+									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.skyobjectname }}'>{{ o.skyobjectname }}</div><div class="ellipsis">By <a href="{% url faulkes.views.index %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></div></div>
 					
 									<div class='more-info'>
-										<div class='name'>Title: <a href="{% url rtiadminsite.faulkes.views.search %}?query={{ o.skyobjectname }}" property='dc:title'>{{ o.skyobjectname }}</a></div>
+										<div class='name'>Title: <a href="{% url faulkes.views.search %}?query={{ o.skyobjectname }}" property='dc:title'>{{ o.skyobjectname }}</a></div>
 										<div class='position'>RA: {{ o.raval|degreestohms }}, Dec: {{ o.decval|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.raval }}&amp;de={{ o.decval }}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.raval }}&amp;dec={{ o.decval }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
-										<div class='telescope'>Telescope: <a href="{% url rtiadminsite.faulkes.views.index %}{{ o.link_tel }}">{{ o.telescope.name }}</a></div>
+										<div class='telescope'>Telescope: <a href="{% url faulkes.views.index %}{{ o.link_tel }}">{{ o.telescope.name }}</a></div>
 										<div class='filter'>Filter: <{% if o.filterprops.1 %}a href="http://lcogt.net/{{ o.filterprops.1 }}"{% else %}span{% endif %} title="{{ o.filter }}">{{ o.filterprops.0 }}</{% if o.filterprops.1 %}a{% else %}span{% endif %}></div>
 										<div class='exposure'>Exposure: {{ o.exposuresecs }} s (total)</div>
 										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>

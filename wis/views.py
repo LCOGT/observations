@@ -1,7 +1,7 @@
 # Create your views here.
 
-from rtiadminsite.wis.models import Slots, Registrations,EmailMessage, Alerts
-from rtiadminsite.wis.choices import usertypes, USER_TYPES,email_footer,email_sender
+from wis.models import Slots, Registrations,EmailMessage, Alerts
+from wis.choices import usertypes, USER_TYPES,email_footer,email_sender
 from django.utils.encoding import smart_unicode
 from django.utils import simplejson
 from django.http import HttpResponse,HttpResponseRedirect

@@ -6,7 +6,7 @@
 	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/zen/lcogt/favicon.ico" type="image/x-icon" />
 	<script type="text/javascript">
 	<!--
-		$(document).ready(function() { slides = new Slideshow({json:'{% url rtiadminsite.faulkes.views.index %}{{link}}.json{% if input.linkquery %}?{{input.linkquery}}{% endif %}'}); })
+		$(document).ready(function() { slides = new Slideshow({json:'{% url faulkes.views.index %}{{link}}.json{% if input.linkquery %}?{{input.linkquery}}{% endif %}'}); })
 
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', 'UA-2087713-1']);
