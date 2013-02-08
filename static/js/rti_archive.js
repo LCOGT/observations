@@ -95,6 +95,7 @@ $(document).ready(function(){
 							// Add the more info links etc
 							formatObservations();
 						}
+						if(typeof updatePlanetarium==="function") updatePlanetarium(data);
 					}
 				});
 			}
