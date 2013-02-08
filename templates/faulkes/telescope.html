@@ -6,25 +6,11 @@
 	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
 	<script type="text/javascript" src="http://lcogt.net/virtualsky/embed/virtualsky.min.js"></script>
 	<script type="text/javascript">
-	function spinOff(){
-		planetarium.az_step = 0;
-		if(typeof timer_az!='undefined') clearTimeout(timer_az);
-	}
-	window.onload = function(){
-		planetarium = new $.virtualsky({id:'starmap',projection:'stereo',latitude:{{ telescope.site.latitude }},longitude:{{ telescope.site.longitude }},az:{% if telescope.site.latitude > 0 %}180{% else %}0{% endif %},gridlines_az:true,callback:{mouseenter:spinOff}});
-		planetarium.draw();
-		planetarium.az_step = -0.1;
-		planetarium.moveIt();
-		$.getJSON('{{ link }}.json?callback=?',function(data) {
-			var obs = data.observation;
-			for(var i = 0; i < obs.length ; i++){
-				relative = relative_time_short(new Date(Date.parse(obs[i].time.creation)))
-				a = planetarium.addPointer({ra:obs[i].ra,dec:obs[i].dec,label:obs[i].label+' ('+relative+')',img:obs[i].image.thumb,url:obs[i]._about,credit:obs[i].observer.label,colour:'rgb(255,255,255)'})
-			}
-			planetarium.draw();
-		});
-	};
+	var lat{% if telescope.site.latitude %} = {{ telescope.site.latitude }}{% endif %};
+	var lon{% if telescope.site.longitude %} = {{ telescope.site.longitude }}{% endif %};
+	var json = "{% url faulkes.views.index %}{{link}}.json";
 	</script>
+	<script type="text/javascript" src="{{MEDIA_URL}}js/rti_archive_virtualsky.js"></script>
 {% endblock %}
 {%block header %}{{ telescope.name }}{%endblock%}
 {%block title %}{{ telescope.name }}{%endblock%}
