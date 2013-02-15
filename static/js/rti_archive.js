@@ -36,7 +36,6 @@ $(document).ready(function(){
 		var li = $(this).closest('li');
 		var idx = $(this).attr('id');
 		idx = parseInt(idx.substring(idx.lastIndexOf('-')+1));
-		console.log(idx);
 		var img = li.find('img').attr('src');
 		var link = li.find('a').attr('href');
 		var observer = li.find('.observer').attr('title');
@@ -75,6 +74,7 @@ $(document).ready(function(){
 						if($('.time').length > 0) $('.time').html('Updated <time datetime="'+str+'" title="'+str+'">'+str.substring(5,str.indexOf('GMT'))+'UTC</time>');
 						if(data == null) return;
 						if(typeof data.observation==="object" && !data.observation.length) data.observation = [data.observation]
+
 						if(data.observation.length > 0){
 							var d = new Date(data.observation[0].time.creation);
 							if($('.mostrecent').length > 0){
@@ -89,6 +89,7 @@ $(document).ready(function(){
 							// Add or replace
 							if(_obj.attr('data-update')=="add") _obj.prepend(out);
 							else _obj.html(out);
+							imageLoadError(_obj.find('img'));
 							// Remove the "lastcol" class and list items that are beyond the limit
 							_obj.find('li').removeClass('lastcol').slice(n).remove();
 							_obj.find('li:nth-child(6n)').addClass('lastcol');
@@ -152,14 +153,29 @@ $(document).ready(function(){
 
 });
 
+function tryImageAgain(t){
+	// Get the value of the original URL
+	var orig = $(t).attr('data-src');
+	if(orig){
+		// Set the source again
+		t.src = orig;
+		console.log(t.src);
+		imageLoadError(t);
+	}
+}
+
 function imageLoadError(el){
 	$(el).each(function(){
 		// Work	around for error function reporting of file load failure
 		this.src = this.src;
-		$(this).bind('error',function() {
+		$(this).off('error').on('error',function() {
+			var tryagain = (!$(this).attr('data-src')) ? true : false;
+			// Store the original URL
+			$(this).attr('data-src',this.src);
 			this.src = "http://lcogt.net/files/no-image_120.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
+			if(tryagain) var timeout = setTimeout(tryImageAgain,2000,this);
 			return true;
 		});
 	});
