@@ -175,7 +175,7 @@ function imageLoadError(el){
 			this.src = "http://lcogt.net/files/no-image_120.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
-			if(tryagain) var timeout = setTimeout(tryImageAgain,2000,this);
+			if(tryagain) var timeout = setTimeout(tryImageAgain,30000,this);
 			return true;
 		});
 	});
