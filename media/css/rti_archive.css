@@ -206,10 +206,10 @@ li.end-of-line {
 }
 .thumb .more-info { display: none; }
 .thumb .ellipsis { white-space:nowrap; overflow: hidden; text-overflow: ellipsis; }
-#virtualskyinfobox{
+.virtualskyinfobox{
 	font-size: 12px;
 	display:none;
-	background-color:rgba(200,200,200,1);
+	background-color:#cccccc;
 	color:black;
 	padding:5px;
 	max-width:150px;

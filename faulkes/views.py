@@ -1,7 +1,7 @@
 # Create your views here.
 
-from rtiadminsite.wis.models import Registrations, Schooluri
-from rtiadminsite.faulkes.models import Site, Telescope, Filter, Imagearchive, ObservationStats
+from wis.models import Registrations, Schooluri
+from faulkes.models import Site, Telescope, Filter, Imagearchive, ObservationStats
 from django.utils.encoding import smart_unicode
 from django.core import serializers
 from django.http import HttpResponse,HttpResponseRedirect

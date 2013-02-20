@@ -5,14 +5,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.core.mail import send_mail
 from django.core import urlresolvers
-from rtiadminsite.wis.models import Registrations, Slots, Timeallocationgroups, EmailMessage, Alerts, StatusUpdate, Settings, Schooluri 
-from rtiadminsite.faulkes.models import Imagearchive, Filter, ObservationStats, Telescope,Site
+from wis.models import Registrations, Slots, Timeallocationgroups, EmailMessage, Alerts, StatusUpdate, Settings, Schooluri 
+from faulkes.models import Imagearchive, Filter, ObservationStats, Telescope,Site
 
-from rtiadminsite.wis.choices import SCOPE_CHOICES,email_sender, email_footer
-from rtiadminsite.wis.templatetags.extra_options import date_full_format
+from wis.choices import SCOPE_CHOICES,email_sender, email_footer
+from wis.templatetags.extra_options import date_full_format
 from django.contrib import admin
 from datetime import date
-from rtiadminsite.wis.admin_render import ReadOnlyAdminFields, DateTextInput
+from wis.admin_render import ReadOnlyAdminFields, DateTextInput
 from string import replace,split, lowercase,rstrip
 import random
 

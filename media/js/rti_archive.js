@@ -36,7 +36,6 @@ $(document).ready(function(){
 		var li = $(this).closest('li');
 		var idx = $(this).attr('id');
 		idx = parseInt(idx.substring(idx.lastIndexOf('-')+1));
-		console.log(idx);
 		var img = li.find('img').attr('src');
 		var link = li.find('a').attr('href');
 		var observer = li.find('.observer').attr('title');
@@ -75,6 +74,7 @@ $(document).ready(function(){
 						if($('.time').length > 0) $('.time').html('Updated <time datetime="'+str+'" title="'+str+'">'+str.substring(5,str.indexOf('GMT'))+'UTC</time>');
 						if(data == null) return;
 						if(typeof data.observation==="object" && !data.observation.length) data.observation = [data.observation]
+
 						if(data.observation.length > 0){
 							var d = new Date(data.observation[0].time.creation);
 							if($('.mostrecent').length > 0){
@@ -89,12 +89,14 @@ $(document).ready(function(){
 							// Add or replace
 							if(_obj.attr('data-update')=="add") _obj.prepend(out);
 							else _obj.html(out);
+							imageLoadError(_obj.find('img'));
 							// Remove the "lastcol" class and list items that are beyond the limit
 							_obj.find('li').removeClass('lastcol').slice(n).remove();
 							_obj.find('li:nth-child(6n)').addClass('lastcol');
 							// Add the more info links etc
 							formatObservations();
 						}
+						if(typeof updatePlanetarium==="function") updatePlanetarium(data);
 					}
 				});
 			}
@@ -104,7 +106,8 @@ $(document).ready(function(){
 	function addMoreInfoHint(el,index){
 		if(el.find('.more-info-hint').length == 0){
 			var d = el.find('time').attr('datetime');
-			var r = relative_time_short(new Date(d));
+			var r = relative_time_short(d);
+			if(!r) r = "Info";
 			el.find('.thumbnail a').after('<a href="#" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info"><time datetime="'+d+'">'+r+'</time></a>');
 			$("#more-info-hint-"+index).fadeIn(1000);
 		}
@@ -139,8 +142,8 @@ $(document).ready(function(){
 	function updateTime(el){
 		var attr = (el.attr('datetime')) ? el.attr('datetime') : el.attr('title');
 		if(!attr) return;
-		var d = new Date(attr);
-		if(d) el.html(relative_time_short(d));
+		var txt = relative_time_short(attr);
+		if(txt) el.html(txt);
 	}
 	function updateTimes(el){
 		if(typeof el!=="object") el = $('.more-info-hint time');
@@ -150,14 +153,29 @@ $(document).ready(function(){
 
 });
 
+function tryImageAgain(t){
+	// Get the value of the original URL
+	var orig = $(t).attr('data-src');
+	if(orig){
+		// Set the source again
+		t.src = orig;
+		console.log(t.src);
+		imageLoadError(t);
+	}
+}
+
 function imageLoadError(el){
 	$(el).each(function(){
 		// Work	around for error function reporting of file load failure
 		this.src = this.src;
-		$(this).bind('error',function() {
+		$(this).off('error').on('error',function() {
+			var tryagain = (!$(this).attr('data-src')) ? true : false;
+			// Store the original URL
+			$(this).attr('data-src',this.src);
 			this.src = "http://lcogt.net/files/no-image_120.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
+			if(tryagain) var timeout = setTimeout(tryImageAgain,30000,this);
 			return true;
 		});
 	});
@@ -187,9 +205,18 @@ function formatPosition(ra,dec){
 	return 'RA: '+ra_h+':'+ra_m+':'+ra_s+', Dec: '+dec_sign+dec_d+':'+dec_m+':'+dec_s+'';
 }
 
+// Function to check if a date is valid - to avoid NaNs
+function isValidDate(d) {
+	if ( Object.prototype.toString.call(d) !== "[object Date]" )
+		return false;
+	return !isNaN(d.getTime());
+}
+
 // pd = parsed date
 function relative_time_short(pd) {
 	var relative_to = (arguments.length > 1) ? arguments[1] : new Date();
+	pd = new Date(pd);
+	if(!isValidDate(pd)) return "";
 	var dt = parseInt((relative_to.getTime() - pd) / 1000);
 	if (dt < 60) return 'seconds ago';
 	else if(dt < 120) return 'a minute ago';

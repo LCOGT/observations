@@ -1,31 +1,16 @@
 {% extends 'faulkes/base.html' %}
 {% load faulkes_extras %}
 
-
 {% block script-content %}
 	<meta http-equiv="X-UA-Compatible" content="IE=9" />
 	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
 	<script type="text/javascript" src="http://lcogt.net/virtualsky/embed/virtualsky.min.js"></script>
 	<script type="text/javascript">
-	function spinOff(){
-		planetarium.az_step = 0;
-		if(typeof timer_az!='undefined') clearTimeout(timer_az);
-	}
-	window.onload = function(){
-		planetarium = $.virtualsky({id:'starmap',projection:'stereo',latitude:{{ site.latitude }},longitude:{{ site.longitude }},az:{% if site.latitude > 0 %}180{% else %}0{% endif %},gridlines_az:true,callback:{mouseenter:spinOff}});
-		planetarium.draw();
-		planetarium.az_step = -0.1;
-		planetarium.moveIt();
-		$.getJSON('{{ link }}.json?callback=?',function(data) {
-			var obs = data.observation;
-			for(var i = 0; i < obs.length ; i++){
-				relative = relative_time_short(new Date(Date.parse(obs[i].time.creation)))
-				a = planetarium.addPointer({ra:obs[i].ra,dec:obs[i].dec,label:obs[i].label+' ('+relative+')',img:obs[i].image.thumb,url:obs[i]._about,credit:obs[i].observer.label,colour:'rgb(255,255,255)'})
-			}
-			planetarium.draw();
-		});
-	};
+	var lat{% if site.latitude %} = {{ site.latitude }}{% endif %};
+	var lon{% if site.longitude %} = {{ site.longitude }}{% endif %};
+	var json = "{% url faulkes.views.index %}{{link}}.json";
 	</script>
+	<script type="text/javascript" src="{{MEDIA_URL}}js/rti_archive_virtualsky.js"></script>
 {% endblock %}
 
 {%block header %}{{ site.name }}{%endblock%}
@@ -33,7 +18,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; {{ site.name }}
+									<a href="{% url faulkes.views.index %}">Observations</a> &raquo; {{ site.name }}
 								</div>
 {% endblock %}
 
@@ -49,7 +34,7 @@
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url faulkes.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}

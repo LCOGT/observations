@@ -19,17 +19,17 @@
 {% endblock %}
 
 {% block search %}{% if n >= 0 %}<div class="searchbox">
-									<form action='{% url rtiadminsite.faulkes.views.index %}search/' method='GET'>
+									<form action='{% url faulkes.views.index %}search/' method='GET'>
 										<input type='text' name='query' class='searchbox' title='e.g. NGC 2011' /><input type='submit' value='Search' class='searchbtn' />
-										<br /><span style='font-size:0.8em;'>[<a href="{% url rtiadminsite.faulkes.views.index %}search">advanced search</a>]</span>
+										<br /><span style='font-size:0.8em;'>[<a href="{% url faulkes.views.index %}search">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url rtiadminsite.faulkes.views.index %}search/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href="{% url faulkes.views.index %}search/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ MEDIA_URL }}img/rti_archive_slideshow.jpg"></a>
 {% endif %}
 								</div>{% else %}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
-							<a href="{% url rtiadminsite.faulkes.views.index %}">Observations</a> &raquo; {% if n < 0 %}Search{% else %}<a href="{% url rtiadminsite.faulkes.views.index %}search">Search</a> &raquo; Results{% endif %}
+							<a href="{% url faulkes.views.index %}">Observations</a> &raquo; {% if n < 0 %}Search{% else %}<a href="{% url faulkes.views.index %}search">Search</a> &raquo; Results{% endif %}
 							<br />
 {% endblock %}
 
@@ -38,14 +38,14 @@
 {% block main-content %}
 {% if n > 0 %}
 						<div class="row">
-							<p>There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{% if n > 1 %} Newest observations are shown first.{% endif %}{% if input.avmcode != "" %} You could also search for <a href="{% url rtiadminsite.faulkes.views.index %}category/{{ input.avmcode }}">{{ input.avmname }}</a>.{% endif %}</p>
+							<p>There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{% if n > 1 %} Newest observations are shown first.{% endif %}{% if input.avmcode != "" %} You could also search for <a href="{% url faulkes.views.index %}category/{{ input.avmcode }}">{{ input.avmname }}</a>.{% endif %}</p>
 						</div>
 						
 						<div class="row">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-							<ul class='observation-results' data-json="{% url rtiadminsite.faulkes.views.index %}search.json{% if input.linkquery %}?{{input.linkquery}}{% if input.pager.page > 1 %}&page={{input.pager.page}}{% endif %}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url faulkes.views.index %}search.json{% if input.linkquery %}?{{input.linkquery}}{% if input.pager.page > 1 %}&page={{input.pager.page}}{% endif %}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}
@@ -61,7 +61,7 @@
 			<p>There are several ways to search through all our public observations. Use any combination of the options below to help narrow your search.</p>
 {% endif %}
 		</div>
-		<form action="{% url rtiadminsite.faulkes.views.index %}search" method="get" id="rti-archive-form">
+		<form action="{% url faulkes.views.index %}search" method="get" id="rti-archive-form">
 			<div class="row">
 				<fieldset>
 					<legend>By title:</legend>
@@ -85,7 +85,7 @@
 							<label for="Category" class="hidden">Category:</label><select name="category" class="form-select" id="category" ><option value="0">All</option>{% for c in categories %}<option value="{{ forloop.counter }}"{% if form.category == forloop.counter %} selected="selected"{% endif %}>{{ c.name }}{% endfor %}</select>
 						</div>
 						<div class="inline">
-							<span class="inline">or by </span><label for="AVM" class="inline"><a href="{% url rtiadminsite.faulkes.views.index %}category">AVM taxonomy</a></label>
+							<span class="inline">or by </span><label for="AVM" class="inline"><a href="{% url faulkes.views.index %}category">AVM taxonomy</a></label>
 							<input type="text" maxlength="7" name="avm" id="AVM" value="{{ form.avm }}" class="form-text" style="width:7em;" /><span id="avm_lookup"></span>
 						</div>
 					</div>

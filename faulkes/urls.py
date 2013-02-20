@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('rtiadminsite.faulkes.views',
+urlpatterns = patterns('faulkes.views',
 
 	(r'^search','search'),
 
