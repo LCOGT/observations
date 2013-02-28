@@ -7,7 +7,7 @@ import time
 wistime_format = "%Y%m%d%H%M%S"
 
 class Site(models.Model):
-	code = models.CharField(primary_key=True, max_length=3, db_column='Code', blank=True)
+	code = models.CharField(primary_key=True, max_length=3, db_column='Code')
 	name = models.CharField(max_length=64, db_column='Name', blank=True)
 	longitude = models.FloatField(null=True, db_column='Longitude', blank=True)
 	latitude = models.FloatField(null=True, db_column='Latitude', blank=True)
@@ -17,7 +17,7 @@ class Site(models.Model):
 	    db_table  = 'observatory_site'
 
 class Telescope(models.Model):
-	id = models.IntegerField(primary_key=True, null=True, db_column='ID', blank=True,help_text='A numerical ID for the telescope')
+	id = models.IntegerField(primary_key=True, db_column='ID', help_text='A numerical ID for the telescope')
 	site = models.ForeignKey(Site)
 	code = models.CharField(max_length=4, db_column='Code', blank=True)
 	name = models.CharField(max_length=64, db_column='Name', blank=True)
@@ -28,7 +28,7 @@ class Telescope(models.Model):
 	    db_table = 'telescope'
 
 class Filter(models.Model):
-	code = models.CharField(primary_key=True, max_length=10, db_column='Code', blank=True)
+	code = models.CharField(primary_key=True, max_length=10, db_column='Code')
 	name = models.CharField(max_length=64, db_column='Name', blank=True)
 	drupalnode = models.IntegerField(null=True, db_column='DrupalNode', blank=True)
 	centralwavelength = models.FloatField('The central wavelength in nm',null=True, db_column='CentralWavelength', blank=True)
