@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load extra_options %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}/css/dashboard.css" />
 <link rel="stylesheet" type="text/css" href="/admin/media/css/form.css" />
 {% endblock %}
 {% block title %}{{ title }} | {% trans 'Las Cumbres Observatory Global Telesope Network' %}{% endblock %}
@@ -28,7 +28,7 @@
    
     <div class="module aligned search"> 
        <h2>Slot Search</h2>
-      <form method=POST action="{% url rtiadminsite.wis.views.find_slots %}">
+      <form method=POST action="{% url wis.views.find_slots %}">
       <div class="form-row">
          <div>
          <label for="start">Start</label>
@@ -92,8 +92,8 @@
 <div class="module report">
    <h2>Reports</h2>
    <ul>
-      <li><a href="{% url rtiadminsite.wis.views.top_users %}">Who is using the most time?</a></li>
-      <li><a href="{% url rtiadminsite.wis.views.slots_by_month %}">Estimated slots allocated per month</a></li>
+      <li><a href="{% url wis.views.top_users %}">Who is using the most time?</a></li>
+      <li><a href="{% url wis.views.slots_by_month %}">Estimated slots allocated per month</a></li>
    </ul>
 </div>
 
