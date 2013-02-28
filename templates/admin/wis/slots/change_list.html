@@ -5,7 +5,7 @@
 
 {% block search %}
 <div class="actions">
-   <form method=POST action="{% url rtiadminsite.wis.views.find_slots %}">
+   <form method=POST action="{% url wis.views.find_slots %}">
    <label>Start</label>
    <input type=text name="start" value="{% now "Y/m/d" %}"/>
    <label>End</label>

@@ -13,7 +13,7 @@ $(document).ready(function() {
 	
 function newAlerts() {
 	var st = $(".alerttime:first").attr('time');
-	$.post("{% url rtiadminsite.wis.views.update_alerts %}", {stamp : st, csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data){
+	$.post("{% url wis.views.update_alerts %}", {stamp : st, csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data){
     	$("tbody").prepend(data);
 	});
 	var newst = $(".alerttime:first").attr('stamp');
