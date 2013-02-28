@@ -7,7 +7,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url ite.faulkes.views.index %}">Observations</a> &raquo; <a href="{% url faulkes.views.index %}category">Categories</a> &raquo; {% if input.avmup and input.avmup|length > 0 %}{% for cat in input.avmup %}<a href="{% url faulkes.views.index %}category/{{ cat.code }}">{{ cat.name }}</a> &raquo; {% endfor %}{% endif %}{{ category }}
+									<a href="{% url faulkes.views.index %}">Observations</a> &raquo; <a href="{% url faulkes.views.index %}category">Categories</a> &raquo; {% if input.avmup and input.avmup|length > 0 %}{% for cat in input.avmup %}<a href="{% url faulkes.views.index %}category/{{ cat.code }}">{{ cat.name }}</a> &raquo; {% endfor %}{% endif %}{{ category }}
 								</div>
 {% endblock %}
 
