@@ -20,6 +20,7 @@ This is the part of the [LCOGT](http://lcogt.net/) site that aims to ensure ever
 * [/observations/category/galaxies](http://lcogt.net/observations/category/galaxies) - all results for major [AVM](http://www.virtualastronomy.org/avm_metadata.php) categories
 * [/observations/category/5.5.2](http://lcogt.net/observations/category/5.5.2) - all results for a specific [AVM](http://www.virtualastronomy.org/avm_metadata.php) category
 * [/observations/map](http://lcogt.net/observations/map) - a heat map of observations within the past month
+* [/observations/object/M42](http://lcogt.net/observations/object/M42) - named astronomical objects have a breakdown of their exposure times
 
 Groups of observations can be viewed in a variety of formats:
 
