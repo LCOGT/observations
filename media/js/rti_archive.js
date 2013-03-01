@@ -81,8 +81,9 @@ $(document).ready(function(){
 								$('.mostrecent').html('<time datetime="'+d.toGMTString()+'" title="'+d.toGMTString()+'">'+d.toLocaleString()+'</time>');
 								updateTime($('.mostrecent time'));
 							}
-							// How many do we currently have in the list?
-							var n = _obj.find('li').length;
+							// What is the maximum size of the list?
+							var n = (_obj.attr('data-max')) ? parseInt(_obj.attr('data-update')) : 30;
+							if(n < 1 || typeof n!=="number") n = 30;
 							// Build the new observations to add
 							var out = "";
 							for(var i = 0; i < data.observation.length ; i++) out += makeObservation(data.observation[i]);
@@ -157,8 +158,8 @@ function tryImageAgain(t){
 	// Get the value of the original URL
 	var orig = $(t).attr('data-src');
 	if(orig){
-		// Set the source again
-		t.src = orig;
+		// Set the source again and work around any caching
+		t.src = orig+"?"+Math.random();
 		console.log(t.src);
 		imageLoadError(t);
 	}

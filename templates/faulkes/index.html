@@ -11,13 +11,13 @@
 						<div class="row">
 							<h2><a href="{% url faulkes.views.index %}recent/">Most recent observations</a></h2>
 							<div class="time"></div>
-							<ul class="observation-results" data-json="{% url faulkes.views.index %}search.json" data-update="add" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class="observation-results" data-json="{% url faulkes.views.index %}search.json" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=latest %}
 							</ul>
 						</div>
 						<div class="row">
 							<h2><a href="{% url faulkes.views.index %}trending/">Currently trending observations</a></h2>
-							<ul class='observation-results' data-json="{% url faulkes.views.index %}trending.json" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url faulkes.views.index %}trending.json" data-update="update" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "faulkes/observationlist.html" with obs=trending %}
 							</ul>
 						</div>
