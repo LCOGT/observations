@@ -185,6 +185,7 @@ def slot_search(request):
                             'end'    : "%sZ" % datetime.strptime(s.end,'%Y%m%d%H%M%S').isoformat(),
                             'booked' : school,
                             'tag'    : s.tag.name,
+                            'userid' : s.schoolid.pk
                             }
                     slotlist.append(slot)
             bookings.append({'telescope' : t['name'], 'slots' : slotlist,'code':t['code']})
