@@ -1553,81 +1553,81 @@ def view_kml(request,obs,config):
 	if not('title' in config):
 		config['title'] = 'LCOGT'
 
-	output = '<?xml version="1.0" encoding="UTF-8"?>\n'
-	output += '<kml xmlns="http://earth.google.com/kml/2.2" hint="target=sky">\n'
-	output += '<Document>\n'
-	output += '	<name>'+config['title']+'</name>\n'
-	output += '	<Style id="observation">\n'
-	output += '		<LabelStyle>\n'
-	output += '			<color>00ffffff</color>\n'
-	output += '		</LabelStyle>\n'
-	output += '	</Style>\n'
+    output = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    output += '<kml xmlns="http://earth.google.com/kml/2.2" hint="target=sky">\n'
+    output += '<Document>\n'
+    output += '	<name>'+config['title']+'</name>\n'
+    output += '	<Style id="observation">\n'
+    output += '		<LabelStyle>\n'
+    output += '			<color>00ffffff</color>\n'
+    output += '		</LabelStyle>\n'
+    output += '	</Style>\n'
     try:
         schoolname = o['user'].schoolname
     except:
         schoolname = 'unknown'
-	
-	for o in obs:
-		output += '	<Placemark>\n'
-		output += '		<name>'+o['skyobjectname']+'</name>\n'
-		output += '		<description><![CDATA[\n'
-		output += '			<p>Observed by <a href="'+base_url+o['link_user']+'.kml">'+schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+base_url+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
-		output += '			<p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
-		output += '		]]></description>\n'
-		output += '		<LookAt>\n'
-		output += '			<longitude>'+str(o['raval'] - 180)+'</longitude>\n'
-		output += '			<latitude>'+str(o['decval'])+'</latitude>\n'
-		output += '			<altitude>0</altitude>\n'
-		output += '			<range>20000</range>\n'
-		output += '			<tilt>0</tilt>\n'
-		output += '			<heading>0</heading>\n'
-		output += '		</LookAt>\n'
-		output += '		<Point>\n'
-		output += '			<coordinates>'+str(o['raval'] - 180)+','+str(o['decval'])+',0</coordinates>\n'
-		output += '		</Point>\n'
-		output += '		<styleUrl>#observation</styleUrl>\n'
-		output += '	</Placemark>\n'
 
-	output += '</Document>\n'
-	output += '</kml>\n'
+    for o in obs:
+    	output += '	<Placemark>\n'
+    	output += '		<name>'+o['skyobjectname']+'</name>\n'
+    	output += '		<description><![CDATA[\n'
+    	output += '			<p>Observed by <a href="'+base_url+o['link_user']+'.kml">'+schoolname+'</a> on '+datestamp(o['whentaken'])+' with <a href="'+base_url+o['link_tel']+'.kml">'+o['telescope'].name+'</a>.<br /><a href="'+o['link_obs']+'"><img src="'+o['thumbnail']+'" /></a></p>\n'
+    	output += '			<p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
+    	output += '		]]></description>\n'
+    	output += '		<LookAt>\n'
+    	output += '			<longitude>'+str(o['raval'] - 180)+'</longitude>\n'
+    	output += '			<latitude>'+str(o['decval'])+'</latitude>\n'
+    	output += '			<altitude>0</altitude>\n'
+    	output += '			<range>20000</range>\n'
+    	output += '			<tilt>0</tilt>\n'
+    	output += '			<heading>0</heading>\n'
+    	output += '		</LookAt>\n'
+    	output += '		<Point>\n'
+    	output += '			<coordinates>'+str(o['raval'] - 180)+','+str(o['decval'])+',0</coordinates>\n'
+    	output += '		</Point>\n'
+    	output += '		<styleUrl>#observation</styleUrl>\n'
+    	output += '	</Placemark>\n'
 
-	return HttpResponse(output,mimetype=config['mimetype'])
+    output += '</Document>\n'
+    output += '</kml>\n'
+
+    return HttpResponse(output,mimetype=config['mimetype'])
 
 	
 def view_rss(request,obs,config):
 
-	if not('title' in config):
-		config['title'] = 'LCOGT'
+    if not('title' in config):
+        config['title'] = 'LCOGT'
     try:
         schoolname = o['user'].schoolname
     except:
         schoolname = 'unknown'
 
-	output = '<?xml version="1.0" encoding="utf-8" ?>\n'
-	output += '<rss version="2.0">\n'
-	output += '<channel>\n'
-	output += '	<title>'+config['title']+'</title>\n'
-	output += '	<link>'+base_url+config['link']+'</link>\n'
-	output += '	<description>'+config['description']+'</description>\n'
-	output += '	<language>en-gb</language>\n'
-	output += '	<pubDate>'+datestamp('')+'</pubDate>\n'
-	output += '	<lastBuildDate>'+datestamp('')+'</lastBuildDate>\n'
-	output += '	<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n'
-	output += '	<generator>RedDragon (cwl)</generator>\n'
-	output += '	<copyright>Las Cumbres Observatory Global Telescope Network</copyright>\n'
-	
-	for o in obs:
-		output += '	<item>\n'
-		output += '		<title>'+o['skyobjectname']+'</title>\n'
-		output += '		<description><![CDATA[<a href="'+base_url+o['link_user']+'">'+schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+base_url+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
-		output += '		<link>'+base_url+o['link_obs']+'</link>\n'
-		output += '		<pubDate>'+datestamp(o['whentaken'])+'</pubDate>\n'
-		output += '	</item>\n'
+    output = '<?xml version="1.0" encoding="utf-8" ?>\n'
+    output += '<rss version="2.0">\n'
+    output += '<channel>\n'
+    output += '	<title>'+config['title']+'</title>\n'
+    output += '	<link>'+base_url+config['link']+'</link>\n'
+    output += '	<description>'+config['description']+'</description>\n'
+    output += '	<language>en-gb</language>\n'
+    output += '	<pubDate>'+datestamp('')+'</pubDate>\n'
+    output += '	<lastBuildDate>'+datestamp('')+'</lastBuildDate>\n'
+    output += '	<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n'
+    output += '	<generator>RedDragon (cwl)</generator>\n'
+    output += '	<copyright>Las Cumbres Observatory Global Telescope Network</copyright>\n'
 
-	output += '</channel>\n'
-	output += '</rss>\n'
+    for o in obs:
+    	output += '	<item>\n'
+    	output += '		<title>'+o['skyobjectname']+'</title>\n'
+    	output += '		<description><![CDATA[<a href="'+base_url+o['link_user']+'">'+schoolname+'</a> took an image of '+o['skyobjectname']+' ('+degreestohms(o['raval'])+', '+degreestodms(o['decval'])+') with <a href="'+base_url+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
+    	output += '		<link>'+base_url+o['link_obs']+'</link>\n'
+    	output += '		<pubDate>'+datestamp(o['whentaken'])+'</pubDate>\n'
+    	output += '	</item>\n'
 
-	return HttpResponse(output,mimetype=config['mimetype'])
+    output += '</channel>\n'
+    output += '</rss>\n'
+
+    return HttpResponse(output,mimetype=config['mimetype'])
 	
 
 def relativetime(value):
