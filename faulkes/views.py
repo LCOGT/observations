@@ -1162,7 +1162,7 @@ def view_observation(request,code,tel,obs):
 							tmp['fits'] = fit.group(1)
 						filters.append(tmp)
 				except:
-					filters[0] = {'img':'', 'fits':''}
+					filters.append({'img':'', 'fits':''})
 
 	obs[0]['filter'] = filter_link(obs[0]['filter'])
 
