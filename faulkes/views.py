@@ -1550,8 +1550,8 @@ def view_json(request,obs,config):
 
 def view_kml(request,obs,config):
 
-	if not('title' in config):
-		config['title'] = 'LCOGT'
+    if not('title' in config):
+    	config['title'] = 'LCOGT'
 
     output = '<?xml version="1.0" encoding="UTF-8"?>\n'
     output += '<kml xmlns="http://earth.google.com/kml/2.2" hint="target=sky">\n'
@@ -1593,7 +1593,6 @@ def view_kml(request,obs,config):
 
     return HttpResponse(output,mimetype=config['mimetype'])
 
-	
 def view_rss(request,obs,config):
 
     if not('title' in config):
@@ -1628,7 +1627,7 @@ def view_rss(request,obs,config):
     output += '</rss>\n'
 
     return HttpResponse(output,mimetype=config['mimetype'])
-	
+
 
 def relativetime(value):
 	delta = datetime.utcnow()-parsetime(value)
