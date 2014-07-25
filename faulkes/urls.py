@@ -33,5 +33,6 @@ urlpatterns = patterns('faulkes.views',
 	(r'^(?P<code>\w\w\w)','view_site'),
 
 	(r'^$','index'),
+	(r'\w+^$','error'),
 #	(r'','unknown'),
 )
