@@ -3,7 +3,7 @@
 from datetime import date,timedelta,datetime
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.core import serializers
-from django.core import urlresolvers
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -215,7 +215,7 @@ def index(request):
     sites = Site.objects.all()
     telescopes = Telescope.objects.all()
 
-    latest = build_recent_observations()
+    latest = build_recent_observations(n_per_line)
 
     obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_line]
     obs = []
@@ -244,20 +244,7 @@ def view_group(request,mode):
     sites = Site.objects.all()
     
     if(mode == "recent"):
-        try:
-            dup = request.GET.get('noduplicates','')
-        except:
-            dup = '';
-
-        if(dup==''):
-            obs = Imagearchive.objects.using('faulkes').order_by('-whentaken')[:n_per_page]
-        else:
-            obs = Imagearchive.objects.using('faulkes').extra(order_by=['-whentaken'])
-            obs.query.group_by = ['schoolid']
-            obs = obs[:n_per_page]
-
-        n = obs.count()
-        obs = build_observations(obs)
+        obs = build_recent_observations(n_per_page)
         input['title'] = "Recent Observations from LCOGT"
         input['link'] = 'recent'
         input['live'] = 300
@@ -1332,7 +1319,7 @@ def getCategoryLevel(avm,input):
 def framedb_lookup(query):
     try:
         conn = httplib.HTTPSConnection("data.lcogt.net")
-        params = urllib.urlencode({'username':'egomez@lcogt.net','password':'ncC74656'})
+        params = urllib.urlencode({'username':'guest','password':'guest'})
         #query = "/find?%s" % params
         conn.request("POST",query,params)
         r = conn.getresponse().read()
@@ -1342,11 +1329,11 @@ def framedb_lookup(query):
         return False
     return resp
 
-def build_recent_observations():
+def build_recent_observations(num):
     observations = []
     recent_obs = []
     ##### Store the TAG IDs in a config not here
-    qstring = "/find?tagid__in=LCOEPO,FTP&limit=6&order_by=-date_obs&full_header=1"
+    qstring = "/find?tagid__in=LCOEPO,FTP&limit=%s&order_by=-date_obs&full_header=1" % int(num)
     observations = framedb_lookup(qstring)
     recent_obs = build_framedb_observations(observations)
     return recent_obs
@@ -1454,7 +1441,7 @@ def build_framedb_observations(observations):
         obj = re.sub(r" ?\([^\)]*\)",'',o['groupid']) # Remove brackets
         obj = re.sub(r"/\s\s+/", ' ', obj)      # Remove redundant whitespace
         obj = re.sub(r"[^\w\-\+0-9 ]/i",'',obj) # Remove non-useful characters
-        params = {  'link_obs'      : '',
+        params = {  'link_obs'      : "%s?origname=%s" % (reverse('faulkes.views.identity'),o['origname']),
                     'instrumentname': o['detector'],
                     'skyobjectname' : o['groupid'],
                     'object'        : obj,
@@ -1472,7 +1459,6 @@ def build_framedb_observations(observations):
                     'decval'        : o['dec'],
                     'fullimage_url' : large_img,
                     'user'          : find_username_tracknum([o['tracknum']])
-
                 }
         avm = avm_from_lookup(params['object'])
         if avm:
@@ -1585,9 +1571,9 @@ def build_observations(obs):
         o['credit'] = "Image taken with "+o['telescope'].name+" operated by Las Cumbres Observatory Global Telescope Network"
         # Change the credit if prior to 11 Oct 2005
         if int(o['whentaken']) < int("20051011000000"):
-            o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust";
+            o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust"
         o['userid'] = o['schoolid']
-        o['link_obs'] = o['telescope'].site.code+"/"+o['telescope'].code+"/"+str(o['imageid']);
+        o['link_obs'] =  reverse('faulkes.views.view_observation',kwargs={'code':o['telescope'].site.code,'tel':o['telescope'].code,'obs':o['imageid']})
         o['link_site'] = o['telescope'].site.code;
         o['link_tel'] = o['link_site']+"/"+o['telescope'].code;
         o['link_user'] = "user/"+str(o['userid']);
