@@ -5,14 +5,20 @@ register = template.Library()
 
 def hourstodegrees(value,arg):
 	"Converts decimal hours to decimal degrees"
+	if ":" in str(value):
+		return value
 	return value*15
 
 def degreestohours(value):
 	"Converts decimal degrees to decimal hours"
+	if ":" in str(value):
+		return value
 	return float(value)/15
 
 def degreestodms(value):
 	"Converts decimal degrees to decimal degrees minutes and seconds"
+	if ":" in str(value):
+		return value
 	if not(value):
 		return ""
 	if(value < 0):
@@ -27,6 +33,8 @@ def degreestodms(value):
 
 def degreestohms(value):
 	"Converts decimal degrees to decimal hours minutes and seconds"
+	if ":" in str(value):
+		return value
 	if not(value):
 		return ""
 	value = float(value)/15
@@ -34,6 +42,29 @@ def degreestohms(value):
 	m = int((value - d)*60)
 	s = ((value - d)*3600 - m*60)
 	return "%02d:%02d:%05.2f" % (d,m,s)
+
+def dmstodegrees(value):
+	if ":" not in str(value):
+		return value
+	el = value.split(":")
+	deg = float(el[0])
+	if deg < 0:
+		sign = -1.
+	else:
+		sign = 1
+	return deg + sign*float(el[1])/60. + sign*float(el[2])/3600.
+
+def hmstodegrees(value):
+	if ":" not in str(value):
+		return value
+	el = value.split(":")
+	return float(el[0])*15 + float(el[1])/60. + float(el[2])/3600.
+
+def hmstohours(value):
+	if ":" not in str(value):
+		return value
+	el = value.split(":")
+	return float(el[0]) + float(el[1])/60. + float(el[2])/3600.
 
 def niceduration(value):
 	if not(value):
@@ -150,3 +181,6 @@ register.filter('negative', negative)
 register.filter('niceduration', niceduration)
 register.filter('relativetime', relativetime)
 register.filter('parsetime', parsetime)
+register.filter('hmstohours', hmstohours)
+register.filter('hmstodegrees',hmstodegrees)
+register.filter('dmstodegrees',dmstodegrees)
