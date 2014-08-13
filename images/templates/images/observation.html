@@ -1,0 +1,83 @@
+{% extends 'images/base.html' %}
+{% load images_extras %}
+
+{% block script-content %}
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/rti_archive_observation.js"></script>
+{% endblock %}
+
+{%block header %}{{ obs.skyobjectname }}{%endblock%}
+{%block title %}{{ obs.skyobjectname }}{%endblock%}
+
+{% block breadcrumb %}
+		{% if framedb_obs %}
+								<a href="{% url images.views.index %}">Observations</a> &raquo; <a href="{% url images.views.index %}{{ site.code }}">{{ site.name }}</a> &raquo; <a href="{% url images.views.index %}{{ site.code }}/{{ obs.telescopeid }}">{{ obs.telescopeid }}</a> &raquo; {{ obs.skyobjectname }}
+								<br />	
+		{% else %}
+								<a href="{% url images.views.index %}">Observations</a> &raquo; <a href="{% url images.views.index %}{{ obs.telescope.site.code }}">{{ telescope.site.name }}</a> &raquo; <a href="{% url images.views.index %}{{ telescope.site.code }}/{{ telescope.code }}">{% if telescope.short %}{{ telescope.short }}{% else %}{{ telescope.name }}{% endif %}</a> &raquo; {{ obs.skyobjectname }}
+								<br />								
+		{% endif %}
+{% endblock %}
+
+{% block telescopes-list-title %}Nearby telescopes:{% endblock %}
+
+{% block main-content %}
+						<div class="row" class='observation' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#' xmlns:avm='http://www.communicatingastronomy.org/avm/1.0/'>
+							<div class='sixoften'>
+								<a href='{{ obs.fullimage_url }}' title='Click for full size version'><img src='{{ obs.fullimage_url }}' class='observation-image' alt='{{ obs.title }}' /></a>
+								<p class='moreobservations'>More observations by <a href="{% url images.views.index %}user/{{ obs.userid }}">{{ obs.user }}</a>:</p>
+								<ul class='stream'>{% for ob in otherobs %}<li class='{{ ob.class }}'><a href='{% url images.views.index %}{{ ob.url }}'><img src='{{ ob.thumb }}' alt='{{ ob.title }}' title='{{ ob.title }} taken on {{ ob.date }}' /></a></li>{% endfor %}</ul>
+							</div>
+							<div class='fouroften observation-metadata lastcol'>
+								<div class="padder">
+									<table class='avm'>
+										<tr style='display:none;'><td class='first'>Title:</td><td property='dc:title'>{{ obs.title }}</td></tr>
+					{% if not framedb_obs %}
+										<tr><td class='first'>Views:</td><td>{{ obs.views }}<div id='observation-stats'></div></td></tr>
+										<tr><td class='first'>Observer:</td><td><a href="{% url images.views.index %}user/{{ obs.userid }}" property="UCD:obs.observer">{{ obs.user }}</a></td></tr>
+										<tr><td class='first'>Date:</td><td><time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time></td></tr>
+										<tr><td class='first'>Coordinates:</td><td><span class='Spatial-ReferenceValue' title='{{ obs.raval }};{{ obs.decval }}'><span property='UCD:pos.eq.RA' content='{{ obs.raval }}'>{{ obs.raval|degreestohms }}</span>, <span property='UCD:pos.eq.DEC' content='{{ obs.decval }}'>{{ obs.decval|degreestodms }}</span></span><span class='Spatial-CoordinateFrame'>FK5</span> <span class='Spatial-Equinox'>J2000</span>
+										<br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.raval|degreestohours }}&amp;de={{ obs.decval }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a>, <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.raval|degreestohours }}&amp;dec={{ obs.decval }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a> or <a href='{% url images.views.index %}{{ telescope.site.code }}/{{ telescope.code }}/{{ obs.imageid }}.kml' title="View these coordinates in Sky for Google Earth">Sky for Google Earth</a>.
+										<br /><a href='{% url images.views.index %}search?RA={{ obs.raval }}&DEC={{ obs.decval }}&SR=3'>Find nearby observations...</a>
+										</td></tr>
+					{% else %}
+										<tr><td class='first'>Date:</td><td><time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time></td></tr>
+										<tr><td class='first'>Coordinates:</td><td><span class='Spatial-ReferenceValue' title='{{ obs.raval }};{{ obs.decval }}'><span property='UCD:pos.eq.RA' content='{{ obs.raval }}'>{{ obs.raval }}</span>, <span property='UCD:pos.eq.DEC' content='{{ obs.decval }}'>{{ obs.decval }}</span></span><span class='Spatial-CoordinateFrame'>FK5</span> <span class='Spatial-Equinox'>J2000</span>
+										<br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.raval|hmstohours }}&amp;de={{ obs.decval|dmstodegrees }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.raval|hmstohours }}&amp;dec={{ obs.decval|dmstodegrees }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a>.
+										<br /><a href='{% url images.views.index %}search?RA={{ obs.raval|hmstohours }}&DEC={{ obs.decval|dmstodegrees }}&SR=3'>Find nearby observations...</a>
+										</td></tr>
+					{% endif %}
+										<tr><td class='first'>Telescope:</td><td property='UCD:instr.tel'><a href="{% url images.views.index %}{{ telescope.site.code }}/{{ telescope.code }}">{{ telescope.name }}</a></td></tr>
+										<tr><td class='first'>Filter:</td><td>{{ obs.filter|safe }}</td></tr>
+										<tr><td class='first'>Exposure:</td><td><span property='UCD:obs.exposure'>{{ obs.exposuresecs }}</span> s{% if filters|length > 1 %} (total){% endif %}</td></tr>
+										<tr><td class='first'>Data:</td><td>
+{% if filters %}
+											<ul class='filters'>
+{% for filter in filters %}
+{% if filter.fits %}
+												<li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{{ filter.fullname }} FITS</a> or <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>jpeg</a></li>
+{% endif %}
+{% endfor %}
+											</ul>
+{% else %}
+											No FITS data found<br />
+{% endif %}
+{% if not framedb_obs %}
+											<a href='http://www.worldwidetelescope.org/wwtweb/ShowImage.aspx?name={{ obs.object }}&ra={{ obs.RaVal }}&dec={{ obs.DecVal }}8&x=1024&y=1024&scale=0.274&rotation=0&imageurl=http://rti.images-telescope.com/observations/2011/08/09/process-677-1.jpg&creditsUrl=http://lcogt.net/observations/ogg/2m0a/61407&credits=Image%20taken%20with%20Faulkes%20Telescope%20North%20operated%20by%20Las%20Cumbres%20Observatory%20Global%20Telescope%20Network&thumb=http://rti.images-telescope.com/observations/2011/08/09/process-677-1_120.jpg'>View in WorldWideTelescope</a>
+{% endif %}
+										</td></tr>
+{% if obs.avmcode %}										<tr><td class='first'>Category:</td><td><a href="{% url images.views.index %}category/{{ obs.avmcode }}">{{ obs.avmname }}</a></td></tr>{% endif %}
+										<tr><td class='first'>Credit:</td><td>{{ obs.credit }}</td></tr>
+										<tr><td class='first'>License:</td><td>	<a href="{{ obs.license }}" rel="license cc:license"><img src="{{ MEDIA_URL }}img/{{ obs.licenseimage }}" style="height:1.5em;" title="Some rights reserved" /></a></td></tr>
+										<tr><td class='first'>Share:</td><td>
+											<a href="http://twitter.com/home/?status={{ obs.skyobjectname|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt"><img title="Tweet this" alt="Twitter" src="http://lcogt.net/sites/default/themes/lcogt/images/twitter.png"></a>
+											<a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}"><img title="Share on Facebook" alt="Facebook" src="http://lcogt.net/sites/default/themes/lcogt/images/facebook.png"></a>
+										</td></tr>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							{{ obs.other }}
+						</div>
+{% endblock %}
+

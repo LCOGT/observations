@@ -1,0 +1,345 @@
+[{
+    "pk": 20,
+    "model": "images.filter",
+    "fields": {
+        "code": "R",
+        "name": "Bessell-R",
+        
+    }
+}, {
+    "pk": 2,
+    "model": "images.filter",
+    "fields": {
+        "code": "B",
+        "name": "Bessell-B",
+        
+    }
+}, {
+    "pk": 19,
+    "model": "images.filter",
+    "fields": {
+        "code": "U",
+        "name": "Bessell-U",
+        
+    }
+}, {
+    "pk": 4,
+    "model": "images.filter",
+    "fields": {
+        "code": "V",
+        "name": "Bessell-V",
+        
+    }
+}, {
+    "pk": 18,
+    "model": "images.filter",
+    "fields": {
+        "code": "w",
+        "name": "PanSTARRS-w",
+        
+    }
+}, {
+    "pk": 17,
+    "model": "images.filter",
+    "fields": {
+        "code": "Y",
+        "name": "PanSTARRS-Y",
+        
+    }
+}, {
+    "pk": 9,
+    "model": "images.filter",
+    "fields": {
+        "code": "zs",
+        "name": "PanSTARRS-Z",
+        
+    }
+}, {
+    "pk": 10,
+    "model": "images.filter",
+    "fields": {
+        "code": "gp",
+        "name": "SDSS-g&prime;",
+        
+    }
+}, {
+    "pk": 11,
+    "model": "images.filter",
+    "fields": {
+        "code": "ip",
+        "name": "SDSS-i&prime;",
+        
+    }
+}, {
+    "pk": 12,
+    "model": "images.filter",
+    "fields": {
+        "code": "rp",
+        "name": "SDSS-r&prime;",
+        
+    }
+}, {
+    "pk": 16,
+    "model": "images.filter",
+    "fields": {
+        "code": "up",
+        "name": "SDSS-u&prime;",
+        
+    }
+}, {
+    "pk": 15,
+    "model": "images.filter",
+    "fields": {
+        "code": "air",
+        "name": "Clear",
+        
+    }
+}, {
+    "pk": 21,
+    "model": "images.filter",
+    "fields": {
+        "code": "I",
+        "name": "Bessell-I",
+        
+    }
+}, {
+    "pk": 22,
+    "model": "images.filter",
+    "fields": {
+        "code": "Astrodon-UV",
+        "name": "Astrodon UV",
+        
+    }
+}, {
+    "pk": 23,
+    "model": "images.filter",
+    "fields": {
+        "code": "solar",
+        "name": "Solar (V+R)",
+        
+    }
+}, {
+    "pk": 26,
+    "model": "images.filter",
+    "fields": {
+        "code": "Skymapper-VS",
+        "name": "Skymapper CaV",
+        
+    }
+}, {
+    "pk": 27,
+    "model": "images.filter",
+    "fields": {
+        "code": "H-Alpha",
+        "name": "H Alpha",
+        
+    }
+}, {
+    "pk": 28,
+    "model": "images.filter",
+    "fields": {
+        "code": "OIII",
+        "name": "OIII",
+        
+    }
+}, {
+    "pk": 29,
+    "model": "images.filter",
+    "fields": {
+        "code": "H-Beta",
+        "name": "H Beta",
+        
+    }
+}, {
+    "pk": 30,
+    "model": "images.filter",
+    "fields": {
+        "code": "D51",
+        "name": "D51",
+        
+    }
+},
+{
+    "pk": 31,
+    "model": "images.filter",
+    "fields": {
+            "code":'CC', "name":'Air', "drupalnode": 'node/31',
+    },
+}
+{
+    "pk": 32,
+    "model": "images.filter",
+    "fields": {
+            "code":'RGB', "name":'Color', "drupalnode": "",
+    }
+},
+{
+    "pk": 33,
+    "model": "images.filter",
+    "fields": {
+            "code":'RGB+ND', "name":"Color + Neutral Density", "drupalnode": "",
+    }
+},
+{
+    "pk": 34,
+    "model": "images.filter",
+    "fields": {
+            "code":'RGB_ND', "name":"BVr' +Neutral Dens", "drupalnode": "",
+    }
+},
+{
+    "pk": 35,
+    "model": "images.filter",
+    "fields": {
+            "code":'Red', "name":"Red", "drupalnode": "",
+    }
+},
+{
+    "pk": 36,
+    "model": "images.filter",
+    "fields": {
+            "code":'Green', "name":"Green", "drupalnode": "",
+    }
+},
+{
+    "pk": 37,
+    "model": "images.filter",
+    "fields": {
+            "code":'Blue', "name":"Blue", "drupalnode": "",
+    }
+},
+{
+    "pk": 38,
+    "model": "images.filter",
+    "fields": {
+            "code":'CA', "name":'Hydrogen Alpha', "drupalnode": 'node/51',
+    }
+},
+{
+    "pk": 39,
+    "model": "images.filter",
+    "fields": {
+            "code":'HB', "name":"Hydrogen Beta", "drupalnode": "node/53",
+    }
+},
+{
+    "pk": 40,
+    "model": "images.filter",
+    "fields": {
+            "code":'CO', "name":'Oxygen III', "drupalnode": 'node/34',
+    }
+},
+{
+    "pk": 41,
+    "model": "images.filter",
+    "fields": {
+            "code":'CB', "name":'Bessell B', "drupalnode": 'node/36',
+    }
+},
+{
+    "pk": 42,
+    "model": "images.filter",
+    "fields": {
+            "code":'CV', "name":"Bessell V", "drupalnode": "node/37",
+    }
+},
+{
+    "pk": 43,
+    "model": "images.filter",
+    "fields": {
+            "code":'CR', "name":'Bessell R', "drupalnode": "node/43",
+    }
+},
+{
+    "pk": 44,
+    "model": "images.filter",
+    "fields": {
+            "code":'BI', "name":"Bessell I", "drupalnode": "",
+    }
+},
+{
+    "pk": 45,
+    "model": "images.filter",
+    "fields": {
+            "code":'CU', "name":"SDSS u'", "drupalnode": "node/42",
+    }
+},
+{
+    "pk": 46,
+    "model": "images.filter",
+    "fields": {
+            "code":'SR', "name":"SDSS r'", "drupalnode": "",
+    }
+},
+{
+    "pk": 47,
+    "model": "images.filter",
+    "fields": {
+            "code":'CI', "name":"SDSS i'", "drupalnode": "node/35",
+    }
+},
+{
+    "pk": 48,
+    "model": "images.filter",
+    "fields": {
+            "code":'NB', "name":"B +Neutral Dens", "drupalnode": "",
+    }
+},
+{
+    "pk": 49,
+    "model": "images.filter",
+    "fields": {
+            "code":'NV', "name":"V +Neutral Dens", "drupalnode": "",
+    }
+},
+{
+    "pk": 50,
+    "model": "images.filter",
+    "fields": {
+            "code":'SG', "name":"Sloan g'", "drupalnode": "node/45",
+    }
+},
+{
+    "pk": 51,
+    "model": "images.filter",
+    "fields": {
+            "code":'SY', "name":"Pan-STARRS Y", "drupalnode": "node/49",
+    }
+},
+{
+    "pk": 52,
+    "model": "images.filter",
+    "fields": {
+            "code":'SZ', "name":"Pan-STARRS Z", "drupalnode": "node/48",
+    }
+},
+{
+    "pk": 53,
+    "model": "images.filter",
+    "fields": {
+            "code":'SO', "name":"Solar", "drupalnode": "node/40",
+    }
+},
+{
+    "pk": 54,
+    "model": "images.filter",
+    "fields": {
+            "code":'SM', "name":"SkyMap - CaV", "drupalnode": "node/41",
+    }
+},
+{
+    "pk": 55,
+    "model": "images.filter",
+    "fields": {
+            "code":'OP', "name":"Opal", "drupalnode": "node/50",
+    }
+},
+{
+    "pk": 56,
+    "model": "images.filter",
+    "fields": {
+            "code":'D5', "name":"D51 filter", "drupalnode": "",
+
+    }
+}
+]

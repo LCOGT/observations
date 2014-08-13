@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+{% load extra_options %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block search %}
+<div class="actions">
+   <form method=POST action="{% url wis.views.find_slots %}">
+   <label>Start</label>
+   <input type=text name="start" value="{% now "Y/m/d" %}"/>
+   <label>End</label>
+   <input type=text name="end" value="{% now "Y/m/d" %}"/>
+   <input type=submit value=search />
+   </form>
+</div>
+{% endblock %}

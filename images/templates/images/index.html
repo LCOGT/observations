@@ -1,0 +1,31 @@
+{% extends 'images/base.html' %}
+{% load images_extras %}
+
+{%block header %}Observations{%endblock%}
+
+{% block main-content %}
+						<div class="row">
+							<p>Welcome. This part of our site aims to ensure that every observation taken by a public user of our network has a permanent web presence. You can see the most recent and popular observations below, <a href="{% url images.views.index %}search">search</a> by title, or browse <a href="#bysite">by site</a>, <a href="#bytelescope">telescope</a> or <a href="{% url images.views.index %}category/">category</a>.</p>
+						</div>
+
+						<div class="row">
+							<h2><a href="{% url images.views.index %}recent/">Most recent observations</a></h2>
+							<div class="time"></div>
+							<ul class="observation-results" data-json="{% url images.views.index %}search.json" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "images/observationlist.html" with obs=latest %}
+							</ul>
+						</div>
+						<div class="row">
+							<h2><a href="{% url images.views.index %}trending/">Currently trending observations</a></h2>
+							<ul class='observation-results' data-json="{% url images.views.index %}trending.json" data-update="update" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "images/observationlist.html" with obs=trending %}
+							</ul>
+						</div>
+						<div class="row">
+							<h2><a href="{% url images.views.index %}popular/">All-time most popular observations</a></h2>
+							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "images/observationlist.html" with obs=popular %}
+							</ul>
+						</div>
+{% endblock %}
+

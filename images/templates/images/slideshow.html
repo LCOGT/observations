@@ -1,0 +1,27 @@
+<head>
+	<title>{% if input.title %}{{ input.title }} | {% endif %}Slideshow</title>
+	<script src="{{ MEDIA_URL }}js/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/rti_archive_slideshow.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/rti_archive_slideshow.css" type="text/css" media="screen" />
+	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/zen/lcogt/favicon.ico" type="image/x-icon" />
+	<script type="text/javascript">
+	<!--
+		$(document).ready(function() { slides = new Slideshow({json:'{% url images.views.index %}{{link}}.json{% if input.linkquery %}?{{input.linkquery}}{% endif %}'}); })
+
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-2087713-1']);
+		_gaq.push(['_trackPageview']);
+		
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	// -->
+	</script>
+</head>
+<body>
+	<div id="logo" style="display:show;"><a href="http://lcogt.net/"><img src="{{ MEDIA_URL }}img/lcogt_w.png" /></a></div>
+	<div id="result">If you have Javascript enabled, a slideshow of images {% if input.title %}titled {{ input.title }}{% endif %} will appear here.</div>
+</body>
+</html>

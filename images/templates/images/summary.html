@@ -1,0 +1,15 @@
+{% load images_extras %}
+{% if input.bins %}
+							<p class="skip-link"><em><a href="#results">Skip to observations</a></em></p>
+							<div class="gray-7-bg">
+								<div class="padded">
+									<h2>Summary</h2>
+									<div class="temporalplot">
+										<div class="temporalbars">
+{% for b in input.bins reversed %}											<div class="temporalitem"><div class="temporalnum" style="margin-top:{% widthratio input.binmax|negative:b.count input.binmax 80 %}px;">{% if b.count > 0 %}<a href="{% url images.views.index %}search/?user={{user}}&daterange=select&sday=1&smon={{ b.m }}&syear={{b.year}}&eday=31&emon={{b.m}}&eyear={{b.year}}">{{ b.count }}</a>{% endif %}</div><div class="temporalbar" style="height:{% widthratio b.count input.binmax 80 %}px;"></div><div class="temporaltxt{% if b.m = 1 %} startyear{% endif %}" style="{% if forloop.last %}padding-right:0px;{% endif %}">{{ b.month }}{% if b.m = 1 %} {{ b.year }}{% endif %}</div></div>{% endfor %}
+											<div style="clear:both;"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+{% endif %}

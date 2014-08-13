@@ -1,0 +1,31 @@
+{% extends 'images/list.html' %}
+{% load images_extras %}
+
+{% block script-content %}{% endblock %}
+{%block header %}{{ input.title }}{%endblock%}
+{%block title %}{{ input.title }}{%endblock%}
+
+{% block breadcrumb %}
+								<div class="breadcrumb">
+									<a href="{% url images.views.index %}">Observations</a> &raquo; <a href="{% url images.views.index %}{{ input.link }}">{{ input.title }}</a>
+								</div>
+{% endblock %}
+
+{% block telescopes-list-title %}{% endblock %}
+
+{% block main-content %}
+						<div class="row">
+							<p>{{ input.description }}:</p>
+						</div>
+						<div class="row">
+							<div class="time"></div>
+							{% if pager %}
+							<div class="pager">{{ pager|safe }}</div>
+							{% endif %}
+
+							<ul class='observation-results' data-json="{% url images.views.index %}{% if link == 'recent' %}search{% else %}{{ link }}{% endif %}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="{% if link == 'recent' %}add{% else %}update{% endif %}" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "images/observationlist.html" with obs=obs %}
+							</ul>
+						</div>
+{% endblock %}
+
