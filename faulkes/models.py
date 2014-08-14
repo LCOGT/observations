@@ -15,6 +15,8 @@ class Site(models.Model):
     class Meta:
         app_label = 'faulkes'
         db_table  = 'observatory_site'
+    def __unicode__(self):
+        return u'%s (%s)' % (self.name,self.code)
 
 class Telescope(models.Model):
     id = models.IntegerField(primary_key=True, db_column='ID', help_text='A numerical ID for the telescope')

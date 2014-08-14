@@ -1,6 +1,7 @@
 # Create your views here.
 
 from datetime import date,timedelta,datetime
+from django.conf import settings
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.core import serializers
 from django.core.urlresolvers import reverse
@@ -1319,15 +1320,16 @@ def getCategoryLevel(avm,input):
 def framedb_lookup(query):
     try:
         conn = httplib.HTTPSConnection("data.lcogt.net")
-        params = urllib.urlencode({'username':'guest','password':'guest'})
+        params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
         #query = "/find?%s" % params
         conn.request("POST",query,params)
-        r = conn.getresponse().read()
-        print "Response - %s " % r
-        resp = json.loads(r)
+        response = conn.getresponse()
+        r = response.read()
+        print "Response - %s " % response.status
+        data = json.loads(r)
     except:
         return False
-    return resp
+    return data
 
 def build_recent_observations(num):
     observations = []
@@ -1340,7 +1342,13 @@ def build_recent_observations(num):
 
 def identity(request):
     origname = request.GET.get('origname','')
-    query = '/find?origname=%s&full_header=1' % origname
+    tracknum = request.GET.get('tracknum','')
+    org_name = request.GET.get('org_name','')
+    query = '/find?full_header=1'
+    if origname:
+        query += '&origname=%s' % origname
+    if tracknum:
+        query += '&tracknum__in=%s' % tracknum
     observation = framedb_lookup(query)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
@@ -1348,7 +1356,6 @@ def identity(request):
     if len(observation) == 1:
         obs = build_framedb_observations(observation)
         filters = get_framedb_fits(observation[0])
-        print filters
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
         except Exception,e:
@@ -1359,6 +1366,19 @@ def identity(request):
                                                                 'obs':obs[0],
                                                                 'filters':filters,
                                                                 'framedb_obs':True },context_instance=RequestContext(request))
+    else:
+        if not org_name:
+            org_name = "Unknown"
+        obs = build_framedb_observations(observation)
+        info = {
+            'title' : "Recent observations for %s" % org_name,
+            'link' : '',  
+            'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % org_name,
+            'perpage' : 36
+        }
+        data = {'input':info,'link':info['link'],'obs':obs,'n':len(obs)}
+        return render_to_response('faulkes/group.html', data,context_instance=RequestContext(request))
+
 
 def build_framedb_observations(observations):
     obs_list = []
@@ -1438,12 +1458,12 @@ def build_framedb_observations(observations):
         # o['link_site'] = o['telescope'].site.code;
         # o['link_tel'] = o['link_site']+"/"+o['telescope'].code;
         # o['link_user'] = "user/"+str(o['userid']);
-        obj = re.sub(r" ?\([^\)]*\)",'',o['groupid']) # Remove brackets
+        obj = re.sub(r" ?\([^\)]*\)",'',o['object_name']) # Remove brackets
         obj = re.sub(r"/\s\s+/", ' ', obj)      # Remove redundant whitespace
         obj = re.sub(r"[^\w\-\+0-9 ]/i",'',obj) # Remove non-useful characters
         params = {  'link_obs'      : "%s?origname=%s" % (reverse('faulkes.views.identity'),o['origname']),
                     'instrumentname': o['detector'],
-                    'skyobjectname' : o['groupid'],
+                    'skyobjectname' : o['object_name'],
                     'object'        : obj,
                     'thumbnail'     : thumbnail,
                     'hasthumbnail'  : True,
@@ -1458,7 +1478,8 @@ def build_framedb_observations(observations):
                     'raval'         : o['ra'],
                     'decval'        : o['dec'],
                     'fullimage_url' : large_img,
-                    'user'          : find_username_tracknum([o['tracknum']])
+                    'user'          : find_username_tracknum([o['tracknum']]),
+                    'fits_view_url' : "%s#%s/%s/%s" % (settings.FITS_VIEWER_URL, o['propid'],o['day_obs'], o['origname'])
                 }
         avm = avm_from_lookup(params['object'])
         if avm:
