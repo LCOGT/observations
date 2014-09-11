@@ -1145,7 +1145,6 @@ def get_sci_fits(params):
 
     rids = params['requestids'].split(',')
     filters = []
-    print url, rids
     if rids:
         if len(rids) == 3:
             ids = ['b','g','r']
@@ -1325,7 +1324,7 @@ def framedb_lookup(query):
         conn.request("POST",query,params)
         response = conn.getresponse()
         r = response.read()
-        print "Response - %s " % response.status
+        #print "Response - %s " % response.status
         data = json.loads(r)
     except:
         return False
@@ -1352,7 +1351,7 @@ def identity(request):
     observation = framedb_lookup(query)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
-        raise Http404
+        return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
         obs = build_framedb_observations(observation)
         filters = get_framedb_fits(observation[0])
@@ -1390,74 +1389,6 @@ def build_framedb_observations(observations):
         large_img = "http://data.lcogt.net/thumbnail/%s/?height=560&width=560&label=0" % id_name
         telname = "%s in %s" % (encl[o['encid']],telid[o['telid']])
         site = Site.objects.get(code=o['siteid'])
-        #         o = {}
-
-        # try:
-        #     o['user'] = Registrations.objects.get(schoolid=ob.schoolid)
-        # except:
-        #     o['user'] = "Unknown"
-
-
-        # try:
-        #     obstats = ObservationStats.objects.filter(imagearchive=ob)
-        #     if(obstats[0].avmcode!="0.0"):
-        #         o['avmcode'] = obstats[0].avmcode
-        #         cats = o['avmcode'].split(';')
-        #         o['avmname'] = "";
-        #         for (counter,c) in enumerate(cats):
-        #             if counter > 0:
-        #                 o['avmname'] += ";"
-        #             if c in categorylookup:
-        #                 o['avmname'] += categorylookup[c]
-        #     else:
-        #         o['avmcode'] = ""
-        #     o['views'] = obstats[0].views
-        # except:
-        #     o['avmcode'] = ""
-
-        # o['imageid'] = ob.imageid
-        # o['imagetype'] = ob.imagetype
-        # o['whentaken'] = ob.whentaken
-        # o['schoolid'] = ob.schoolid
-        # o['bestofimage'] = ob.bestofimage
-        # o['skyobjectname'] = ob.skyobjectname
-        # o['raval'] = ob.raval*15
-        # o['decval'] = ob.decval
-        # o['filter'] = ob.filter
-        # o['filterprops'] = filter_props(ob.filter)
-        # o['exposuresecs'] = ob.exposuresecs
-        # o['defaultexpsecs'] = ob.defaultexpsecs
-        # o['skyobjecttype'] = ob.skyobjecttype
-        # o['requestids'] = ob.requestids
-        # o['telescopeid'] = ob.telescopeid
-        # o['mosaicpatterncode'] = ob.mosaicpatterncode
-        # o['hasthumbnail'] = ob.hasthumbnail
-        # o['imagesequenceid'] = ob.imagesequenceid
-        # o['filename'] = ob.filename
-        # o['schoolloginname'] = ob.schoolloginname
-        # o['processingtype'] = ob.processingtype
-        # o['indexnames'] = ob.indexnames
-        # o['instrumentname'] = ob.instrumentname
-        # o['telescope'] = Telescope.objects.filter(id=int(o['telescopeid']))[0]
-        # o['fitsfiles'] = "";
-        # if o['filename'].startswith('NoImage'):
-        #     o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
-        #     o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
-        # else:
-        #     o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
-        #     #o['fullimage_url'] = "http://rti.lcogt.net/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
-        #     o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
-        # o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
-        # o['licenseimage'] = 'cc-by-nc.png'
-        # o['credit'] = "Image taken with "+o['telescope'].name+" operated by Las Cumbres Observatory Global Telescope Network"
-        # # Change the credit if prior to 11 Oct 2005
-        # if int(o['whentaken']) < int("20051011000000"):
-        #     o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust";
-        # o['userid'] = o['schoolid']
-        # o['link_obs'] = o['telescope'].site.code+"/"+o['telescope'].code+"/"+str(o['imageid']);
-        # o['link_site'] = o['telescope'].site.code;
-        # o['link_tel'] = o['link_site']+"/"+o['telescope'].code;
-        # o['link_user'] = "user/"+str(o['userid']);
         obj = re.sub(r" ?\([^\)]*\)",'',o['object_name']) # Remove brackets
         obj = re.sub(r"/\s\s+/", ' ', obj)      # Remove redundant whitespace
         obj = re.sub(r"[^\w\-\+0-9 ]/i",'',obj) # Remove non-useful characters
