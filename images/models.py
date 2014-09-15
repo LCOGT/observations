@@ -78,7 +78,7 @@ class Image(models.Model):
         return self.skyobjectname
 
 class ObservationStats(models.Model):
-    imagearchive = models.ForeignKey(Imagearchive)
+    image = models.ForeignKey(Image)
     views = models.IntegerField(null=True, db_column='Views', blank=True,help_text='The number of views that this observation has had')
     weight = models.FloatField(null=True, db_column='Weight', blank=True,help_text='A weight to determine what is currently popular')
     lastviewed = models.DateTimeField(db_column='LastViewed', blank=True,help_text='The time this image was last viewed')

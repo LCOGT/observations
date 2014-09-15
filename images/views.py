@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.encoding import smart_unicode
 from email.utils import parsedate_tz
-from images.models import Site, Telescope, Filter, Imagearchive, ObservationStats
+from images.models import Site, Telescope, Filter, Image, ObservationStats
 from string import replace
 from wis.models import Registrations, Schooluri
 import math
@@ -220,14 +220,14 @@ def index(request):
     obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_line]
     obs = []
     for o in obstats:
-        obs.append(o.imagearchive)
+        obs.append(o.image)
     trending = build_observations(obs)
 
 
     obstats = ObservationStats.objects.all().order_by('-views')[:n_per_line]
     obs = []
     for o in obstats:
-        obs.append(o.imagearchive)
+        obs.append(o.image)
     popular = build_observations(obs)
 
     return render_to_response('images/index.html', {'latest':latest,
@@ -250,9 +250,9 @@ def view_group(request,mode):
             dup = '';
 
         if(dup==''):
-            obs = Imagearchive.objects.using('images').order_by('-whentaken')[:n_per_page]
+            obs = image.objects.using('images').order_by('-whentaken')[:n_per_page]
         else:
-            obs = Imagearchive.objects.using('images').extra(order_by=['-whentaken'])
+            obs = image.objects.using('images').extra(order_by=['-whentaken'])
             obs.query.group_by = ['schoolid']
             obs = obs[:n_per_page]
 
@@ -267,7 +267,7 @@ def view_group(request,mode):
         n = obstats.count()
         obs = []
         for o in obstats:
-            obs.append(o.imagearchive)
+            obs.append(o.image)
         obs = build_observations(obs)
         input['title'] = "All-time Most Viewed Observations at LCOGT"
         input['link'] = 'popular'
@@ -277,7 +277,7 @@ def view_group(request,mode):
         n = obstats.count()
         obs = []
         for o in obstats:
-            obs.append(o.imagearchive)
+            obs.append(o.image)
         obs = build_observations(obs)
         input['title'] = "Trending Observations at LCOGT"
         input['link'] = 'trending'  
@@ -329,7 +329,7 @@ def search(request):
     obs = []
     n = -1
     if input['query']:
-        obs = Imagearchive.objects.all()
+        obs = image.objects.all()
         if form['query'] != "":
             obs = obs.filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
         if form['telid'] != 0:
@@ -513,7 +513,7 @@ def view_site(request,code):
     obs = []
     n = 0
     if site.code == 'ogg' or site.code == 'coj':
-        obs = Imagearchive.objects.filter(telescopeid__in=telescopes.values_list('id',flat=True)).order_by('-whentaken')
+        obs = image.objects.filter(telescopeid__in=telescopes.values_list('id',flat=True)).order_by('-whentaken')
         n = obs.count()
 
 
@@ -559,7 +559,7 @@ def view_telescope(request,code,tel):
     obs = []
     n =  0
     if site.code == 'ogg' or site.code == 'coj':
-        obs = Imagearchive.objects.filter(telescopeid=telescope.id).order_by('-whentaken')
+        obs = image.objects.filter(telescopeid=telescope.id).order_by('-whentaken')
         n = obs.count()
 
 
@@ -678,7 +678,7 @@ def view_object(request,object):
         object = {'name':object,'avm':{'name':avm,'code':avmcode}}
 
     try:
-        obser = Imagearchive.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
+        obser = image.objects.all().filter(skyobjectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
         # If we have an AVM code we can use it to limit to objects of the correct type
         if object['avm']['code'] != "":
             obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
@@ -767,7 +767,7 @@ def view_user(request,userid):
     #s = Registrations.objects.filter(schoolid=userid)#.values('usertype').annotate(Count(tot='schoolid')).order_by('-schoolid__count')
     #return HttpResponse(simplejson.dumps(s),mimetype='application/javascript')
 
-    obs = Imagearchive.objects.filter(schoolid=userid).order_by('-whentaken')
+    obs = image.objects.filter(schoolid=userid).order_by('-whentaken')
     n = obs.count()
 
 
@@ -821,7 +821,7 @@ def view_username(request,username):
     except ObjectDoesNotExist:
         return unknown(request)
     
-    obs = Imagearchive.objects.filter(schoolloginname=username).order_by('-whentaken')
+    obs = image.objects.filter(schoolloginname=username).order_by('-whentaken')
     n = obs.count()
 
     input['observations'] = n
@@ -890,7 +890,7 @@ def view_category(request,category):
 
     n = 0
     try:
-        obstats = ObservationStats.objects.filter(avmcode__startswith='%s' % avm).order_by('-imagearchive__whentaken')#.order_by('-views')
+        obstats = ObservationStats.objects.filter(avmcode__startswith='%s' % avm).order_by('-image__whentaken')#.order_by('-views')
         n = obstats.count()
     except ObjectDoesNotExist:
         return unknown(request)
@@ -911,7 +911,7 @@ def view_category(request,category):
 
     obs = []
     for o in obstats:
-        obs.append(o.imagearchive)
+        obs.append(o.image)
 
     obs = build_observations(obs)
     
@@ -940,7 +940,7 @@ def view_avm(request,avm):
     avmtemp = re.sub(r"\.","\\.",avm)
 
     n = 0
-    obstats = ObservationStats.objects.filter(avmcode__regex=r'(^|;)%s' % avmtemp).order_by('-imagearchive__whentaken')#.order_by('-views')
+    obstats = ObservationStats.objects.filter(avmcode__regex=r'(^|;)%s' % avmtemp).order_by('-image__whentaken')#.order_by('-views')
     n = obstats.count()
 
     if avm in categorylookup:
@@ -963,7 +963,7 @@ def view_avm(request,avm):
 
     obs = []
     for o in obstats:
-        obs.append(o.imagearchive)
+        obs.append(o.image)
     obs = build_observations(obs)
 
 
@@ -993,7 +993,7 @@ def view_map(request):
     sites = Site.objects.all()
     telescopes = Telescope.objects.all()
 
-    obs = Imagearchive.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
+    obs = image.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
     #print dt.strftime("%Y%m%d%H%M%S")
     n = obs.count()
         
@@ -1032,7 +1032,7 @@ def view_observation(request,code,tel,obs):
         return unknown(request)
 
     try:
-        obs = Imagearchive.objects.filter(imageid=obs)
+        obs = image.objects.filter(imageid=obs)
     except:
         return broken(request,"There was a problem finding the requested observation in the database.")
 
@@ -1051,7 +1051,7 @@ def view_observation(request,code,tel,obs):
         user_agent = ''
 
     # Update stats
-    obstats = ObservationStats.objects.filter(imagearchive=obs[0])
+    obstats = ObservationStats.objects.filter(image=obs[0])
     if obstats:
         # Only update the number of views if it isn't a crawler
         if (request.is_crawler):
@@ -1068,7 +1068,7 @@ def view_observation(request,code,tel,obs):
         #print obstats[0].weight
         obstats[0].lastviewed = datetime.utcnow()
     else:
-        obstats = [ObservationStats(imagearchive=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
+        obstats = [ObservationStats(image=obs[0],views = 1,weight = 1,lastviewed = datetime.utcnow())]
         views = 1
     obstats[0].save()
 
@@ -1213,7 +1213,7 @@ def get_framedb_fits(obs):
 
 def get_observation_stream(obs):
 
-    ob = Imagearchive.objects.filter(schoolid=obs['schoolid'])
+    ob = image.objects.filter(schoolid=obs['schoolid'])
     o = ob.values()
     num = len(o)
 
@@ -1392,7 +1392,7 @@ def build_framedb_observations(observations):
 
 
         # try:
-        #     obstats = ObservationStats.objects.filter(imagearchive=ob)
+        #     obstats = ObservationStats.objects.filter(image=ob)
         #     if(obstats[0].avmcode!="0.0"):
         #         o['avmcode'] = obstats[0].avmcode
         #         cats = o['avmcode'].split(';')
@@ -1437,7 +1437,7 @@ def build_framedb_observations(observations):
         #     o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
         #     o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
         # else:
-        #     o['fullimage_url'] = "http://lcogt.net/files/rtisba/images-rti/imagearchive/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
+        #     o['fullimage_url'] = "http://lcogt.net/files/rtisba/images-rti/image/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
         #     #o['fullimage_url'] = "http://rti.lcogt.net/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescopeid'])
         #     o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
         # o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
@@ -1532,7 +1532,7 @@ def build_observations(obs):
             o['schoolname'] = "Unknown"
 
         try:
-            obstats = ObservationStats.objects.filter(imagearchive=ob)
+            obstats = ObservationStats.objects.filter(image=ob)
             if(obstats[0].avmcode!="0.0"):
                 o['avmcode'] = obstats[0].avmcode
                 cats = o['avmcode'].split(';')

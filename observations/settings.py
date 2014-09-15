@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(CURRENT_PATH)
 PREFIX="/observations" #if PRODUCTION else ""
 
 PRODUCTION = True if platform.node().startswith('scheduler') else False
-VERSION = '1.02'
+VERSION = '0.1'
 TEST = 'test' in sys.argv
 DEBUG = not PRODUCTION
 
@@ -63,7 +63,6 @@ DATABASES = {'default'      : DEFAULT_DB,
 
 ADMINS = (
           ('Edward Gomez', 'egomez@lcogt.net'),
-          ('Zach Walker', 'zwalker@lcogt.net'),
           ('Doug Thomas', 'dthomas@lcogt.net'),
          )
 MANAGERS = ADMINS
@@ -88,7 +87,7 @@ if PRODUCTION:
 else:
     STATIC_ROOT = '/var/www/html/static/'
     STATIC_URL = PREFIX + '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR,'whatsup', 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'observations', 'static'),]
 
 ##### Upload directory for the proposalsubmit app. Also where proposal PDFs are created
 MEDIA_ROOT = os.path.join(CURRENT_PATH, 'media')
