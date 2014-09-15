@@ -41,28 +41,20 @@ class Filter(models.Model):
         return self.name
 
 class Image(models.Model):
-    imageid = models.IntegerField(primary_key=True, db_column='ImageID') # Field name made lowercase.
-    imagetype = models.CharField(max_length=30, db_column='ImageType', blank=True) # Field name made lowercase.
-    whentaken = models.CharField(max_length=42, db_column='WhenTaken', blank=True) # Field name made lowercase.
-    schoolid = models.IntegerField(null=True, db_column='SchoolID', blank=True) # Field name made lowercase.
-    bestofimage = models.CharField(max_length=3, db_column='BestOfImage', blank=True) # Field name made lowercase.
-    skyobjectname = models.CharField(max_length=762, db_column='SkyObjectName', blank=True) # Field name made lowercase.
-    raval = models.FloatField(null=True, db_column='RaVal', blank=True) # Field name made lowercase.
-    decval = models.FloatField(null=True, db_column='DecVal', blank=True) # Field name made lowercase.
+    imageid = models.IntegerField(primary_key=True)
+    whentaken = models.CharField(max_length=42, blank=True)
+    schoolid = models.IntegerField(null=True, blank=True)
+    objectname = models.CharField(max_length=762,blank=True)
+    ra = models.FloatField(null=True, blank=True)
+    dec = models.FloatField(null=True, blank=True)
     filter = models.CharField(max_length=30, blank=True)
-    exposuresecs = models.FloatField(null=True, db_column='ExposureSecs', blank=True) # Field name made lowercase.
-    defaultexpsecs = models.FloatField(null=True, db_column='DefaultExpSecs', blank=True) # Field name made lowercase.
-    skyobjecttype = models.CharField(max_length=3, db_column='SkyObjectType', blank=True) # Field name made lowercase.
+    exposure = models.FloatField(null=True, blank=True)
     requestids = models.CharField(max_length=762, blank=True)
     telescope = models.ForeignKey(Telescope)
-    mosaicpatterncode = models.IntegerField(null=True, db_column='MosaicPatternCode', blank=True) # Field name made lowercase.
-    hasthumbnail = models.CharField(max_length=3, db_column='HasThumbnail', blank=True) # Field name made lowercase.
-    imagesequenceid = models.IntegerField(null=True, db_column='imageSequenceId', blank=True) # Field name made lowercase.
-    filename = models.CharField(max_length=150, db_column='Filename', blank=True) # Field name made lowercase.
-    schoolloginname = models.CharField(max_length=762, blank=True)
+    filename = models.CharField(max_length=150, blank=True)
+    rti_username = models.CharField(max_length=50, blank=True,null=True)
     processingtype = models.CharField(max_length=762, blank=True)
-    indexnames = models.CharField(max_length=762, blank=True)
-    instrumentname = models.CharField(max_length=60, db_column='instrumentName', blank=True) # Field name made lowercase.
+    instrumentname = models.CharField(max_length=60, blank=True)
     class Meta:
         db_table = u'images'
         verbose_name = u'image'
@@ -75,7 +67,7 @@ class Image(models.Model):
             d = "Error"
         return d
     def __unicode__(self):
-        return self.skyobjectname
+        return "%s taken by %s" % (self.objectname, self.rti_username)
 
 class ObservationStats(models.Model):
     image = models.ForeignKey(Image)
