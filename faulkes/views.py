@@ -1469,7 +1469,10 @@ def build_framedb_observations(observations,org_names=None):
         else:
             params['user'] = "Unknown"
         avm = avm_from_lookup(params['object'])
-        params['reduction'] = reduction.get(str(o['annotate_best_reduction']),'')
+        try:
+            params['reduction'] = reduction.get(str(o['annotate_best_reduction']),'')
+        except:
+            params['reduction'] = 'Unknown'
         if avm:
             params['avmname'] = avm['desc']
             params['avmcode'] = avm['code']
