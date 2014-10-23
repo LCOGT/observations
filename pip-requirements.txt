@@ -1,5 +1,7 @@
+--extra-index-url=http://versionsba.lco.gtn/svn/telsoft/Lco/PyPi
 MySQL-python==1.2.5
 Django==1.4.13
 South==0.8.4
 ipython==2.1.0
 flup==1.0.2
+django-rbauth==1.13

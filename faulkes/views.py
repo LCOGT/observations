@@ -3,11 +3,12 @@
 from datetime import date,timedelta,datetime
 from django.conf import settings
 from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.auth.models import User
 from django.core import serializers
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Q
 from django.http import HttpResponse,HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
@@ -21,6 +22,7 @@ from wis.models import Registrations, Schooluri
 import math
 import re
 import urllib, urllib2, httplib, json
+import MySQLdb
 
 n_per_line = 6
 n_per_page = 30
@@ -1330,13 +1332,54 @@ def framedb_lookup(query):
         return False
     return data
 
+def tracknum_lookup(tracknum):
+    try:
+        conn = httplib.HTTPSConnection("lcogt.net")
+        params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
+        query = "/observe/service/request/get/userrequest/%s" % tracknum
+        conn.request("POST",query,params)
+        response = conn.getresponse()
+        r = response.read()
+        #print "Response - %s " % response.status
+        data = json.loads(r)
+    except:
+        return False
+    return data
+
+def find_user_ids(tracknums):
+    user_list =[]
+    for n in tracknums:
+        data = tracknum_lookup(n)
+        user_list.append((n,data['proposal']['user_id']))
+    return user_list
+
+def look_up_org_names(usernames):
+    ''' Parse a list of tuples mapping tracking num to username
+        return a dict of tracking numbers to organization names
+    '''
+    tracknums, userlist = zip(*usernames)
+    db = MySQLdb.connect(user=settings.ODIN_DB['USER'], passwd=settings.ODIN_DB['PASSWORD'], db=settings.ODIN_DB['NAME'], host=settings.ODIN_DB['HOST'])
+    sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" %  "','".join(userlist)
+    rows = db.cursor()
+    rows.execute(sql)
+    org_names = {x[0]:x[1] for x in rows}
+    db.close()
+    user_dict = dict(usernames) 
+    if org_names:
+        for k,v in user_dict.items():
+            user_dict[k] = org_names.get(v,'Unknown')
+    return user_dict
+
 def build_recent_observations(num):
     observations = []
     recent_obs = []
     ##### Store the TAG IDs in a config not here
     qstring = "/find?tagid__in=LCOEPO,FTP&limit=%s&order_by=-date_obs&full_header=1" % int(num)
     observations = framedb_lookup(qstring)
-    recent_obs = build_framedb_observations(observations)
+    tracknums = [o['tracknum'] for o in observations]
+    usernames = find_user_ids(tracknums)
+    org_names = look_up_org_names(usernames)
+    recent_obs = build_framedb_observations(observations,org_names)
     return recent_obs
 
 def identity(request):
@@ -1349,11 +1392,14 @@ def identity(request):
     if tracknum:
         query += '&tracknum__in=%s' % tracknum
     observation = framedb_lookup(query)
+    tracknums = [o['tracknum'] for o in observation]
+    usernames = find_user_ids(tracknums)
+    org_names = look_up_org_names(usernames)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
         return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
-        obs = build_framedb_observations(observation)
+        obs = build_framedb_observations(observation,org_names)
         filters = get_framedb_fits(observation[0])
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
@@ -1366,20 +1412,26 @@ def identity(request):
                                                                 'filters':filters,
                                                                 'framedb_obs':True },context_instance=RequestContext(request))
     else:
-        if not org_name:
-            org_name = "Unknown"
-        obs = build_framedb_observations(observation)
-        info = {
-            'title' : "Recent observations for %s" % org_name,
-            'link' : '',  
-            'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % org_name,
-            'perpage' : 36
-        }
+        obs = build_framedb_observations(observation,org_names)
+        if len(org_names)>1:
+            info = {
+                'title' : "Recent observations" ,
+                'link' : '',  
+                'description' : 'Recent observations from Las Cumbres Observatory Global Telescope Network',
+                'perpage' : 36
+            }
+        elif len(org_names) == 1:
+            info = {
+                'title' : "Recent %s observations" % org_names[0][1],
+                'link' : '',  
+                'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % org_names[0][1],
+                'perpage' : 36
+            }
         data = {'input':info,'link':info['link'],'obs':obs,'n':len(obs)}
         return render_to_response('faulkes/group.html', data,context_instance=RequestContext(request))
 
 
-def build_framedb_observations(observations):
+def build_framedb_observations(observations,org_names=None):
     obs_list = []
     encl = {'doma':'Dome A','domb':'Dome B','domc':'Dome C','clma':'','aqwa':'Aqawan A','aqwb':'Aqawan B'}
     telid = {'1m0a' : '1-meter','2m0a':'2-meter','0m4a':'0.4-meter','0m4b':'0.4-meter'}
@@ -1409,9 +1461,12 @@ def build_framedb_observations(observations):
                     'raval'         : o['ra'],
                     'decval'        : o['dec'],
                     'fullimage_url' : large_img,
-                    'user'          : find_username_tracknum([o['tracknum']]),
                     'fits_view_url' : "%s#%s/%s/%s" % (settings.FITS_VIEWER_URL, o['propid'],o['day_obs'], o['origname'])
                 }
+        if org_names:
+            params['user'] = org_names.get(o['tracknum'],'Unknown')
+        else:
+            params['user'] = "Unknown"
         avm = avm_from_lookup(params['object'])
         if avm:
             params['avmname'] = avm['desc']
