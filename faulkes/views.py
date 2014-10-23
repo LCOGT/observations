@@ -1362,7 +1362,7 @@ def look_up_org_names(usernames):
     sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" %  "','".join(userlist)
     rows = db.cursor()
     rows.execute(sql)
-    org_names = {x[0]:x[1] for x in rows}
+    org_names = dict((x[0],x[1]) for x in rows)
     db.close()
     user_dict = dict(usernames) 
     if org_names:
