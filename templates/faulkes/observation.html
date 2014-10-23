@@ -67,6 +67,11 @@
 											<a href='{{obs.fits_view_url}}' target='_new'>View FITS file in viewer</a>
 {% endif %}
 										</td></tr>
+{% if obs.reduction %}
+										<tr>
+											<td class="first">Data Quality:</td><td>{{obs.reduction}}</td>
+										</tr>
+{% endif%}
 {% if obs.avmcode %}										<tr><td class='first'>Category:</td><td><a href="{% url faulkes.views.index %}category/{{ obs.avmcode }}">{{ obs.avmname }}</a></td></tr>{% endif %}
 										<tr><td class='first'>Credit:</td><td>{{ obs.credit }}</td></tr>
 										<tr><td class='first'>License:</td><td>	<a href="{{ obs.license }}" rel="license cc:license"><img src="{{ MEDIA_URL }}img/{{ obs.licenseimage }}" style="height:1.5em;" title="Some rights reserved" /></a></td></tr>

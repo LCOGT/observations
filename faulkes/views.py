@@ -1388,7 +1388,7 @@ def identity(request):
     org_name = request.GET.get('org_name','')
     query = '/find?full_header=1'
     if origname:
-        query += '&origname=%s' % origname
+        query += '&origname=%s&annotate_best_reduction=1' % origname
     if tracknum:
         query += '&tracknum__in=%s' % tracknum
     observation = framedb_lookup(query)
@@ -1435,6 +1435,7 @@ def build_framedb_observations(observations,org_names=None):
     obs_list = []
     encl = {'doma':'Dome A','domb':'Dome B','domc':'Dome C','clma':'','aqwa':'Aqawan A','aqwb':'Aqawan B'}
     telid = {'1m0a' : '1-meter','2m0a':'2-meter','0m4a':'0.4-meter','0m4b':'0.4-meter'}
+    reduction = {'10.0':'Quicklook image','90.0':'Final quality','00.0':'Uncalibrated image'}
     for o in observations:
         id_name = o['origname'].split('.')[0]
         thumbnail = "http://data.lcogt.net/thumbnail/%s/?height=150&width=150&label=0" % id_name
@@ -1468,6 +1469,7 @@ def build_framedb_observations(observations,org_names=None):
         else:
             params['user'] = "Unknown"
         avm = avm_from_lookup(params['object'])
+        params['reduction'] = reduction.get(str(o['annotate_best_reduction']),'')
         if avm:
             params['avmname'] = avm['desc']
             params['avmcode'] = avm['code']
