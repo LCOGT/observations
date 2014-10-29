@@ -1182,23 +1182,42 @@ def get_sci_fits(params):
                 filters.append({'img':'', 'fits':''})
     return filters
 
-def get_framedb_fits(obs):
+def get_fits(obs):
     '''
     return a download link to the observation along with the filter name
-
-    http://data.lcogt.net/download/frame/cpt1m013-kb76-20140811-0162.fits
+    First it checks if the data is in IPAC and if not returns a framedb link
     '''
-    url = 'http://data.lcogt.net/download/frame/%s' % obs['origname']
+    date = obs["date_obs"][0:10]
+    url = get_ipac_fits(obs['origname'],date,obs['propid'],obs['tracknum'],obs['reqnum'])
+    img = "http://data.lcogt.net/thumbnail/%s/?height=1000&width=1000&label=0" % obs['origname'][:-5]
+    if not url:
+        url = 'http://data.lcogt.net/download/frame/%s' % obs['origname']
     filter_info = {
             'id':obs['reqnum'],
             'name':obs['filter_name'],
             'fullname':obs['filter_name'],
-            'img':'',
+            'img':img,
             'fits': url
     }
     # Make an array to match the format returned by RTI/sci-archive
     filters = [filter_info]
     return filters
+
+def get_ipac_fits(origname,date,propid,tracknum,reqnum):
+    ipac_dl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/LCODownload/nph-lcoDownload?file="
+    baseurl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/Gator/nph-query?spatial=NONE&outfmt=1&catalog=lco_img"
+    qstring="&propid=%s&selcols=filehand,tracknum,reqnum&mission=lcogt&constraints=(date_obs+between+to_date('%s 00:01','YYYY-MM-DD HH24:MI')+and+to_date('%s 23:59','YYYY-MM-DD HH24:MI')+and+tracknum+in+('%s'))" % (propid,date,date,tracknum)
+    lookup_url = baseurl+qstring.replace(" ","%20")
+    resp = urllib2.urlopen(lookup_url)
+    text = resp.read()
+    vals = [x.strip() for x in text.split("\n") if x[:1]!='\\' and x[:1] != '' and x[:1] != '|']
+    files =  [v.split()[0] for v in vals]
+    filename = origname[:-9]
+    datafile = [f for f in files if filename in f]
+    if datafile:
+        return ipac_dl+datafile[0]
+    else:
+        return False
 
 def get_observation_stream(obs):
 
@@ -1357,18 +1376,21 @@ def look_up_org_names(usernames):
     ''' Parse a list of tuples mapping tracking num to username
         return a dict of tracking numbers to organization names
     '''
-    tracknums, userlist = zip(*usernames)
-    db = MySQLdb.connect(user=settings.ODIN_DB['USER'], passwd=settings.ODIN_DB['PASSWORD'], db=settings.ODIN_DB['NAME'], host=settings.ODIN_DB['HOST'])
-    sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" %  "','".join(userlist)
-    rows = db.cursor()
-    rows.execute(sql)
-    org_names = dict((x[0],x[1]) for x in rows)
-    db.close()
-    user_dict = dict(usernames) 
-    if org_names:
-        for k,v in user_dict.items():
-            user_dict[k] = org_names.get(v,'Unknown')
-    return user_dict
+    if usernames:
+        tracknums, userlist = zip(*usernames)
+        db = MySQLdb.connect(user=settings.ODIN_DB['USER'], passwd=settings.ODIN_DB['PASSWORD'], db=settings.ODIN_DB['NAME'], host=settings.ODIN_DB['HOST'])
+        sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" %  "','".join(userlist)
+        rows = db.cursor()
+        rows.execute(sql)
+        org_names = dict((x[0],x[1]) for x in rows)
+        db.close()
+        user_dict = dict(usernames) 
+        if org_names:
+            for k,v in user_dict.items():
+                user_dict[k] = org_names.get(v,'Unknown')
+        return user_dict
+    else:
+        return "Unknown"
 
 def build_recent_observations(num):
     observations = []
@@ -1400,7 +1422,7 @@ def identity(request):
         return render_to_response('faulkes/404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
         obs = build_framedb_observations(observation,org_names)
-        filters = get_framedb_fits(observation[0])
+        filters = get_fits(observation[0])
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
         except Exception,e:
@@ -1421,10 +1443,11 @@ def identity(request):
                 'perpage' : 36
             }
         elif len(org_names) == 1:
+            name = org_names.items()[0][1]
             info = {
-                'title' : "Recent %s observations" % org_names[0][1],
+                'title' : "Recent %s observations" % name,
                 'link' : '',  
-                'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % org_names[0][1],
+                'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % name,
                 'perpage' : 36
             }
         data = {'input':info,'link':info['link'],'obs':obs,'n':len(obs)}
