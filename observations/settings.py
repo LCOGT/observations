@@ -8,13 +8,15 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import django.template
 django.template.add_to_builtins('django.templatetags.future')
 TEST = 'test' in sys.argv
-PRODUCTION = True if platform.node().startswith('pydevsba') else False
+PRODUCTION = True if platform.node().startswith('pyprodsba') else False
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+if PRODUCTION:
+  PREFIX="/observations"
+else:
+  PREFIX =""
 BASE_DIR = os.path.dirname(CURRENT_PATH)
-PREFIX="/observations" #if PRODUCTION else ""
 
-PRODUCTION = True if platform.node().startswith('scheduler') else False
-VERSION = '0.1'
+VERSION = '0.2'
 TEST = 'test' in sys.argv
 DEBUG = not PRODUCTION
 
@@ -39,15 +41,15 @@ DEFAULT_DB = {
               'HOST'     : 'db01sba' if PRODUCTION else '',
               'OPTIONS'  : {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
               }
-RBAUTH_DB = {
-            'ENGINE'    : DEV_DB_BACKEND,
-            'NAME'      : dev_db_name('rbauth', DEV_DB_BACKEND),
-            'USER'      : 'root',
-            'PASSWORD'  : '',
-            'HOST'      : '',
-            'OPTIONS'   : {'init_command': 'SET storage_engine=INNODB'} if DEV_DB_BACKEND == 'django.db.backends.mysql' else {} ,
-            'TEST_DEPENDENCIES': [],
-        }
+
+ODIN_DB = {
+              'ENGINE'   : 'django.db.backends.mysql',
+              'NAME'     : 'rbauth',
+              'USER'     : 'rbauth_user' if PRODUCTION else 'root',
+              'PASSWORD' : '@uth3nt1c@t3M3!' if PRODUCTION else '',
+              'HOST'     : 'db01sba' if PRODUCTION else '',
+              'OPTIONS'  : {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
+              }
 
 if PRODUCTION:
     CACHES = {
@@ -58,7 +60,6 @@ if PRODUCTION:
     }
 
 DATABASES = {'default'      : DEFAULT_DB,
-              'rbauth'      : RBAUTH_DB
             }
 
 ADMINS = (
@@ -87,7 +88,7 @@ if PRODUCTION:
 else:
     STATIC_ROOT = '/var/www/html/static/'
     STATIC_URL = PREFIX + '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR,'observations', 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'images', 'static'),]
 
 ##### Upload directory for the proposalsubmit app. Also where proposal PDFs are created
 MEDIA_ROOT = os.path.join(CURRENT_PATH, 'media')
@@ -133,16 +134,22 @@ TEMPLATE_DIRS = (
     CURRENT_PATH +'/images/templates/',
 )
 
+FIXTURE_DIRS = (
+  CURRENT_PATH + '/observations/fixtures/',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
     'django.contrib.admin',
-    'rbauth',
     'images',
+    'debug_toolbar',
 )
 
+FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
 
 try:
     from local_settings import *

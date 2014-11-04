@@ -1,36 +1,40 @@
 [{
-    "pk": "ogg",
+    "pk": 1,
     "model": "images.site",
     "fields": {
         "latitude": 20.7075,
         "drupalnode": 12,
+        "code": "ogg",
         "name": "Haleakala",
         "longitude": -156.2558
     }
 }, {
-    "pk": "coj",
+    "pk": 2,
     "model": "images.site",
     "fields": {
         "latitude": -31.2733,
         "drupalnode": 62,
+        "code": "coj",
         "name": "Siding Spring",
         "longitude": 149.070593
     }
 }, {
-    "pk": "lsc",
+    "pk": 3,
     "model": "images.site",
     "fields": {
         "latitude": -30.169,
         "drupalnode": 154,
+        "code": "lsc",
         "name": "Cerro Tololo",
         "longitude": -70.804
     }
 }, {
-    "pk": "cpt",
+    "pk": 4,
     "model": "images.site",
     "fields": {
         "latitude": -30.169,
         "drupalnode": 154,
+        "code": "cpt",
         "name": "Sutherland",
         "longitude": -70.804
     }

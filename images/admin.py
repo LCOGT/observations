@@ -1,14 +1,9 @@
 from django.contrib import admin
+from images.models import *
 
-class FaulkesSettingsAdmin(admin.ModelAdmin):
-    # A handy constant for the name of the alternate database.
-    using = 'images'
+class ArchiveAdmin(admin.ModelAdmin):
+	list_display = ['objectname','rti_username','datestamp','telescope']
 
-    def save_model(self, request, obj, form, change):
-        # Tell Django to save objects to the 'other' database.
-        obj.save(using=self.using)
-
-    def queryset(self, request):
-        # Tell Django to look for objects on the 'other' database.
-        return super(FaulkesSettingsAdmin, self).queryset(request).using(self.using)
-        
+admin.site.register(Image,ArchiveAdmin)
+admin.site.register(Telescope)
+admin.site.register(Site)       

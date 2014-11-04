@@ -3,343 +3,341 @@
     "model": "images.filter",
     "fields": {
         "code": "R",
-        "name": "Bessell-R",
-        
+        "name": "Bessell-R"
     }
 }, {
     "pk": 2,
     "model": "images.filter",
     "fields": {
         "code": "B",
-        "name": "Bessell-B",
-        
+        "name": "Bessell-B"
+
     }
 }, {
     "pk": 19,
     "model": "images.filter",
     "fields": {
         "code": "U",
-        "name": "Bessell-U",
-        
+        "name": "Bessell-U"
+
     }
 }, {
     "pk": 4,
     "model": "images.filter",
     "fields": {
         "code": "V",
-        "name": "Bessell-V",
-        
+        "name": "Bessell-V"
+
     }
 }, {
     "pk": 18,
     "model": "images.filter",
     "fields": {
         "code": "w",
-        "name": "PanSTARRS-w",
-        
+        "name": "PanSTARRS-w"
+
     }
 }, {
     "pk": 17,
     "model": "images.filter",
     "fields": {
         "code": "Y",
-        "name": "PanSTARRS-Y",
-        
+        "name": "PanSTARRS-Y"
+
     }
 }, {
     "pk": 9,
     "model": "images.filter",
     "fields": {
         "code": "zs",
-        "name": "PanSTARRS-Z",
-        
+        "name": "PanSTARRS-Z"
+
     }
 }, {
     "pk": 10,
     "model": "images.filter",
     "fields": {
         "code": "gp",
-        "name": "SDSS-g&prime;",
-        
+        "name": "SDSS-g&prime;"
+
     }
 }, {
     "pk": 11,
     "model": "images.filter",
     "fields": {
         "code": "ip",
-        "name": "SDSS-i&prime;",
-        
+        "name": "SDSS-i&prime;"
+
     }
 }, {
     "pk": 12,
     "model": "images.filter",
     "fields": {
         "code": "rp",
-        "name": "SDSS-r&prime;",
-        
+        "name": "SDSS-r&prime;"
+
     }
 }, {
     "pk": 16,
     "model": "images.filter",
     "fields": {
         "code": "up",
-        "name": "SDSS-u&prime;",
-        
+        "name": "SDSS-u&prime;"
+
     }
 }, {
     "pk": 15,
     "model": "images.filter",
     "fields": {
         "code": "air",
-        "name": "Clear",
-        
+        "name": "Clear"
+
     }
 }, {
     "pk": 21,
     "model": "images.filter",
     "fields": {
         "code": "I",
-        "name": "Bessell-I",
-        
+        "name": "Bessell-I"
+
     }
 }, {
     "pk": 22,
     "model": "images.filter",
     "fields": {
         "code": "Astrodon-UV",
-        "name": "Astrodon UV",
-        
+        "name": "Astrodon UV"
+
     }
 }, {
     "pk": 23,
     "model": "images.filter",
     "fields": {
         "code": "solar",
-        "name": "Solar (V+R)",
-        
+        "name": "Solar (V+R)"
+
     }
 }, {
     "pk": 26,
     "model": "images.filter",
     "fields": {
         "code": "Skymapper-VS",
-        "name": "Skymapper CaV",
-        
+        "name": "Skymapper CaV"
+
     }
 }, {
     "pk": 27,
     "model": "images.filter",
     "fields": {
         "code": "H-Alpha",
-        "name": "H Alpha",
-        
+        "name": "H Alpha"
+
     }
 }, {
     "pk": 28,
     "model": "images.filter",
     "fields": {
         "code": "OIII",
-        "name": "OIII",
-        
+        "name": "OIII"
+
     }
 }, {
     "pk": 29,
     "model": "images.filter",
     "fields": {
         "code": "H-Beta",
-        "name": "H Beta",
-        
+        "name": "H Beta"
+
     }
 }, {
     "pk": 30,
     "model": "images.filter",
     "fields": {
         "code": "D51",
-        "name": "D51",
-        
+        "name": "D51"
+
     }
-},
-{
+}, {
     "pk": 31,
     "model": "images.filter",
     "fields": {
-            "code":'CC', "name":'Air', "drupalnode": 'node/31',
-    },
-}
-{
+        "code": "CC",
+        "name": "Air"
+    }
+}, {
     "pk": 32,
     "model": "images.filter",
     "fields": {
-            "code":'RGB', "name":'Color', "drupalnode": "",
+        "code": "RGB",
+        "name": "Color"
     }
-},
-{
+}, {
     "pk": 33,
     "model": "images.filter",
     "fields": {
-            "code":'RGB+ND', "name":"Color + Neutral Density", "drupalnode": "",
+        "code": "RGB+ND",
+        "name": "Color + Neutral Density"
     }
-},
-{
+}, {
     "pk": 34,
     "model": "images.filter",
     "fields": {
-            "code":'RGB_ND', "name":"BVr' +Neutral Dens", "drupalnode": "",
+        "code": "RGB_ND",
+        "name": "BVr' +Neutral Dens"
     }
-},
-{
+}, {
     "pk": 35,
     "model": "images.filter",
     "fields": {
-            "code":'Red', "name":"Red", "drupalnode": "",
+        "code": "Red",
+        "name": "Red"
     }
-},
-{
+}, {
     "pk": 36,
     "model": "images.filter",
     "fields": {
-            "code":'Green', "name":"Green", "drupalnode": "",
+        "code": "Green",
+        "name": "Green"
     }
-},
-{
+}, {
     "pk": 37,
     "model": "images.filter",
     "fields": {
-            "code":'Blue', "name":"Blue", "drupalnode": "",
+        "code": "Blue",
+        "name": "Blue"
     }
-},
-{
+}, {
     "pk": 38,
     "model": "images.filter",
     "fields": {
-            "code":'CA', "name":'Hydrogen Alpha', "drupalnode": 'node/51',
+        "code": "CA",
+        "name": "Hydrogen Alpha"
     }
-},
-{
+}, {
     "pk": 39,
     "model": "images.filter",
     "fields": {
-            "code":'HB', "name":"Hydrogen Beta", "drupalnode": "node/53",
+        "code": "HB",
+        "name": "Hydrogen Beta"
     }
-},
-{
+}, {
     "pk": 40,
     "model": "images.filter",
     "fields": {
-            "code":'CO', "name":'Oxygen III', "drupalnode": 'node/34',
+        "code": "CO",
+        "name": "Oxygen III"
     }
-},
-{
+}, {
     "pk": 41,
     "model": "images.filter",
     "fields": {
-            "code":'CB', "name":'Bessell B', "drupalnode": 'node/36',
+        "code": "CB",
+        "name": "Bessell B"
     }
-},
-{
+}, {
     "pk": 42,
     "model": "images.filter",
     "fields": {
-            "code":'CV', "name":"Bessell V", "drupalnode": "node/37",
+        "code": "CV",
+        "name": "Bessell V"
     }
-},
-{
+}, {
     "pk": 43,
     "model": "images.filter",
     "fields": {
-            "code":'CR', "name":'Bessell R', "drupalnode": "node/43",
+        "code": "CR",
+        "name": "Bessell R"
     }
-},
-{
+}, {
     "pk": 44,
     "model": "images.filter",
     "fields": {
-            "code":'BI', "name":"Bessell I", "drupalnode": "",
+        "code": "BI",
+        "name": "Bessell I"
     }
-},
-{
+}, {
     "pk": 45,
     "model": "images.filter",
     "fields": {
-            "code":'CU', "name":"SDSS u'", "drupalnode": "node/42",
+        "code": "CU",
+        "name": "SDSS u'"
     }
-},
-{
+}, {
     "pk": 46,
     "model": "images.filter",
     "fields": {
-            "code":'SR', "name":"SDSS r'", "drupalnode": "",
+        "code": "SR",
+        "name": "SDSS r'"
     }
-},
-{
+}, {
     "pk": 47,
     "model": "images.filter",
     "fields": {
-            "code":'CI', "name":"SDSS i'", "drupalnode": "node/35",
+        "code": "CI",
+        "name": "SDSS i'"
     }
-},
-{
+}, {
     "pk": 48,
     "model": "images.filter",
     "fields": {
-            "code":'NB', "name":"B +Neutral Dens", "drupalnode": "",
+        "code": "NB",
+        "name": "B +Neutral Dens"
     }
-},
-{
+}, {
     "pk": 49,
     "model": "images.filter",
     "fields": {
-            "code":'NV', "name":"V +Neutral Dens", "drupalnode": "",
+        "code": "NV",
+        "name": "V +Neutral Dens"
     }
-},
-{
+}, {
     "pk": 50,
     "model": "images.filter",
     "fields": {
-            "code":'SG', "name":"Sloan g'", "drupalnode": "node/45",
+        "code": "SG",
+        "name": "Sloan g'"
     }
-},
-{
+}, {
     "pk": 51,
     "model": "images.filter",
     "fields": {
-            "code":'SY', "name":"Pan-STARRS Y", "drupalnode": "node/49",
+        "code": "SY",
+        "name": "Pan-STARRS Y"
     }
-},
-{
+}, {
     "pk": 52,
     "model": "images.filter",
     "fields": {
-            "code":'SZ', "name":"Pan-STARRS Z", "drupalnode": "node/48",
+        "code": "SZ",
+        "name": "Pan-STARRS Z"
     }
-},
-{
+}, {
     "pk": 53,
     "model": "images.filter",
     "fields": {
-            "code":'SO', "name":"Solar", "drupalnode": "node/40",
+        "code": "SO",
+        "name": "Solar"
     }
-},
-{
+}, {
     "pk": 54,
     "model": "images.filter",
     "fields": {
-            "code":'SM', "name":"SkyMap - CaV", "drupalnode": "node/41",
+        "code": "SM",
+        "name": "SkyMap - CaV"
     }
-},
-{
+}, {
     "pk": 55,
     "model": "images.filter",
     "fields": {
-            "code":'OP', "name":"Opal", "drupalnode": "node/50",
+        "code": "OP",
+        "name": "Opal"
     }
-},
-{
+}, {
     "pk": 56,
     "model": "images.filter",
     "fields": {
-            "code":'D5', "name":"D51 filter", "drupalnode": "",
+        "code": "D5",
+        "name": "D51 filter"
 
     }
-}
-]
+}]

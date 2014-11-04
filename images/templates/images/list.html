@@ -1,7 +1,7 @@
 {% extends 'images/base.html' %}
 
 {% block feeds %}
-	<link rel="alternate" type="application/rss+xml" title="{{ input.title }}" href="{% url images.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}" />{% endblock %}
+	<link rel="alternate" type="application/rss+xml" title="{{ input.title }}" href="{% url 'home' %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}" />{% endblock %}
 
 {% block list %}
 		<ul>
@@ -15,17 +15,17 @@
 {% if n > 0 %}
 					<div class="row lastrow">
 							<p>Alternative outputs: 
-								<a title="View RSS feed" rel="alternate" type="application/xml" href="{% url images.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}">RSS</a>,
-								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url images.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}">Sky for Google Earth</a>, and
-								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url images.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}">JSON</a>
+								<a title="View RSS feed" rel="alternate" type="application/xml" href="{% url 'home' %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}">RSS</a>,
+								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url 'home' %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}">Sky for Google Earth</a>, and
+								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url 'home' %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}">JSON</a>
 							</p>
 					</div>
 {% endif %}
 {% endblock %}
 
-{% block headercomment %}	<!--
+{% comment %}	<!--
 		The observations included in this page are also available in these formats:
-		JSON - {% url images.views.index %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}
+		JSON - {% url 'home' %}{{ link }}.json{% if input.query %}?{{ input.query }}{% endif %}
 		RSS - {% url images.views.index %}{{ link }}.rss{% if input.query %}?{{ input.query }}{% endif %}
 		Google Earth - {% url images.views.index %}{{ link }}.kml{% if input.query %}?{{ input.query }}{% endif %}
-	-->{% endblock %}
+	-->{% endcomment %}
