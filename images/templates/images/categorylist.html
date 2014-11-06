@@ -59,7 +59,7 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url images.views.index %}">Observations</a> &raquo; <a href="{% url images.views.index %}category">Categories</a>
+									<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'view_category' %}">Categories</a>
 								</div>
 {% endblock %}
 
@@ -70,7 +70,7 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 							<p>You can browse our public observations based on the following <a href="http://www.virtualastronomy.org/avm_metadata.php">AVM</a> categories. These categories cover the whole of astronomy and therefore some of these categories will be empty.</p>
 							<ol>
 {% for c in category %}
-							<li class="category"><a href="{% url images.views.index %}category/{{ c.link }}" data="{{ c.avm }}">{{ c.name }}</a></li>
+							<li class="category"><a href="{% url 'view_category' %}{{ c.link }}" data="{{ c.avm }}">{{ c.name }}</a></li>
 {% endfor %}
 							</ol>
 						</div>

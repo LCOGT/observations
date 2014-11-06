@@ -8,38 +8,37 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('images.views',
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^search/$','search',name='search'),
+    url(r'^search/$','search',name="search"),
 
     url(r'^recent/$','view_group',{'mode' : 'recent'},name='show_recent'),
     url(r'^popular/$','view_group',{'mode' : 'popular'},name='show_popular'),
-    url(r'^trending/$','view_group',{'mode' : 'trending'}, name='show_trending'),
+    url(r'^trending/$','view_group',{'mode' : 'trending'},name='show_trending'),
 
-    (r'^user/(?P<userid>\d+)/$','view_user'),
-    (r'^user/(?P<username>[a-zA-Z\.]+)/$','view_username'),
-    (r'^user/$','index'),
-    (r'^u/(?P<userid>\d+)/$','view_user'),
-    (r'^u/(?P<username>[a-zA-Z\.]+)/$','view_username'),
+    url(r'^user/(?P<userid>\d+)/$','view_user'),
+    url(r'^user/(?P<username>[a-zA-Z\.]+)/$','view_username'),
+    url(r'^user/$','index'),
+    url(r'^u/(?P<userid>\d+)/$','view_user'),
+    url(r'^u/(?P<username>[a-zA-Z\.]+)/$','view_username'),
 
-    (r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)/$','view_object'),
-    (r'^object/$','index'),
-    (r'^o/(?P<object>[a-zA-Z \+\-\.0-9]+)/$','view_object'),
+    url(r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)/$','view_object'),
+    url(r'^object/$','index'),
+    url(r'^o/(?P<object>[a-zA-Z \+\-\.0-9]+)/$','view_object'),
 
-    (r'^category/(?P<avm>[0-9\.]+)/$','view_avm'),
-    url(r'^category/(?P<category>\w+)/$','view_category', name='category'),
+    url(r'^category/(?P<avm>[0-9\.]+)/$','view_avm',name='show_avm'),
+    url(r'^category/(?P<category>\w+)/$','view_category',name='category_show'),
     url(r'^category/$','view_category_list',name='category_list'),
-    (r'^c/(?P<avm>[0-9\.]+)/$','view_avm'),
-    (r'^c/(?P<category>\w+)/$','view_category'),
+    url(r'^c/(?P<avm>[0-9\.]+)/$','view_avm'),
+    url(r'^c/(?P<category>\w+)/$','view_category'),
 
-    (r'^map/$','view_map'),
+    url(r'^map/$','view_map'),
 
     url(r'^identity/$','identity',name='identity'),
 
-    (r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$','view_observation'),
-    url(r'^(?P<code>\w\w\w)/show/$','view_site',name='site_view'),
-    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$','view_telescope',name='telescope_view'),
-    (r'^(?P<code>\w\w\w)/$','view_site'),
-
+    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$','view_observation'),
+    url(r'^(?P<code>\w\w\w)/show/$','view_site', name='show_site'),
+    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$','view_telescope',name='show_telescope'),
+    url(r'^(?P<code>\w\w\w).(?P<format>\w+)','view_site',name='site_api'),
+    (r'^admin/', include(admin.site.urls)),
     url(r'^$','index', name='home'),
   ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

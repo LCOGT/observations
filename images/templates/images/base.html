@@ -109,7 +109,7 @@
 
 										<h2>{% block sites-list-title %}By site:{% endblock %}</h2>
 										<ul>
-{% for site in sites %}										<li><a href="{% url 'site_view' site.code %}">{{ site.name }}</a></li>{% endfor %}
+{% for site in sites %}										<li><a href="{% url 'show_site' site.code %}">{{ site.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>
@@ -119,7 +119,7 @@
 									<div class="padder">
 										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
 										<ul>
-{% for telescope in telescopes %}										<li><a href="{% url 'telescope_view' telescope.site.code telescope.code %}">{{ telescope.name }}</a></li>{% endfor %}
+{% for telescope in telescopes %}										<li><a href="{% url 'show_telescope' telescope.site.code telescope.code %}">{{ telescope.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>
@@ -129,7 +129,7 @@
 									<div class="padder">
 										<h2>{% block categories-list-title %}<a href="{% url 'category_list' %}">By category</a>:{% endblock %}</h2>
 										<ul>
-{% for c in categories %}										<li><a href="{% url 'category' c.link %}">{{ c.name }}</a></li>{% endfor %}
+{% for c in categories %}										<li><a href="{% url 'category_show' c.link %}">{{ c.name }}</a></li>{% endfor %}
 										</ul>
 									</div>
 								</div>

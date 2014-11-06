@@ -2,7 +2,7 @@
 {% load images_extras %}
 
 {% block script-content %}
-	<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/raphael-min.js"></script>
 	<script>
 	<!--
 	ras = {{ ras|safe }}
@@ -48,7 +48,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url images.views.index %}">Observations</a> &raquo; {{ input.title }}
+									<a href="{% url 'home' %}">Observations</a> &raquo; {{ input.title }}
 								</div>
 {% endblock %}
 
@@ -58,7 +58,7 @@
 {% block main-content %}
 						<div class="row">
 							<p>This is a heat map showing how often various parts of the sky have been observed by our telescopes during the past month. Brighter squares show areas that have more public observations.</p>
-							<div id="starmap" class="sixcol" style="width:944px;height:472px;"><img src="{{ MEDIA_URL }}img/virtualskyplaceholder.jpg" /></div>
+							<div id="starmap" class="sixcol" style="width:944px;height:472px;"><img src="{{ STATIC_URL }}img/virtualskyplaceholder.jpg" /></div>
 							<div id="heatmap" class="sixcol" style="width:944px;height:472px;position:absolute;z-index:10;margin-left:0px;" title="Click on the map to search for nearby observations"></div>
 						</div>
 						<div class="row lastrow">

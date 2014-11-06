@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Q
 from django.http import HttpResponse,HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.encoding import smart_unicode
@@ -22,7 +22,7 @@ import urllib, urllib2, httplib, json
 import MySQLdb
 
 n_per_line = 6
-n_per_page = 30
+n_per_page = 12
 base_url = "http://lcogt.net/observations/"
 categorylookup = { '1': 'Planets',
                 '1.1':'Planets (Type)',
@@ -297,21 +297,19 @@ def since(request):
             sd = ''
     return sd
 
+def search_framedb(form):
+    # remove exterior whitespace and join interior with '+'
+    name = "+".join(form['query'].strip().split())
+    qstring = "/find?object_name=%s&day_obs__gt=2014-04-01&limit=%s&order_by=-date_obs&full_header=1" % (name, n_per_page)
+    observations = framedb_lookup(qstring)
+    if observations:
+        org_names = collate_org_names(observations)
+        obs = build_framedb_observations(observations,org_names)
+    else:
+        obs = []
+    return obs
 
-def search(request):
-    input = input_params(request)
-    telescopes = Telescope.objects.all()
-    now = datetime.now()
-    years = range(2004,now.year+1)
-    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    days = range(1,32)
-    ago = now + timedelta(-30)
-    form = {'query':request.GET.get('query',''),'category':int(request.GET.get('category',0)),'avm':request.GET.get('avm',''),'daterange':request.GET.get('daterange','all'),'sday':int(request.GET.get('sday',ago.day)),'smon':int(request.GET.get('smon',ago.month)),'syear':int(request.GET.get('syear',ago.year)),'eday':int(request.GET.get('eday',now.day)),'emon':int(request.GET.get('emon',now.month)),'eyear':int(request.GET.get('eyear',now.year)),'telid':int(request.GET.get('telid',0)),'filter':request.GET.get('filter','A'),'user':request.GET.get('user',''),'SR':request.GET.get('SR',''),'RA':request.GET.get('RA',''),'DEC':request.GET.get('DEC',''),'exposure':request.GET.get('exposure',''),'exposurecondition':request.GET.get('exposurecondition','eq'),'expmin':request.GET.get('expmin',''),'expmax':request.GET.get('expmax',''),'since':request.GET.get('since','')}
-    obs = []
-    if re.search('e.g.',form['query']):
-        form['query'] = ''
-    
-
+def search_rtiarchive(form,input):
     obs = []
     n = -1
     if input['query']:
@@ -433,8 +431,58 @@ def search(request):
             obs = obs.filter(imageid__in=keepers)
 
         obs = obs.order_by('-whentaken')
+    return obs
 
-        n = obs.count()
+def search(request):
+    now = datetime.now()
+    ago = now + timedelta(-30)
+    input = input_params(request)
+    form = {'query':request.GET.get('query',''),
+            'category':int(request.GET.get('category',0)),
+            'avm':request.GET.get('avm',''),
+            'daterange':request.GET.get('daterange','all'),
+            'sday':int(request.GET.get('sday',ago.day)),
+            'smon':int(request.GET.get('smon',ago.month)),
+            'syear':int(request.GET.get('syear',ago.year)),
+            'eday':int(request.GET.get('eday',now.day)),
+            'emon':int(request.GET.get('emon',now.month)),
+            'eyear':int(request.GET.get('eyear',now.year)),
+            'telid':int(request.GET.get('telid',0)),
+            'filter':request.GET.get('filter','A'),
+            'user':request.GET.get('user',''),
+            'SR':request.GET.get('SR',''),
+            'RA':request.GET.get('RA',''),
+            'DEC':request.GET.get('DEC',''),
+            'exposure':request.GET.get('exposure',''),
+            'exposurecondition':request.GET.get('exposurecondition','eq'),
+            'expmin':request.GET.get('expmin',''),
+            'expmax':request.GET.get('expmax',''),
+            'since':request.GET.get('since','')}
+    telescopes = Telescope.objects.all()
+    years = range(2004,now.year+1)
+    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    days = range(1,32)
+    if not request.GET:
+        return render(request,'images/search.html', {
+                                                'categorylookup':categorylookup,
+                                                'filters':filter_list(),
+                                                'telescopes':telescopes,
+                                                'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],
+                                                'years':years,
+                                                'months':months,
+                                                'days':days,
+                                                'categories':categories})
+    obs = []
+    if re.search('e.g.',form['query']):
+        form['query'] = ''
+    
+    # Fetch RTI images
+    rti_obs = search_rtiarchive(form,input)
+    n_rti = rti_obs.count()
+    framedb_obs = search_framedb(form)
+    n_framedb = len(framedb_obs)
+    n = n_rti + n_framedb
+
 
     input['observations'] = n
     input['title'] = "Search Results"
@@ -443,32 +491,14 @@ def search(request):
     input['form'] = form
     input['description'] = 'Search results (LCOGT)'
     input['perpage'] = n_per_page
-    input['pager'] = build_pager(request,n)
+    #input['pager'] = build_pager(request,n)
     
 
-    if(n > n_per_page):
-        obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
-    else:
-        obs = build_observations(obs)
-
-
-    # If they searched for a phrase we will guess what category these observations fit into
-    input['avmcode'] = "";
-    if(form['query'] != ""):
-        prev = "            ";
-        # Find shorted AVM code
-        for o in obs:
-            if(o['avmcode'] and len(o['avmcode']) < len(prev)):
-                input['avmcode'] = o['avmcode']
-                prev = o['avmcode']
-        input['avmcode'] = re.sub(r"\;(.*)$",'',input['avmcode'])
-        # If we are at the 4th level we'll step back up to 3rd
-        input['avmcode'] = re.sub(r"(\.[0-9]\.[0-9])\.[0-9]$",r"\1",input['avmcode'])
-        if(input['avmcode']!=""):
-            try:
-                input['avmname'] = categorylookup[input['avmcode']]
-            except:
-                input['avmname'] = "";
+    # if(n > n_per_page):
+    #     obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
+    # else:
+    robs = build_observations(rti_obs[0:20])
+    obs = framedb_obs + robs
 
 
     if input['doctype'] == "json":
@@ -479,13 +509,53 @@ def search(request):
         return view_rss(request,obs,input)
     else:
         if input['slideshow']:
-            return render_to_response('images/slideshow.html', {'input':input,'obs':obs,'n':n,'link':input['link']},context_instance=RequestContext(request))
+            return render(request,'images/slideshow.html', {'input':input,'obs':obs,'n':n,'link':input['link']},context_instance=RequestContext(request))
         else:
-            return render_to_response('images/search.html', {'input':input,'obs':obs,'categorylookup':categorylookup,'n':n,'filters':filter_list(),'link':input['link'],'pager':input['pager']['html'],'form':form,'telescopes':telescopes,'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],'years':years,'months':months,'days':days,'categories':categories},context_instance=RequestContext(request))
+            return render(request,'images/search.html', {'input':input,
+                                                            'obs':obs,
+                                                            'categorylookup':categorylookup,
+                                                            'n':n,
+                                                            'filters':filter_list(),
+                                                            'link':input['link'],
+                                                            'form':form,
+                                                            'telescopes':telescopes,
+                                                            'conditions':[{'value':'gt','text':'greater than'},{'value':'lt','text':'less than'},{'value':'eq','text':'equals'}],
+                                                            'years':years,
+                                                            'months':months,
+                                                            'days':days,
+                                                            'categories':categories})
 
+def view_site(request,code,format=None):
+    observations = []
+    recent_obs = []
+    ##### Store the TAG IDs in a config not here
+    qstring = "/find?siteid=%s&limit=%s&order_by=-date_obs&full_header=1" % (code,18)
+    observations = framedb_lookup(qstring)
+    org_names = collate_org_names(observations)
+    obs = build_framedb_observations(observations,org_names)
+    n = n_per_page
+    if len(recent_obs) < n_per_page:
+        n = len(recent_obs)
+    data = {'sites':Site.objects.all(),
+            'site':Site.objects.get(code=code),
+            'telescopes':Telescope.objects.all(),
+            'n':n,
+            'obs':obs,
+            #'input':input,
+            #'link':input['link']
+            }
+    input = input_params(request)
+    if input['doctype'] == "json" or format=='json':
+        return view_json(request,build_observations_json(obs),input)
+    elif input['doctype'] == "kml" or format=='kml':
+        return view_kml(request,obs,input)
+    elif input['doctype'] == "rss" or format=='rss':
+        return view_rss(request,obs,input)
+    else:
+        print data
+        return render(request,'images/site.html', data)
 
-
-def view_site(request,code):
+def old_view_site(request,code):
     input = input_params(request)
     sites = Site.objects.exclude(code=code)
 
@@ -967,7 +1037,6 @@ def view_avm(request,avm):
             return render_to_response('images/category.html', data,context_instance=RequestContext(request))
 
 
-
 def view_map(request):
     input = input_params(request)
 
@@ -997,15 +1066,15 @@ def view_map(request):
         ras.append(round(o.ra*15*100)/100)
         dcs.append(round(o.dec*100)/100)
 
-    if input['doctype'] == "json":
-        return view_json(request,build_observations_json(obs),input)
-    elif input['doctype'] == "kml":
-        return view_kml(request,obs,input)
-    elif input['doctype'] == "rss":
-        return view_rss(request,obs,input)
-    else:
-        data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input,'sites':sites,'telescopes':telescopes}
-        return render_to_response('images/map.html', data,context_instance=RequestContext(request))
+    # if input['doctype'] == "json":
+    #     return view_json(request,build_observations_json(obs),input)
+    # elif input['doctype'] == "kml":
+    #     return view_kml(request,obs,input)
+    # elif input['doctype'] == "rss":
+    #     return view_rss(request,obs,input)
+    # else:
+    data = {'ras':ras,'dcs':dcs,'link':input['link'],'input':input,'sites':sites,'telescopes':telescopes}
+    return render_to_response('images/map.html', data,context_instance=RequestContext(request))
 
 
 
@@ -1241,7 +1310,6 @@ def get_observation_stream(obs):
     otherobs = []
     i = 0
     for item in reversed(o):
-        print item
         tmp = {'url':item['link_obs'],'thumb':item['thumbnail'],'title':item['objectname'],'date':datestamp(item['whentaken']),'class':''}
         if(i==0):
             tmp['class'] = 'left'
@@ -1389,24 +1457,29 @@ def look_up_org_names(usernames):
     else:
         return {"Unknown":"Unknown"}
 
+def collate_org_names(observations):
+    ''' Small function to find the organizations of observers from a list of observations
+    '''
+    tracknums = [o['tracknum'] for o in observations]
+    usernames = find_user_ids(tracknums)
+    org_names = look_up_org_names(usernames)
+    return org_names
+
 def build_recent_observations(num):
     observations = []
     recent_obs = []
     ##### Store the TAG IDs in a config not here
     qstring = "/find?tagid__in=LCOEPO,FTP&limit=%s&order_by=-date_obs&full_header=1" % int(num)
-    now = datetime.now()
     observations = framedb_lookup(qstring)
-    print "Framedb_lookup", datetime.now() -now
-    tracknums = [o['tracknum'] for o in observations]
-    usernames = find_user_ids(tracknums)
-    print "find user ids", datetime.now() -now
-    org_names = look_up_org_names(usernames)
-    print "look up org names", datetime.now() -now
+    org_name = collate_org_names(observations)
     recent_obs = build_framedb_observations(observations,org_names)
-    print "build obs list", datetime.now() -now
     return recent_obs
 
 def identity(request):
+    '''
+    Main function for looking up the origname, tracking number or organization's observations.
+    Then passes all the meta data that observations need to be displayed either as a group or on a single page
+    '''
     origname = request.GET.get('origname','')
     tracknum = request.GET.get('tracknum','')
     org_name = request.GET.get('org_name','')
@@ -1416,9 +1489,7 @@ def identity(request):
     if tracknum:
         query += '&tracknum__in=%s' % tracknum
     observation = framedb_lookup(query)
-    tracknums = [o['tracknum'] for o in observation]
-    usernames = find_user_ids(tracknums)
-    org_names = look_up_org_names(usernames)
+    org_names = collate_org_names(observation)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
         return render_to_response('images/404.html', context_instance=RequestContext(request))
@@ -1456,6 +1527,9 @@ def identity(request):
         return render_to_response('images/group.html', data,context_instance=RequestContext(request))
 
 def build_framedb_observations(observations,org_names=None):
+    '''
+    Translate response from framedb to the format Observations wants to display 
+    '''
     obs_list = []
     encl = {'doma':'Dome A','domb':'Dome B','domc':'Dome C','clma':'','aqwa':'Aqawan A','aqwb':'Aqawan B'}
     telid = {'1m0a' : '1-meter','2m0a':'2-meter','0m4a':'0.4-meter','0m4b':'0.4-meter'}
@@ -1465,14 +1539,23 @@ def build_framedb_observations(observations,org_names=None):
         id_name = o['origname'].split('.')[0]
         thumbnail = "http://data.lcogt.net/thumbnail/%s/?height=150&width=150&label=0" % id_name
         large_img = "http://data.lcogt.net/thumbnail/%s/?height=560&width=560&label=0" % id_name
-        telname = "%s in %s" % (encl[o['encid']],telid[o['telid']])
-        site = Site.objects.get(code=o['siteid'])
+        try:
+            telname = "%s in %s" % (encl[o['encid']],telid[o['telid']])
+            site = Site.objects.get(code=o['siteid'])
+        except:
+            telname = ''
+            site = ''
+            print o
         if o['object_name']:
             obj = re.sub(r" ?\([^\)]*\)",'',o['object_name']) # Remove brackets
             obj = re.sub(r"/\s\s+/", ' ', obj)      # Remove redundant whitespace
             obj = re.sub(r"[^\w\-\+0-9 ]/i",'',obj) # Remove non-useful characters
         else:
             obj = "Unknown"
+        try:
+            filter_name = Filter.objects.get(code=o['filter_name'])
+        except:
+            filter_name = o['filter_name']
         params = {  'link_obs'      : "%s?origname=%s" % (reverse('images.views.identity'),o['origname']),
                     'instrumentname': o['detector'],
                     'objectname'    : o['object_name'],
@@ -1484,8 +1567,8 @@ def build_framedb_observations(observations,org_names=None):
                     'license'       : "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US",
                     'credit'        : "Image taken with %s telescope at Las Cumbres Observatory Global Telescope Network, %s node" % (o['telid'],site.name),
                     'licenseimage'  : 'cc-by-nc.png',
-                    'filter'        : o['filter_name'],
-                    'filterprops'   : o['filter_name'],
+                    'filter'        : filter_name,
+                    'filterprops'   : filter_name,
                     'exposuresecs'  : o['exptime'],
                     'ra'            : o['ra'],
                     'dec'           : o['dec'],
@@ -1596,7 +1679,7 @@ def build_observations(obs):
             o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
             o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
         else:
-            o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescope'])
+            o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4])
             #o['fullimage_url'] = "http://rti.lcogt.net/observations/%s/%s/%s/%s-%s.jpg" % (o['whentaken'][0:4],o['whentaken'][4:6],o['whentaken'][6:8],o['filename'][0:-4],o['telescope'])
             o['thumbnail'] = o['fullimage_url'][0:-4]+"_120.jpg"
         o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
@@ -1705,8 +1788,8 @@ def build_observations_json(obs):
             "about" : base_url+o['link_obs'],
             "label" : o['objectname'],
             "observer" : {
-                "about" : base_url+o['link_user'],
-                "label" : re.sub(r"\"",'',o['schoolname'])
+                "about" : '',#base_url+o['link_user'],
+                "label" : re.sub(r"\"",'',o['user'])
             },
             "image" : {
                 "about" : o['fullimage_url'],
@@ -1719,10 +1802,10 @@ def build_observations_json(obs):
             "filter" :  {
                 "name" : re.sub(r"\"",'',filter[0]),
             },
-            "instr" : {
-                "about" : base_url+o['link_tel'],
-                "tel" : re.sub(r"\"",'',o['telescope'].name)
-            },
+            # "instr" : {
+            #     "about" : '',
+            #     "tel" : re.sub(r"\"",'',o['telescope'].name)
+            # },
             #"views" : o['views'],
             "time" : {
                 "creation" : datestamp(o['whentaken'])
@@ -1733,16 +1816,16 @@ def build_observations_json(obs):
                 "label" : o['credit']
             }
         }
-        if len(filter)==2:
-            ob['filter']['about'] = "http://lcogt.net/"+filter[1]
-        if 'schooluri' in o:
-            ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
-        if 'avmcode' in o and o['avmcode']!="":
-            ob['avm'] = { "code": o['avmcode'], }
-        if 'avmname' in o and o['avmname']!="":
-            ob['avm']['name'] = o['avmname']
-        if 'views' in o:
-            ob['views'] = o['views']
+        # if len(filter)==2:
+        #     ob['filter']['about'] = "http://lcogt.net/"+filter[1]
+        # if 'schooluri' in o:
+        #     ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
+        # if 'avmcode' in o and o['avmcode']!="":
+        #     ob['avm'] = { "code": o['avmcode'], }
+        # if 'avmname' in o and o['avmname']!="":
+        #     ob['avm']['name'] = o['avmname']
+        # if 'views' in o:
+        #     ob['views'] = o['views']
 
         if len(obs) > 1:
             observations.append(ob)

@@ -7,7 +7,7 @@
 
 {% block breadcrumb %}
 								<div class="breadcrumb">
-									<a href="{% url images.views.index %}">Observations</a> &raquo; <a href="{% url images.views.index %}category">Categories</a> &raquo; {% if input.avmup and input.avmup|length > 0 %}{% for cat in input.avmup %}<a href="{% url images.views.index %}category/{{ cat.code }}">{{ cat.name }}</a> &raquo; {% endfor %}{% endif %}{{ category }}
+									<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'category_list' %}">Categories</a> &raquo; {% if input.avmup and input.avmup|length > 0 %}{% for cat in input.avmup %}<a href="{% url 'show_avm' cat.code %}">{{ cat.name }}</a> &raquo; {% endfor %}{% endif %}{{ category }}
 								</div>
 {% endblock %}
 
@@ -15,14 +15,14 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>There are {{ n }} observations classified as {{ category|lowercase }}. The classification is automatic based on the observation title set by the observer so may include incorrect results when objects of different types have similar names or when observers have mis-labelled their observations.{% if input.avmdn and input.avmdn|length > 0 %} Sub-categories: {% for cat in input.avmdn %}<a href="{% url images.views.index %}category/{{ cat.code }}">{{ cat.name }}</a>{% if not forloop.last %}; {% else %}.{% endif %}{% endfor %}{% endif %}</p>
+							<p>There are {{ n }} observations classified as {{ category|lowercase }}. The classification is automatic based on the observation title set by the observer so may include incorrect results when objects of different types have similar names or when observers have mis-labelled their observations.{% if input.avmdn and input.avmdn|length > 0 %} Sub-categories: {% for cat in input.avmdn %}<a href="{% url 'category_show' cat.code %}">{{ cat.name }}</a>{% if not forloop.last %}; {% else %}.{% endif %}{% endfor %}{% endif %}</p>
 						</div>
 						<div class="row">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul class='observation-results' data-json="{% url images.views.index %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url 'home' %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs %}
 							</ul>
 							{% if pager %}

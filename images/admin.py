@@ -6,4 +6,5 @@ class ArchiveAdmin(admin.ModelAdmin):
 
 admin.site.register(Image,ArchiveAdmin)
 admin.site.register(Telescope)
-admin.site.register(Site)       
+admin.site.register(Site)   
+admin.site.register(Filter)       

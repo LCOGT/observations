@@ -10,10 +10,10 @@
 
 {% block breadcrumb %}
 		{% if framedb_obs %}
-								<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'site_view' site.code %}">{{ site.name }}</a> &raquo; <a href="{% url 'telescope_view' site.code obs.telescope %}">{{ obs.telescope }}</a> &raquo; {{ obs.objectname }}
+								<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'show_site' site.code %}">{{ site.name }}</a> &raquo; <a href="{% url 'show_telescope' site.code obs.telescope %}">{{ obs.telescope }}</a> &raquo; {{ obs.objectname }}
 								<br />	
 		{% else %}
-								<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'site_view' %}">{{ telescope.site.name }}</a> &raquo; <a href="{% url 'telescope_view' %}">{% if telescope.short %}{{ telescope.short }}{% else %}{{ telescope.name }}{% endif %}</a> &raquo; {{ obs.objectname }}
+								<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'show_site' telescope.site.code %}">{{ telescope.site.name }}</a> &raquo; <a href="{% url 'show_telescope' %}">{% if telescope.short %}{{ telescope.short }}{% else %}{{ telescope.name }}{% endif %}</a> &raquo; {{ obs.objectname }}
 								<br />								
 		{% endif %}
 {% endblock %}
