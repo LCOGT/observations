@@ -146,7 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'images',
-    'debug_toolbar',
+    #'debug_toolbar',
 )
 
 FITS_VIEWER_URL = 'http://data.lcogt.net/view/'

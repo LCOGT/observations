@@ -525,7 +525,7 @@ def search(request):
                                                             'days':days,
                                                             'categories':categories})
 
-def view_site(request,code,format=None):
+def get_site_data(code):
     observations = []
     recent_obs = []
     ##### Store the TAG IDs in a config not here
@@ -534,17 +534,22 @@ def view_site(request,code,format=None):
     org_names = collate_org_names(observations)
     obs = build_framedb_observations(observations,org_names)
     n = n_per_page
-    if len(recent_obs) < n_per_page:
-        n = len(recent_obs)
-    data = {'sites':Site.objects.all(),
-            'site':Site.objects.get(code=code),
-            'telescopes':Telescope.objects.all(),
-            'n':n,
-            'obs':obs,
-            #'input':input,
-            #'link':input['link']
-            }
+    if len(obs) < n_per_page:
+        n = len(obs)
+    data = {'n':n,
+            'obs':obs}
+    return data
+
+def view_site(request,code,format=None):
     input = input_params(request)
+    data = get_site_data(code)
+    obs = data['obs']
+    site = Site.objects.get(code=code)
+    input['observations'] = len(obs)
+    input['title'] = site.name
+    input['link'] = site.code
+    input['description'] = 'Observations from telescopes at '+site.name+' (LCOGT)'
+    input['perpage'] = n_per_page
     if input['doctype'] == "json" or format=='json':
         return view_json(request,build_observations_json(obs),input)
     elif input['doctype'] == "kml" or format=='kml':
@@ -552,8 +557,14 @@ def view_site(request,code,format=None):
     elif input['doctype'] == "rss" or format=='rss':
         return view_rss(request,obs,input)
     else:
-        print data
+        data['sites'] = Site.objects.all()
+        data['site'] = site
+        data['telescopes'] = Telescope.objects.all()
         return render(request,'images/site.html', data)
+
+def view_site_slideshow(request,code,format=None):
+    site = Site.objects.get(code=code)
+    return render(request,'images/slideshow.html', {'site':site})
 
 def old_view_site(request,code):
     input = input_params(request)
@@ -1461,8 +1472,11 @@ def collate_org_names(observations):
     ''' Small function to find the organizations of observers from a list of observations
     '''
     tracknums = [o['tracknum'] for o in observations]
-    usernames = find_user_ids(tracknums)
-    org_names = look_up_org_names(usernames)
+    if tracknums:
+        usernames = find_user_ids(tracknums)
+        org_names = look_up_org_names(usernames)
+    else:
+        org_names = {"Unknown":"Unknown"}
     return org_names
 
 def build_recent_observations(num):
@@ -1530,6 +1544,7 @@ def build_framedb_observations(observations,org_names=None):
     '''
     Translate response from framedb to the format Observations wants to display 
     '''
+    from images.utils import dmstodegrees, hmstodegrees
     obs_list = []
     encl = {'doma':'Dome A','domb':'Dome B','domc':'Dome C','clma':'','aqwa':'Aqawan A','aqwb':'Aqawan B'}
     telid = {'1m0a' : '1-meter','2m0a':'2-meter','0m4a':'0.4-meter','0m4b':'0.4-meter'}
@@ -1570,8 +1585,8 @@ def build_framedb_observations(observations,org_names=None):
                     'filter'        : filter_name,
                     'filterprops'   : filter_name,
                     'exposuresecs'  : o['exptime'],
-                    'ra'            : o['ra'],
-                    'dec'           : o['dec'],
+                    'ra'            : hmstodegrees(o['ra']),
+                    'dec'           : dmstodegrees(o['dec']),
                     'fullimage_url' : large_img,
                     'fits_view_url' : "%s#%s/%s/%s" % (settings.FITS_VIEWER_URL, o['propid'],o['day_obs'], o['origname']),
                     'origname'      : o['origname']
