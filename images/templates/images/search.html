@@ -61,33 +61,21 @@
 			<p>There are several ways to search through all our public observations. Use any combination of the options below to help narrow your search.</p>
 {% endif %}
 		</div>
-		<form action= method="get" id="rti-archive-form">
+{% if form.errors %}
+		<div class="row">
+		{{form.errors}}
+		</div>
+{% endif %}
+		<form action="" method="get" id="rti-archive-form">
 			<div class="row">
 				<fieldset>
-					<legend>By title:</legend>
+					<legend>By object name:</legend>
 					<div class="twocol">
 						<p class="gray-5">The name of a single astronomical object e.g. &quot;<em>Orion Nebula</em>&quot;. This is a simple title search so <em>Saturn</em> would match both &quot;<em>Saturn</em>&quot; and &quot;<em>NGC7009 (Saturn Nebula)</em>&quot;.</p>
 					</div>
 					<div class="fourcol lastcol">
-						<label for="edit-ObName" class="hidden">Title: </label><input type="text" maxlength="128" name="query" id="ObName" value="{{ form.query }}" class="form-text" style="width:298px;" />
-					</div>
-				</fieldset>
-			</div>
-			<div class="spacer"></div>
-			<div class="row">
-				<fieldset>
-					<legend>By category of object:</legend>
-					<div class="twocol">
-						<p class="gray-5">The type of astronomical object determined from the title as set by the observer.</p>
-					</div>
-					<div class="fourcol lastcol">
-						<div class="inline">
-							<label for="Category" class="hidden">Category:</label><select name="category" class="form-select" id="category" ><option value="0">All</option>{% for c in categories %}<option value="{{ forloop.counter }}"{% if form.category == forloop.counter %} selected="selected"{% endif %}>{{ c.name }}{% endfor %}</select>
-						</div>
-						<div class="inline">
-							<span class="inline">or by </span><label for="AVM" class="inline"><a href="{% url 'category_list' %}">AVM taxonomy</a></label>
-							<input type="text" maxlength="7" name="avm" id="AVM" value="{{ form.avm }}" class="form-text" style="width:7em;" /><span id="avm_lookup"></span>
-						</div>
+						<label for="edit-ObName" class="hidden">Title: </label>{{form.query}}
+						{% if form.query.errors  %}<span class="error form-error">{{form.query.errors.as_text}}</span>{% endif %}
 					</div>
 				</fieldset>
 			</div>
@@ -99,33 +87,14 @@
 						<p class="gray-5">Limit your search to a particular range of dates.</p>
 					</div>
 					<div class="fourcol lastcol">
-						<label class="option"><input type="radio" name="daterange" value="all" checked="checked"  class="form-radio" /> All dates</label>
-						<label class="option inline"><input type="radio" name="daterange" value="select" class="form-radio" /> Use date range </label>
-							from
-							<div class="inline">
-								<label for="edit-StartDate-day" class="hidden">start day</label><select name="sday" class="form-select" id="edit-StartDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.sday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
-							</div>
-							<div class="inline">
-								<label for="edit-StartDate-month" class="hidden">start month</label><select name="smon" class="form-select" id="edit-StartDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.smon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
-							</div>
-							<div class="inline">
-								<label for="edit-StartDate-year" class="hidden">start year</label><select name="syear" class="form-select" id="edit-StartDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.syear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
-							</div>
-							<label for="edit-EndDate" class="inline"> until </label>
-							<div class="inline">
-								<label for="edit-EndDate-day" class="hidden">end day</label><select name="eday" class="form-select" id="edit-EndDate-day" >{% for d in days %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.eday %} selected="selected"{% endif %}>{{ d }}</option>{% endfor %}</select>
-							</div>
-							<div class="inline">
-								<label for="edit-EndDate-month" class="hidden">end month</label><select name="emon" class="form-select" id="edit-EndDate-month" >{% for m in months %}<option value="{{ forloop.counter }}"{% if forloop.counter == form.emon %} selected="selected"{% endif %}>{{ m }}</option>{% endfor %}</select>
-							</div>
-							<div class="inline">
-								<label for="edit-EndDate-year" class="hidden">end year</label><select name="eyear" class="form-select" id="edit-EndDate-year" >{% for y in years %}<option value="{{ y }}"{% if y == form.eyear %} selected="selected"{% endif %}>{{ y }}</option>{% endfor %}</select>
-							</div>
+						<label class="option">All dates: {{form.alldates}}</label>
+						<label class="option inline">or use date range</label> {{form.startdate}} to {{form.enddate}}
+						{% if form.startdate.errors or form.enddate.errors %}<span class="error form-error">{{form.startdate.errors.as_text}} {{form.enddate.errors.as_text}}</span>{% endif %}
 					</div>
 				</fieldset>
 			</div>
 			<div class="spacer"></div>
-			<div class="row">
+			<!-- div class="row">
 				<fieldset>
 					<legend>By position: </legend>
 					<div class="twocol">
@@ -138,18 +107,15 @@
 					</div>
 				</fieldset>
 			</div>
-			<div class="spacer"></div>
+			<div class="spacer"></div-->
 			<div class="row">
 				<fieldset>
-					<legend>By telescope:</legend>
+					<legend>By observatory site:</legend>
 					<div class="twocol">
-						<p class="gray-5">Limit your search to a specific telescope.</p>
+						<p class="gray-5">Limit your search to a specific observatory site.</p>
 					</div>
 					<div class="fourcol lastcol">
-						<label for="edit-telid" class="hidden">Telescope: </label><select name="telid" class="form-select" id="edit-telid" >
-							<option value="0">All</option>{% for telescope in telescopes %}
-							<option value="{{ telescope.id }}"{% if telescope.id == form.telid %} selected="selected"{% endif %}>{{ telescope.name }}</option>{% endfor %}
-						</select>
+						<label for="edit-telid" class="hidden">Site: </label>{{form.sites}}
 					</div>
 				</fieldset>
 			</div>
@@ -161,8 +127,7 @@
 						<p class="gray-5">Limit your search by the type of astronomical <a href="http://lcogt.net/network/instrumentation/filtertypes">filter</a>.</p>
 					</div>
 					<div class="fourcol lastcol">
-						<label for="edit-filter" class="hidden">Wavelength filter: </label><select name="filter" class="form-select" id="edit-filter" ><option value="A">Any</option>{% for filter in filters %}<option value="{{ filter.code }}"{% if filter.code == form.filter %} selected="selected"{% endif %}>{{ filter.name }}</option>{% endfor %}</select>
-						<!--<option value="">Opal</option><option value="BI">Bessell I</option><option value="CR">Bessell R</option><option value="BU">Bessell U</option><option value="CV">Bessell V</option><option value="D51">D51</option><option value="CA">H alpha</option><option value="HB">H beta</option><option value="CO">OIII</option><option value="SY">Pan-STARRS Y</option><option value="SZ">Pan-STARRS Z</option><option value="SG">SDSS g&#039;</option><option value="CI">SDSS i&#039;</option><option value="SR">SDSS r&#039;</option><option value="CU">SDSS u</option><option value="SM">SkyMap v</option><option value="SO">Solar</option></select>-->
+						<label for="edit-filter" class="hidden">Wavelength filter: </label>{{form.filters}}
 					</div>
 				</fieldset>
 			</div>
@@ -175,23 +140,7 @@
 					</div>
 					<div class="fourcol lastcol">
 						<label for="exposure" class="hidden">Exposure length: </label>
-						<select name="exposurecondition" class="form-select">
-							{% for condition in conditions %}
-								<option value="{{condition.value}}"{% if condition.value == form.exposurecondition %} selected="selected"{% endif %}>{{condition.text}}</option>
-							{% endfor %}
-							</select> <input type="text" maxlength="30" name="exposure" id="exposure" value="{{ form.exposure }}" class="form-text" style="width:5em;" /> seconds
-					</div>
-				</fieldset>
-			</div>
-			<div class="spacer"></div>
-			<div class="row">
-				<fieldset>
-					<legend>By user: </legend>
-					<div class="twocol">
-						<p class="gray-5">Limit your search to observations by a specific user's name.</p>
-					</div>
-					<div class="fourcol lastcol">
-						<label for="UserID" class="hidden">User: </label><input type="text" maxlength="30" name="user" id="UserID" value="{{ form.user }}" class="form-text" style="width:15em;" />
+						{{form.exposurecondition}} {{form.exposure}} seconds
 					</div>
 				</fieldset>
 			</div>

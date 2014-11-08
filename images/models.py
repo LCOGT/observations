@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 
 from datetime import datetime
@@ -40,16 +41,17 @@ class Image(models.Model):
     imageid = models.IntegerField(primary_key=True)
     whentaken = models.CharField(max_length=42, blank=True,null=True)
     schoolid = models.IntegerField(blank=True,null=True)
-    objectname = models.CharField(max_length=762,blank=True,null=True)
+    objectname = models.CharField(max_length=100,blank=True,null=True)
     ra = models.FloatField(blank=True,null=True)
     dec = models.FloatField(blank=True,null=True)
     filter = models.CharField(max_length=30, blank=True,null=True)
     exposure = models.FloatField(blank=True,null=True)
-    requestids = models.CharField(max_length=762, blank=True,null=True)
+    requestids = models.CharField(max_length=50, blank=True,null=True)
     telescope = models.ForeignKey(Telescope)
     filename = models.CharField(max_length=150, blank=True,null=True)
-    rti_username = models.CharField(max_length=50, blank=True,null=True)
-    processingtype = models.CharField(max_length=762, blank=True, null=True)
+    rti_username = models.CharField(max_length=150, blank=True,null=True)
+    observer = models.CharField(max_length=150, blank=True,null=True)
+    processingtype = models.CharField(max_length=20, blank=True, null=True)
     instrumentname = models.CharField(max_length=60, blank=True, null=True)
     archive_link = models.CharField(max_length=200,blank=True,null=True)
     class Meta:

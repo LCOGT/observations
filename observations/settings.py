@@ -135,7 +135,7 @@ TEMPLATE_DIRS = (
 )
 
 FIXTURE_DIRS = (
-  CURRENT_PATH + '/observations/fixtures/',
+  CURRENT_PATH + '/observations/images/fixtures/',
 )
 
 INSTALLED_APPS = (
@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'south',
     'images',
     #'debug_toolbar',
 )

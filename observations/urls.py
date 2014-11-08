@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
@@ -33,13 +34,13 @@ urlpatterns = patterns('images.views',
     url(r'^map/$','view_map'),
 
     url(r'^identity/$','identity',name='identity'),
+    (r'^admin/', include(admin.site.urls)),
 
-    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$','view_observation'),
+    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$','view_observation',name='show_rtiobservation'),
     url(r'^(?P<code>\w\w\w)/show/$','view_site_slideshow', name='slideshow_site'),
     url(r'^(?P<code>\w\w\w)/$','view_site', name='show_site'),
     url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$','view_telescope',name='show_telescope'),
     url(r'^(?P<code>\w\w\w).(?P<format>\w+)','view_site',name='site_api'),
-    (r'^admin/', include(admin.site.urls)),
     url(r'^$','index', name='home'),
   ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
