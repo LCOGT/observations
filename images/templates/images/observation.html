@@ -108,9 +108,8 @@
                     <td>
                         {% if filters %}
                         <ul class='filters'>
-                        {{filters}}
                             {% for filter in filters %} {% if filter.fits %}
-                            <li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{% if forloop.first  and forloop.last %}{% else %}{{ filter.fullname }}{%endif%}FITS</a> or <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>jpeg</a>
+                            <li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{% if forloop.first  and forloop.last %}{% else %}{{ filter.fullname }} {%endif%}FITS</a> or <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>jpeg</a>
                             </li>
                             {% endif %} {% endfor %}
                         </ul>

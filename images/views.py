@@ -1105,7 +1105,6 @@ def get_sci_fits(params):
     url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (params['rti_username'],params['whentaken'][0:8],telid)
     rids = params['requestids'].split(',')
     filters = []
-    print url,rids
     if rids:
         if len(rids) == 3:
             ids = ['b','g','r']
@@ -1129,7 +1128,6 @@ def get_sci_fits(params):
 
                 jpg = re.search('file-jpg type=\"url\">([^\<]*)<',xml)
                 fit = re.search('file-hfit type=\"url\">([^\<]*)<',xml)
-                print 
                 if jpg or fit:
                     tmp = {'id':ids[rid],'name':names[rid],'fullname':filter_name(names[rid])}
                     if jpg:
