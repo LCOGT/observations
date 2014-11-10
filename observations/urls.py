@@ -12,6 +12,7 @@ urlpatterns = patterns('images.views',
     url(r'^search/$','search',name="search"),
 
     url(r'^recent/$','view_group',{'mode' : 'recent'},name='show_recent'),
+    url(r'^recent.(?P<format>\w+)$','view_group',{'mode' : 'recent'},name='show_recent_json'),
     url(r'^popular/$','view_group',{'mode' : 'popular'},name='show_popular'),
     url(r'^trending/$','view_group',{'mode' : 'trending'},name='show_trending'),
 

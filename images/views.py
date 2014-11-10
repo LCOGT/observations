@@ -24,7 +24,7 @@ import urllib, urllib2, httplib, json
 import MySQLdb
 
 n_per_line = 6
-n_per_page = 12
+n_per_page = 18
 base_url = "http://lcogt.net/observations/"
 categorylookup = { '1': 'Planets',
                 '1.1':'Planets (Type)',
@@ -239,7 +239,7 @@ def index(request):
                                                     'telescopes':telescopes,
                                                     'categories':categories}, context_instance=RequestContext(request))
 
-def view_group(request,mode):
+def view_group(request,mode,format=None):
     input = input_params(request)
 
     sites = Site.objects.all()
@@ -275,7 +275,7 @@ def view_group(request,mode):
     input['observations'] = len(obs)
     input['perpage'] = n_per_page
 
-    if input['doctype'] == "json":
+    if input['doctype'] == "json" or format == 'json':
         return view_json(request,build_observations_json(obs),input)
     elif input['doctype'] == "kml":
         return view_kml(request,obs,input)
@@ -1715,7 +1715,7 @@ def build_observations_json(obs):
             "time" : {
                 "creation" : datestamp(o['whentaken'])
             },
-            "exposure": o['exposuresecs'],
+            "exposure": o['exposure'],
             "credit" : {
                 "about" : o['license'],
                 "label" : o['credit']
