@@ -1441,7 +1441,10 @@ def build_framedb_observations(observations,org_names=None):
         thumbnail = "http://data.lcogt.net/thumbnail/%s/?height=150&width=150&label=0" % id_name
         large_img = "http://data.lcogt.net/thumbnail/%s/?height=560&width=560&label=0" % id_name
         try:
-            telname = "%s in %s" % (telid[o['telid']],encl[o['encid']])
+            if o['telid'] != '2m0a':
+                telname = "%s in %s" % (telid[o['telid']],encl[o['encid']])
+            else:
+                telname = telid[o['telid']]
             site = Site.objects.get(code=o['siteid'])
         except:
             telname = ''

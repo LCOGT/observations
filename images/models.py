@@ -29,7 +29,7 @@ class Telescope(models.Model):
         return u"%s at %s" % (self.code,self.site)
 
 class Filter(models.Model):
-    code = models.CharField(max_length=10, blank=True, null=True)
+    code = models.CharField(max_length=20, blank=True, null=True)
     name = models.CharField(max_length=64, blank=True, null=True)
     ucd = models.CharField('UCD electromagnetic spectrum identifier',max_length=32, blank=True, null=True)
     class Meta:
