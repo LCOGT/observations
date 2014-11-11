@@ -8,8 +8,8 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import django.template
 django.template.add_to_builtins('django.templatetags.future')
 TEST = 'test' in sys.argv
-PRODUCTION = True if platform.node().startswith('pyprodsba') else False
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+PRODUCTION = True if CURRENT_PATH.startswith('/var/www') else False
 if PRODUCTION:
   PREFIX="/observations"
 else:
@@ -17,9 +17,7 @@ else:
 BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 VERSION = '0.2'
-TEST = 'test' in sys.argv
-DEBUG = not PRODUCTION
-
+DEBUG = True if os.environ.get('DEBUG',None) else not PRODUCTION
 TEMPLATE_DEBUG = DEBUG
 DOMAIN = 'lcogt.net'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
@@ -83,11 +81,11 @@ SITE_ID = 1
 USE_I18N = True
 
 if PRODUCTION:
-    STATIC_ROOT = '/home/egomez/public_html/static/observations'
-    STATIC_URL = 'http://lcogt.net/observations/static/'
-else:
     STATIC_ROOT = '/var/www/html/static/'
     STATIC_URL = PREFIX + '/static/'
+else:
+    STATIC_ROOT = '/home/egomez/public_html/static/observations'
+    STATIC_URL = 'http://lcogt.net/observations/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'images', 'static'),]
 
 ##### Upload directory for the proposalsubmit app. Also where proposal PDFs are created
