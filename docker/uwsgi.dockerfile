@@ -1,5 +1,5 @@
 #
-# observations app container
+# observations app container (driven by uwsgi)
 #
 FROM centos:centos6
 MAINTAINER LCOGT <webmaster@lcogt.net>
@@ -27,6 +27,8 @@ ENV PYTHONPATH /var/www/apps
 ENV DJANGO_SETTINGS_MODULE observations.settings
 ENV BRANCH ${BRANCH}
 ENV BUILDDATE ${BUILDDATE}
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
 
 EXPOSE 8000
 CMD ["/usr/bin/uwsgi", "--ini", "/var/www/apps/observations/config/uwsgi.ini"]

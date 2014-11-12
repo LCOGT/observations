@@ -1,10 +1,28 @@
+#
+# observations docker image makefile
+#
+# 'make' will create the two docker images needed to run the observations app:
+#    lcogtwebmaster/lcogt:observations-uwsgi-$BRANCH
+#    lcogtwebmaster/lcogt:observations-nginx-$BRANCH
+#
+# where $BRANCH is the git branch name presently in use.
+#
+# Once built, these images are pushed up the docker hub repository, and can then be
+# run via something like:
+#
+# docker run -d --name=observations-wsgi -p 8000:8000 lcogtwebmaster/lcogt:observations-uwsgi-$BRANCH
+# docker run -d --name=observations-nginx -p 8001:8001 lcogtwebmaster/lcogt:observations-nginx-$BRANCH
+#
+# Doug Thomas
+# LCOGT
+#
 NAME := lcogtwebmaster/lcogt
 BRANCH := $(shell git name-rev --name-only HEAD)
 BUILDDATE := $(shell date +%Y%m%d%H%M)
 TAG1 := observations-uwsgi-${BRANCH}
 TAG2 := observations-nginx-${BRANCH}
 
-.PHONY: all uwsgi test login push
+.PHONY: all uwsgi nginx test login push
 
 all: uwsgi nginx push
 
