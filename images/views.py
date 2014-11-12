@@ -170,9 +170,9 @@ categorylookup = { '1': 'Planets',
                 '5.4':'Galaxies (Component)',
                 '5.4.1':'Bulges',
                 '5.4.2':'Bars',
-                '5.4.3':'Disks', 
-                '5.4.4':'Halos', 
-                '5.4.5':'Rings', 
+                '5.4.3':'Disks',
+                '5.4.4':'Halos',
+                '5.4.5':'Rings',
                 '5.4.6':'Central Black Holes',
                 '5.4.7':'Spiral Arms',
                 '5.4.8':'Dust Lanes',
@@ -243,7 +243,7 @@ def view_group(request,mode,format=None):
     input = input_params(request)
 
     sites = Site.objects.all()
-    
+
     if(mode == "recent"):
         obs = build_recent_observations(n_per_page)
         input['title'] = "Recent Observations from LCOGT"
@@ -268,7 +268,7 @@ def view_group(request,mode,format=None):
             obs.append(o.image)
         obs = build_observations(obs)
         input['title'] = "Trending Observations at LCOGT"
-        input['link'] = 'trending'  
+        input['link'] = 'trending'
         input['description'] = 'Trending observations from the Las Cumbres Observatory Global Telescope'
 
 
@@ -363,7 +363,7 @@ def search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             obs = []
-            
+
             # Fetch RTI images
             rti_obs = search_rtiarchive(form.cleaned_data,input)
             framedb_obs = search_framedb(form.cleaned_data)
@@ -377,7 +377,7 @@ def search(request):
             input['description'] = 'Search results (LCOGT)'
             input['perpage'] = n_per_page
             #input['pager'] = build_pager(request,n)
-            
+
 
             # if(n > n_per_page):
             #     obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
@@ -424,6 +424,7 @@ def view_site(request,code,format=None):
     input = input_params(request)
     data = get_site_data(code)
     obs = data['obs']
+    print "code = '" + code + "'"
     site = Site.objects.get(code=code)
     input['observations'] = len(obs)
     input['title'] = site.name
@@ -454,7 +455,7 @@ def old_view_site(request,code):
         site = Site.objects.get(code=code)
     except ObjectDoesNotExist:
         return unknown(request)
-    
+
     telescopes = Telescope.objects.filter(site=site)
 
     obs = []
@@ -641,8 +642,8 @@ def view_object(request,object):
 
     except ObjectDoesNotExist:
         return unknown(request)
-    
-    
+
+
     n = obser.count()
 
     input['observations'] = n
@@ -651,7 +652,7 @@ def view_object(request,object):
     input['description'] = 'Observations of '+object['name']+' (LCOGT)'
     input['perpage'] = n_per_page
     input['pager'] = build_pager(request,n,object['avm']['code'])
-        
+
     if(n > n_per_page):
         obs = build_observations(obser[input['pager']['start']:input['pager']['end']])
     else:
@@ -710,7 +711,7 @@ def view_user(request,userid):
         u = Registrations.objects.get(schoolid=userid)
     except ObjectDoesNotExist:
         return unknown(request)
-    
+
     #s = Registrations.objects.filter(schoolid=userid)#.values('usertype').annotate(Count(tot='schoolid')).order_by('-schoolid__count')
     #return HttpResponse(simplejson.dumps(s),mimetype='application/javascript')
 
@@ -767,7 +768,7 @@ def view_username(request,username):
         u = Registrations.objects.get(rti_username=username)
     except ObjectDoesNotExist:
         return unknown(request)
-    
+
     obs = Image.objects.filter(rti_username=username).order_by('-whentaken')
     n = obs.count()
 
@@ -861,7 +862,7 @@ def view_category(request,category):
         obs.append(o.image)
 
     obs = build_observations(obs)
-    
+
 
     if input['doctype'] == "json":
         return view_json(request,build_observations_json(obs),input)
@@ -935,14 +936,14 @@ def view_map(request):
     telescopes = Telescope.objects.all()
 
     dt = datetime.utcnow() - timedelta(30)
-    
+
     sites = Site.objects.all()
     telescopes = Telescope.objects.all()
 
     obs = Image.objects.filter(whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
     #print dt.strftime("%Y%m%d%H%M%S")
     n = obs.count()
-        
+
 
     input['observations'] = 0
     input['title'] = 'Heat Map'
@@ -1260,12 +1261,12 @@ def input_params(request):
         mimetype = 'application/xml'
     elif doctype == 'rdf':
         mimetype = 'application/rdf+xml'
-        
+
     if path[len(path)-1] == "show":
         slideshow = True
 
     query = request.META.get('QUERY_STRING', '')
-    
+
 
     return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
 
@@ -1346,7 +1347,7 @@ def look_up_org_names(usernames):
         tracknums, userlist = zip(*usernames)
         rows = rbauth_lookup(userlist)
         org_names = dict((x[0],x[1]) for x in rows)
-        user_dict = dict(usernames) 
+        user_dict = dict(usernames)
         if org_names:
             for k,v in user_dict.items():
                 user_dict[k] = org_names.get(v,'Unknown')
@@ -1411,7 +1412,7 @@ def identity(request):
         if len(org_names)>1:
             info = {
                 'title' : "Recent observations" ,
-                'link' : '',  
+                'link' : '',
                 'description' : 'Recent observations from Las Cumbres Observatory Global Telescope Network',
                 'perpage' : 36
             }
@@ -1419,7 +1420,7 @@ def identity(request):
             name = org_names.items()[0][1]
             info = {
                 'title' : "Recent %s observations" % name,
-                'link' : '',  
+                'link' : '',
                 'description' : 'Recent observations taken by %s using Las Cumbres Observatory Global Telescope Network' % name,
                 'perpage' : 36
             }
@@ -1428,7 +1429,7 @@ def identity(request):
 
 def build_framedb_observations(observations,org_names=None):
     '''
-    Translate response from framedb to the format Observations wants to display 
+    Translate response from framedb to the format Observations wants to display
     '''
     from images.utils import dmstodegrees, hmstodegrees
     obs_list = []
@@ -1604,7 +1605,7 @@ def build_observations(obs):
 
         if len(obs) > 0 and o['schoolid']:
             observations.append(o)
-            
+
 
     return observations
 
@@ -1702,7 +1703,7 @@ def build_observations_json(obs):
                 "fits" : o['fitsfiles'],
                 "thumb" : o['thumbnail']
             },
-            "ra" : o['ra'], 
+            "ra" : o['ra'],
             "dec" : o['dec'],
             "filter" :  {
                 "name" : re.sub(r"\"",'',filter[0]),
@@ -1740,7 +1741,7 @@ def build_observations_json(obs):
 
 
 def view_json(request,obs,config):
-    
+
     response = {
         "message" : "This is a beta release of LCOGT JSON. The format may change so any applications you build using this may need updating in the future.",
         "date" : datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0000"),
@@ -1766,13 +1767,13 @@ def view_json(request,obs,config):
         response["live"] = config['live']
     if 'exposure' in config:
         response["exposure"] = config['exposure']
-    
+
     s = simplejson.dumps(response, indent=1,sort_keys=True)
     output = '\n'.join([l.rstrip() for l in  s.splitlines()])
     if 'callback' in config and config['callback'] != "":
         output = config['callback']+"("+output+")"
     return HttpResponse(output,mimetype=config['mimetype'])
-    
+
 
 
 def view_kml(request,obs,config):
@@ -2003,7 +2004,7 @@ def binMonths(obs,input,bins):
     values = [{'count':0,'year':0,'m':0,'month':''} for num in range(bins)]
     for num in range(bins):
         m = now.month - num
-        values[num]['year'] = now.year+((m-1)/12)       
+        values[num]['year'] = now.year+((m-1)/12)
         while m < 1:
             m += 12
         values[num]['month'] = datetime(now.year, m, 1).strftime("%b")

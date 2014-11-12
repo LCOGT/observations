@@ -10,6 +10,12 @@ django.template.add_to_builtins('django.templatetags.future')
 TEST = 'test' in sys.argv
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 PRODUCTION = True if CURRENT_PATH.startswith('/var/www') else False
+BRANCH = os.environ.get('BRANCH',None)
+if BRANCH:
+    BRANCH = '-' + BRANCH
+else:
+    BRANCH = ''
+
 if PRODUCTION:
   PREFIX="/observations"
 else:
@@ -33,7 +39,7 @@ def dev_db_name(dbname, backend):
 
 DEFAULT_DB = {
               'ENGINE'   : 'django.db.backends.mysql' if PRODUCTION else DEV_DB_BACKEND,
-              'NAME'     : 'observations' if PRODUCTION else dev_db_name('observations', DEV_DB_BACKEND),
+              'NAME'     : 'observations'+BRANCH if PRODUCTION else dev_db_name('observations', DEV_DB_BACKEND),
               'USER'     : 'citsci' if PRODUCTION else 'root',
               'PASSWORD' : 'aster01d' if PRODUCTION else '',
               'HOST'     : 'db01sba' if PRODUCTION else '',
@@ -49,7 +55,7 @@ ODIN_DB = {
               'OPTIONS'  : {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
               }
 
-if PRODUCTION:
+if False:
     CACHES = {
               'default': {
                           'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',

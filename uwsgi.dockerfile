@@ -17,16 +17,15 @@ RUN pip install pip==1.3;  pip install uwsgi
 RUN pip install -r pip-requirements.txt
 RUN python manage.py syncdb --noinput --migrate;
 RUN python manage.py collectstatic --noinput;
-RUN python manage.py loaddata observations/fixtures/site.json
-RUN python manage.py loaddata observations/fixtures/filter.json
-RUN python manage.py loaddata observations/fixtures/telescope.json
-RUN python manage.py loaddata observations/fixtures/image.json
-RUN python manage.py loaddata observations/fixtures/observationstats.json
-
+#RUN python manage.py loaddata observations/fixtures/site.json
+#RUN python manage.py loaddata observations/fixtures/filter.json
+#RUN python manage.py loaddata observations/fixtures/telescope.json
+#RUN python manage.py loaddata observations/fixtures/image.json
+#RUN python manage.py loaddata observations/fixtures/observationstats.json
 
 ENV PYTHONPATH /var/www/apps
 ENV DJANGO_SETTINGS_MODULE observations.settings
+ENV BRANCH ${BRANCH}
 
 EXPOSE 8000
 CMD ["/usr/bin/uwsgi", "--ini", "/var/www/apps/observations/config/uwsgi.ini"]
-
