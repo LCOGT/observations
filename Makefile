@@ -1,20 +1,25 @@
 NAME := lcogtwebmaster/lcogt
 BRANCH := $(shell git name-rev --name-only HEAD)
-TAG := observations-${BRANCH}
+BUILDDATE := $(shell date +%Y%m%d%H%M)
+TAG1 := observations-uwsgi-${BRANCH}
+TAG2 := observations-nginx-${BRANCH}
 
 .PHONY: all uwsgi test login push
 
-all: uwsgi
+all: uwsgi nginx push
 
 login:
     docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@lcogt.net"
 
 uwsgi:
-	export BRANCH=${BRANCH} && cat uwsgi.dockerfile | envsubst > Dockerfile && docker build -t $(NAME):$(TAG) --rm . && rm -f Dockerfile
+	export BUILDDATE=${BUILDDATE} && export BRANCH=${BRANCH} && cat docker/uwsgi.dockerfile | envsubst > Dockerfile && docker build -t $(NAME):$(TAG1) --rm . && rm -f Dockerfile
+
+nginx:
+	export BUILDDATE=${BUILDDATE} && export BRANCH=${BRANCH} && cat docker/nginx.dockerfile | envsubst > Dockerfile && docker build -t $(NAME):$(TAG2) --rm . && rm -f Dockerfile
 
 test:
-	env NAME=$(NAME) VERSION=$(TAG) ./test/runtests.sh
+	env NAME=${NAME} VERSION=${TAG1} ./test/runtests.sh
 
 push: test login
-	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(TAG); then echo "$(NAME):$(TAG) is not yet built. Please run 'make build'"; false; fi
-	docker push $(NAME):$(TAG)
+	@if ! docker images ${NAME} | awk '{ print $$2 }' | grep -q -F ${TAG1}; then echo "${NAME}:${TAG1} is not yet built. Please run 'make'"; false; fi
+	docker push ${NAME}:${TAG1} && docker push ${NAME}:${TAG2}
