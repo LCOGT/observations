@@ -13,7 +13,7 @@ RUN yum -y install python-devel; yum clean all
 
 ADD . /var/www/apps/observations
 WORKDIR /var/www/apps/observations
-RUN cat config/nginx.conf | envsubst > /etc/nginx/nginx.conf
+RUN cat docker/config/nginx.conf | envsubst > /etc/nginx/nginx.conf
 
 RUN pip install pip==1.3
 RUN pip install -r pip-requirements.txt

@@ -24,7 +24,7 @@ BRANCH := $(shell git name-rev --name-only HEAD)
 BUILDDATE := $(shell date +%Y%m%d%H%M)
 TAG1 := observations-uwsgi-${BRANCH}
 TAG2 := observations-nginx-${BRANCH}
-PREFIX := observations
+PREFIX := '/observations'
 
 .PHONY: all uwsgi nginx test login install
 

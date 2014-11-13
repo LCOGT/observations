@@ -1466,7 +1466,7 @@ def build_framedb_observations(observations,org_names=None):
                     'whentaken'     : datetime.strptime(o['date_obs'],"%Y-%m-%d %H:%M:%S").strftime("%Y%m%d%H%M%S"),
                     'telescope'     : o['telid'],
                     'license'       : "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US",
-                    'credit'        : "Image taken with %s telescope at Las Cumbres Observatory Global Telescope Network, %s node" % (o['telid'],site.name),
+                    'credit'        : "Image taken with %s telescope at Las Cumbres Observatory Global Telescope Network, %s node" % (o['telid'], site.name if hasattr(site,'name') else 'unknown'),
                     'licenseimage'  : 'cc-by-nc.png',
                     'filter'        : filter_name,
                     'filterprops'   : filter_name,
