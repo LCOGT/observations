@@ -17,11 +17,6 @@ RUN pip install pip==1.3;  pip install uwsgi==2.0.8
 RUN pip install -r pip-requirements.txt
 RUN python manage.py syncdb --noinput --migrate;
 RUN python manage.py collectstatic --noinput;
-RUN python manage.py loaddata observations/fixtures/site.json
-RUN python manage.py loaddata observations/fixtures/filter.json
-RUN python manage.py loaddata observations/fixtures/telescope.json
-RUN python manage.py loaddata observations/fixtures/image.json
-RUN python manage.py loaddata observations/fixtures/observationstats.json
 
 ENV PYTHONPATH /var/www/apps
 ENV DJANGO_SETTINGS_MODULE observations.settings

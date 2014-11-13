@@ -26,12 +26,12 @@ TAG1 := observations-uwsgi-${BRANCH}
 TAG2 := observations-nginx-${BRANCH}
 PREFIX := observations
 
-.PHONY: all uwsgi nginx test login push_wsgi push_nginx install
+.PHONY: all uwsgi nginx test login install
 
 all: uwsgi nginx test
 
 login:
-    docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@lcogt.net"
+	docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@lcogt.net"
 
 uwsgi:
 	export BUILDDATE=${BUILDDATE} && \
@@ -50,12 +50,6 @@ nginx:
 test:
 	env NAME=${NAME} VERSION=${TAG1} ./test/runtests.sh
 
-push_wsgi: login
+install: test login
 	@if ! docker images ${NAME} | awk '{ print $$2 }' | grep -q -F ${TAG1}; then echo "${NAME}:${TAG1} is not yet built. Please run 'make'"; false; fi
-    docker push ${NAME}:${TAG1}
-
-push_nginx: login
-	@if ! docker images ${NAME} | awk '{ print $$2 }' | grep -q -F ${TAG2}; then echo "${NAME}:${TAG2} is not yet built. Please run 'make'"; false; fi
-    docker push ${NAME}:${TAG2}
-
-install: push_wsgi push_nginx
+	docker push ${NAME}:${TAG1} && docker push ${NAME}:${TAG2}
