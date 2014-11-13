@@ -17,7 +17,7 @@ else:
     BRANCH = ''
 
 if PRODUCTION:
-  PREFIX="/observations"
+  PREFIX= os.environ.get('PREFIX','/observations')
 else:
   PREFIX =""
 BASE_DIR = os.path.dirname(CURRENT_PATH)

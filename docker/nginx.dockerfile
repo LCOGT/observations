@@ -13,7 +13,7 @@ RUN yum -y install python-devel; yum clean all
 
 ADD . /var/www/apps/observations
 WORKDIR /var/www/apps/observations
-COPY config/nginx.conf /etc/nginx/
+RUN cat config/nginx.conf | envsubst > /etc/nginx/nginx.conf
 
 RUN pip install pip==1.3
 RUN pip install -r pip-requirements.txt
@@ -25,8 +25,9 @@ ENV BRANCH ${BRANCH}
 ENV BUILDDATE ${BUILDDATE}
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
+ENV PREFIX ${PREFIX}
 
-EXPOSE 8001
+EXPOSE 8000
 
-CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
+CMD ["/var/www/apps/observations/docker/bin/nginx.sh"]
 

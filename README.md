@@ -1,8 +1,5 @@
-rtiobservations
-===============
-
-The LCOGT Real Time Interface (RTI) Django project. 
-
+observations
+============
 
 [/observations](http://lcogt.net/observations)
 =============
@@ -29,3 +26,18 @@ Groups of observations can be viewed in a variety of formats:
 * [JSON](https://en.wikipedia.org/wiki/JSON) and [JSON-p](https://en.wikipedia.org/wiki/JSONP): add `.json` or `.json?callback=blah` to the URL
 * [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language): add `.kml` to the URL
 * [RSS](https://en.wikipedia.org/wiki/RSS): add `.rss` to the URL
+
+
+docker
+======
+
+To build the two docker containers for this app, just 'make' it.  Note that the created build will be git-branch specific.
+That is, if you have the 'release' branch checked out, and you 'make && make install', you will build and deploy two
+docker containers, each of which contains the code and carries the 'release' label.  Likewise for the 'test' branch, or
+any other branch.
+
+The default application prefix can be overridden via the PREFIX environment variable.  The default PREFIX is 'observations'
+
+Once the containers are created, run them both via ./docker/bin/run.sh
+
+When testing is complete, push them to the lcogt docker hub repository via 'make install'

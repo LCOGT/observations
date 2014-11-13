@@ -29,6 +29,8 @@ ENV BRANCH ${BRANCH}
 ENV BUILDDATE ${BUILDDATE}
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
+ENV PREFIX ${PREFIX}
 
-EXPOSE 8000
-CMD ["/usr/bin/uwsgi", "--ini", "/var/www/apps/observations/config/uwsgi.ini"]
+EXPOSE 8001
+
+CMD ["/var/www/apps/observations/docker/bin/uwsgi.sh"]
