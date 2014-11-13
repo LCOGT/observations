@@ -2,16 +2,16 @@
 # observations docker image makefile
 #
 # 'make' will create the two docker images needed to run the observations app:
-#    lcogtwebmaster/lcogt:observations-uwsgi-$BRANCH
-#    lcogtwebmaster/lcogt:observations-nginx-$BRANCH
+#    lcogtwebmaster/lcogt:observations_uwsgi_$BRANCH
+#    lcogtwebmaster/lcogt:observations_nginx_$BRANCH
 #
 # where $BRANCH is the git branch name presently in use.
 #
 # Once built, these images can be pushed up the docker hub repository via 'make install',
 # and can then be run via something like:
 #
-# docker run -d --name=observations-wsgi -p 8001 -e PREFIX=observations2 lcogtwebmaster/lcogt:observations-uwsgi-$BRANCH
-# docker run -d --name=observations-nginx -p 8000:8000 -e PREFIX=observations2 --link observations-wsgi:observations-wsgi lcogtwebmaster/lcogt:observations-nginx-$BRANCH
+# docker run -d --name=observations_wsgi -p 8001 -e PREFIX=/observations2 lcogtwebmaster/lcogt:observations_uwsgi_$BRANCH
+# docker run -d --name=observations_nginx -p 8000:8000 -e PREFIX=/observations2 --link observations_wsgi:observations_wsgi lcogtwebmaster/lcogt:observations_nginx_$BRANCH
 #
 # at which point the app will be exposed on the target host at port 8000
 #
@@ -22,8 +22,8 @@
 NAME := lcogtwebmaster/lcogt
 BRANCH := $(shell git name-rev --name-only HEAD)
 BUILDDATE := $(shell date +%Y%m%d%H%M)
-TAG1 := observations-uwsgi-${BRANCH}
-TAG2 := observations-nginx-${BRANCH}
+TAG1 := observations_uwsgi_${BRANCH}
+TAG2 := observations_nginx_${BRANCH}
 PREFIX := '/observations'
 
 .PHONY: all uwsgi nginx test login install
