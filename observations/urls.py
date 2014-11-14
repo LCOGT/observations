@@ -10,14 +10,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('images.views',
     url(r'^search/$','search',name="search"),
-    url(r'^search.(?P<format>\w+)$','search',name="search"),
+    url(r'^search\.(?P<format>\w+)$','search',name="search"),
 
     url(r'^recent/$','view_group',{'mode' : 'recent'},name='show_recent'),
-    url(r'^recent.(?P<format>\w+)$','view_group',{'mode' : 'recent'},name='show_recent_json'),
+    url(r'^recent\.(?P<format>\w+)$','view_group',{'mode' : 'recent'},name='show_recent_json'),
     url(r'^popular/$','view_group',{'mode' : 'popular'},name='show_popular'),
-    url(r'^popular.(?P<format>\w+)$','view_group',{'mode' : 'popular'},name='show_popular'),
+    url(r'^popular\.(?P<format>\w+)$','view_group',{'mode' : 'popular'},name='show_popular'),
     url(r'^trending/$','view_group',{'mode' : 'trending'},name='show_trending'),
-    url(r'^trending.(?P<format>\w+)$','view_group',{'mode' : 'trending'},name='show_trending'),
+    url(r'^trending\.(?P<format>\w+)$','view_group',{'mode' : 'trending'},name='show_trending'),
 
     url(r'^user/(?P<userid>\d+)/$','view_user'),
     url(r'^user/(?P<username>[a-zA-Z\.]+)/$','view_username'),
@@ -44,7 +44,7 @@ urlpatterns = patterns('images.views',
     url(r'^(?P<code>\w\w\w)/show/$','view_site_slideshow', name='slideshow_site'),
     url(r'^(?P<code>\w\w\w)/$','view_site', name='show_site'),
     url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$','view_telescope',name='show_telescope'),
-    url(r'^(?P<code>\w\w\w).(?P<format>\w+)','view_site',name='site_api'),
+    url(r'^(?P<code>\w\w\w)\.(?P<format>\w+)$','view_site',name='site_api'),
     url(r'^$','index', name='home'),
   ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

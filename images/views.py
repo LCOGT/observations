@@ -421,6 +421,9 @@ def get_site_data(code):
     return data
 
 def view_site(request,code,format=None):
+    # Check we have a valid site
+    if Site.objects.filter(code=code).count() == 0:
+        raise Http404
     input = input_params(request)
     data = get_site_data(code)
     obs = data['obs']
