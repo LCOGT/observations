@@ -28,16 +28,22 @@ Groups of observations can be viewed in a variety of formats:
 * [RSS](https://en.wikipedia.org/wiki/RSS): add `.rss` to the URL
 
 
-docker
-======
+docker stuff
+============
 
-To build the two docker containers for this app, just 'make' it.  Note that the created build will be git-branch specific.
+A production deployment of this app requires two docker containers -- one for the dynamic django app (run via uwsgi),
+and the other for the static content (run via nginx).
+
+These environment variables can be set to modify the behavior of this application:
+
+* PREFIX: determines the root URI stem for the application.  Default is '/observations'
+* DEBUG: enables debug within the django app, and displays logging outout.  Default is disabled.
+
+To build the two docker images for this app, just 'make' them.  Note that the created build will be git-branch specific.
 That is, if you have the 'release' branch checked out, and you 'make && make install', you will build and deploy two
-docker containers, each of which contains the code and carries the 'release' label.  Likewise for the 'test' branch, or
+docker images, each of which contains the release code and carries the 'release' label.  Likewise for the 'test' branch, or
 any other branch.
 
-The default application prefix can be overridden via the PREFIX environment variable.  The default PREFIX is 'observations'
+Once the containers are created, run them both via ./docker/bin/run.sh.
 
-Once the containers are created, run them both via ./docker/bin/run.sh
-
-When testing is complete, push them to the lcogt docker hub repository via 'make install'
+When testing is complete, push these images to the lcogt docker hub repository via 'make install'
