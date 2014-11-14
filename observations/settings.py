@@ -91,7 +91,7 @@ if PRODUCTION:
     STATIC_URL = PREFIX + '/static/'
 else:
     STATIC_ROOT = '/home/egomez/public_html/static/observations'
-    STATIC_URL = 'http://lcogt.net/observations/static/'
+    STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'images', 'static'),]
 
 ##### Upload directory for the proposalsubmit app. Also where proposal PDFs are created

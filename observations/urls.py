@@ -10,11 +10,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('images.views',
     url(r'^search/$','search',name="search"),
+    url(r'^search.(?P<format>\w+)$','search',name="search"),
 
     url(r'^recent/$','view_group',{'mode' : 'recent'},name='show_recent'),
     url(r'^recent.(?P<format>\w+)$','view_group',{'mode' : 'recent'},name='show_recent_json'),
     url(r'^popular/$','view_group',{'mode' : 'popular'},name='show_popular'),
+    url(r'^popular.(?P<format>\w+)$','view_group',{'mode' : 'popular'},name='show_popular'),
     url(r'^trending/$','view_group',{'mode' : 'trending'},name='show_trending'),
+    url(r'^trending.(?P<format>\w+)$','view_group',{'mode' : 'trending'},name='show_trending'),
 
     url(r'^user/(?P<userid>\d+)/$','view_user'),
     url(r'^user/(?P<username>[a-zA-Z\.]+)/$','view_username'),

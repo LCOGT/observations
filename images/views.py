@@ -354,7 +354,7 @@ def search_rtiarchive(form,input):
         obs = obs.order_by('-whentaken')
     return list(obs)
 
-def search(request):
+def search(request,format=None):
     input = input_params(request)
     if not request.GET:
         form = SearchForm()
@@ -386,7 +386,7 @@ def search(request):
             obs = framedb_obs + robs
 
 
-            if input['doctype'] == "json":
+            if input['doctype'] == "json" or format == 'json':
                 return view_json(request,build_observations_json(obs),input)
             elif input['doctype'] == "kml":
                 return view_kml(request,obs,input)
