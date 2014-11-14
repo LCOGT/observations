@@ -1,8 +1,5 @@
-rtiobservations
-===============
-
-The LCOGT Real Time Interface (RTI) Django project. 
-
+observations
+============
 
 [/observations](http://lcogt.net/observations)
 =============
@@ -29,3 +26,24 @@ Groups of observations can be viewed in a variety of formats:
 * [JSON](https://en.wikipedia.org/wiki/JSON) and [JSON-p](https://en.wikipedia.org/wiki/JSONP): add `.json` or `.json?callback=blah` to the URL
 * [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language): add `.kml` to the URL
 * [RSS](https://en.wikipedia.org/wiki/RSS): add `.rss` to the URL
+
+
+docker stuff
+============
+
+A production deployment of this app requires two docker containers -- one for the dynamic django app (run via uwsgi),
+and the other for the static content (run via nginx).
+
+These environment variables can be set to modify the behavior of this application:
+
+* PREFIX: determines the root URI stem for the application.  Default is '/observations'
+* DEBUG: enables debug within the django app, and displays logging outout.  Default is disabled.
+
+To build the two docker images for this app, just 'make' them.  Note that the created build will be git-branch specific.
+That is, if you have the 'release' branch checked out, and you 'make && make install', you will build and deploy two
+docker images, each of which contains the release code and carries the 'release' label.  Likewise for the 'test' branch, or
+any other branch.
+
+Once the containers are created, run them both via ./docker/bin/run.sh.
+
+When testing is complete, push these images to the lcogt docker hub repository via 'make install'
