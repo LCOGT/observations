@@ -1313,6 +1313,9 @@ def framedb_lookup(query):
     return data
 
 def tracknum_lookup(tracknum):
+    if not tracknum.startswith('0') and len(tracknum) != 10:
+        # Avoid sending junk to the API
+        return False
     try:
         conn = httplib.HTTPSConnection("lcogt.net")
         params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
