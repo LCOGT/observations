@@ -8,8 +8,11 @@ docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@
 if [ "$DEBUG" != "" ]; then
     DEBUGENV="-e DEBUG=True"
 fi
-docker run -d --name=observations_uwsgi -e PREFIX=/observations $DEBUGENV lcogtwebmaster/lcogt:observations_uwsgi_$BRANCH
-docker run -d --name=observations_nginx -p 8000:8000 -e PREFIX=/observations $DEBUGENV --link observations_uwsgi:observations_uwsgi lcogtwebmaster/lcogt:observations_nginx_$BRANCH
+if [ "$PREFIX" == "" ]; then
+    PREFIX="/observations"
+fi
+docker run -d --name=observations_uwsgi -e PREFIX=$PREFIX $DEBUGENV lcogtwebmaster/lcogt:observations_uwsgi_$BRANCH
+docker run -d --name=observations_nginx -p 8000:8000 -e PREFIX=$PREFIX $DEBUGENV --link observations_uwsgi:observations_uwsgi lcogtwebmaster/lcogt:observations_nginx_$BRANCH
 if [ "$DEBUG" != "" ]; then
     docker logs -f observations_nginx &
     docker logs -f observations_uwsgi &

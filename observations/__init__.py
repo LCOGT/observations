@@ -8,3 +8,5 @@ URLNode.old_render = URLNode.render
 def render(self, context):
     from django.conf import settings
     return settings.PREFIX + self.old_render(context)
+
+URLNode.render = render
