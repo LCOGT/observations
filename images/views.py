@@ -635,10 +635,7 @@ def view_object(request,object):
             obser = obser.filter(observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
         a = obser.values('schoolid').annotate(count=Count('schoolid')).order_by('-count')
         if a:
-            try:
-                u = Registrations.objects.get(schoolid=a[0]['schoolid'])
-            except ObjectDoesNotExist:
-                u = ""
+            u = user_look_up(a[0]['rti_username'])
             input['mostobservedby'] = {'name':u,'id':a[0]['schoolid'],'count':a[0]['count']}
         else:
             u = ""
@@ -707,78 +704,21 @@ def view_object(request,object):
             return render_to_response('images/object.html', data,context_instance=RequestContext(request))
 
 
-def view_user(request,userid):
-    input = input_params(request)
-
-    try:
-        u = Registrations.objects.get(schoolid=userid)
-    except ObjectDoesNotExist:
-        return unknown(request)
-
-    #s = Registrations.objects.filter(schoolid=userid)#.values('usertype').annotate(Count(tot='schoolid')).order_by('-schoolid__count')
-    #return HttpResponse(simplejson.dumps(s),mimetype='application/javascript')
-
-    obs = Image.objects.filter(schoolid=userid).order_by('-whentaken')
-    n = obs.count()
-
-
-    input['observations'] = n
-    input['title'] = u.schoolname
-    input['link'] = 'user/'+userid
-    input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
-    input['perpage'] = n_per_page
-    input['pager'] = build_pager(request,n)
-
-    if int(request.GET.get('page','1')) == 1:
-        # Bin the observations by month for the past year
-        input = binMonths(obs,input,24)
-
-    if(n > n_per_page):
-        obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
-    else:
-        obs = build_observations(obs)
-
-
-
-    try:
-        uri = Schooluri.objects.get(usr_id=u).uri
-    except:
-        uri = ""
-
-    mostrecent = ""
-
-    if len(obs) > 0:
-        mostrecent = relativetime(obs[0]['whentaken'])
-
-    if input['doctype'] == "json":
-        return view_json(request,build_observations_json(obs),input)
-    elif input['doctype'] == "kml":
-        return view_kml(request,obs,input)
-    elif input['doctype'] == "rss":
-        return view_rss(request,obs,input)
-    else:
-        data = {'input':input,'user': u.schoolname, 'userid' : userid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
-        if input['slideshow']:
-            return render_to_response('images/slideshow.html', data,context_instance=RequestContext(request))
-        else:
-            return render_to_response('images/user.html', data,context_instance=RequestContext(request))
-
-
 def view_username(request,username):
     input = input_params(request)
 
-    try:
-        u = Registrations.objects.get(rti_username=username)
-    except ObjectDoesNotExist:
-        return unknown(request)
+    u = user_look_up(username)
+    org_name = u.get(username,'Unknown')
 
     obs = Image.objects.filter(rti_username=username).order_by('-whentaken')
+    if obs:
+        org_name = obs[0].observer
     n = obs.count()
 
     input['observations'] = n
-    input['title'] = u.schoolname
+    input['title'] = org_name
     input['link'] = 'user/'+username
-    input['description'] = 'Observations by '+u.schoolname+' (LCOGT)'
+    input['description'] = 'Observations by '+org_name+' (LCOGT)'
     input['perpage'] = n_per_page
     input['pager'] = build_pager(request,n)
 
@@ -804,7 +744,7 @@ def view_username(request,username):
     elif input['doctype'] == "rss":
         return view_rss(request,obs,input)
     else:
-        data = {'user': u.schoolname, 'userid' : u.schoolid,'n':n,'start':datestamp_basic(u.accountcreated),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+        data = {'user': org_name, 'n':n,'start': datetime(2005,1,1),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
         if input['slideshow']:
             return render_to_response('images/slideshow.html', data,context_instance=RequestContext(request))
         else:
@@ -1052,11 +992,7 @@ def view_observation(request,code,tel,obs):
         except:
             obstats[0].avmcode = "0"
 
-    try:
-        u = Registrations.objects.get(schoolid=obs[0]['schoolid'])
-        tag = u.tag
-    except:
-        tag='0'
+    tag='0'
 
     obs[0]['views'] = views
 
@@ -1087,7 +1023,6 @@ def view_observation(request,code,tel,obs):
                   'telescope':obs[0]['telescope'],
                   'filter':obs[0]['filter']}
         filters = get_sci_fits(params)
-        print filters
 
     obs[0]['filter'] = filter_link(obs[0]['filter'])
 
@@ -1332,6 +1267,7 @@ def tracknum_lookup(tracknum):
         return False
     return data
 
+
 def find_user_ids(tracknums):
     user_list =[]
     for n in tracknums:
@@ -1347,6 +1283,15 @@ def rbauth_lookup(userlist):
     rows.execute(sql)
     db.close()
     return rows
+
+def user_look_up(userlist):
+    rows = rbauth_lookup(userlist)
+    org_names = dict((x[0],x[1]) for x in rows)
+    user_dict = {}
+    if org_names:
+        for u in user_list:
+            user_dict[k] = org_names.get(u,'Unknown')
+    return user_dict
 
 def look_up_org_names(usernames):
     ''' Parse a list of tuples mapping tracking num to username
@@ -1616,7 +1561,7 @@ def build_observations(obs):
         o['link_obs'] =  reverse('show_rtiobservation',kwargs={'code':o['telescope'].site.code,'tel':o['telescope'].code,'obs':o['imageid']})
         o['link_site'] = o['telescope'].site.code;
         o['link_tel'] = o['link_site']+"/"+o['telescope'].code;
-        o['link_user'] = "user/"+str(o['userid']);
+        o['link_user'] = "user/"+str(o['rti_username']);
         o['object'] = re.sub(r" ?\([^\)]*\)",'',o['objectname']) # Remove brackets
         o['object'] = re.sub(r"/\s\s+/", ' ', o['object'])      # Remove redundant whitespace
         o['object'] = re.sub(r"[^\w\-\+0-9 ]/i",'',o['object']) # Remove non-useful characters

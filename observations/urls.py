@@ -19,10 +19,8 @@ urlpatterns = patterns('images.views',
     url(r'^trending/$','view_group',{'mode' : 'trending'},name='show_trending'),
     url(r'^trending\.(?P<format>\w+)$','view_group',{'mode' : 'trending'},name='show_trending'),
 
-    url(r'^user/(?P<userid>\d+)/$','view_user'),
     url(r'^user/(?P<username>[a-zA-Z\.]+)/$','view_username'),
     url(r'^user/$','index'),
-    url(r'^u/(?P<userid>\d+)/$','view_user'),
     url(r'^u/(?P<username>[a-zA-Z\.]+)/$','view_username'),
 
     url(r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)/$','view_object'),
