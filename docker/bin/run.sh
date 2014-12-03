@@ -11,8 +11,8 @@ fi
 if [ "$PREFIX" == "" ]; then
     PREFIX="/observations"
 fi
-docker run -d --name=observations_uwsgi -e PREFIX=$PREFIX $DEBUGENV lcogtwebmaster/lcogt:observations_uwsgi_$BRANCH
-docker run -d --name=observations_nginx -p 8000:8000 -e PREFIX=$PREFIX $DEBUGENV --link observations_uwsgi:observations_uwsgi lcogtwebmaster/lcogt:observations_nginx_$BRANCH
+docker run -d --name=observations_uwsgi -e PREFIX=$PREFIX $DEBUGENV lcogtwebmaster/lcogt:observations_$BRANCH /var/www/apps/observations/docker/bin/uwsgi.sh
+docker run -d --name=observations_nginx -p 8000:8000 -e PREFIX=$PREFIX $DEBUGENV --link observations_uwsgi:observations_uwsgi lcogtwebmaster/lcogt:observations_$BRANCH /var/www/apps/observations/docker/bin/nginx.sh
 if [ "$DEBUG" != "" ]; then
     docker logs -f observations_nginx &
     docker logs -f observations_uwsgi &

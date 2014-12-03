@@ -1,5 +1,5 @@
 #
-# observations nginx dockerfile
+# observations dockerfile
 #
 FROM lcogtwebmaster/lcogt:webbase
 MAINTAINER LCOGT <webmaster@lcogt.net>
@@ -19,6 +19,3 @@ ENV BUILDDATE ${BUILDDATE}
 ENV PREFIX ${PREFIX}
 
 EXPOSE 8000
-
-CMD ["/var/www/apps/observations/docker/bin/nginx.sh"]
-

@@ -39,11 +39,11 @@ These environment variables can be set to modify the behavior of this applicatio
 * PREFIX: determines the root URI stem for the application.  Default is '/observations'
 * DEBUG: enables debug within the django app, and displays logging outout.  Default is disabled.
 
-To build the two docker images for this app, just 'make' them.  Note that the created build will be git-branch specific.
-That is, if you have the 'release' branch checked out, and you 'make && make install', you will build and deploy two
-docker images, each of which contains the release code and carries the 'release' label.  Likewise for the 'test' branch, or
+To build the docker image for this app, just 'make' it.  Note that the created build will be git-branch specific.
+That is, if you have the 'release' branch checked out, and you 'make && make install', you will build a
+docker image which contains the release code and carries the '_release' label.  Likewise for the 'test' branch, or
 any other branch.
 
-Once the containers are created, run them both via ./docker/bin/run.sh.
+Once the image is created, run the app via ./docker/bin/run.sh.
 
-When testing is complete, push these images to the lcogt docker hub repository via 'make install'
+When testing is complete, push the image to the lcogt docker hub repository via 'make install'
