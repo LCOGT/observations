@@ -55,7 +55,9 @@ $(document).ready(function(){
 
 
 	var lastUpdated = new Date(); //'Fri, 27 Apr 2012 11:22:53 +0000');
-	var timer = setInterval(updateObservations,60000);
+
+	// ****** disabling look for new observations ****
+	//var timer = setInterval(updateObservations,60000);
 
 	// Get new observations
 	function updateObservations(){
