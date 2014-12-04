@@ -1559,9 +1559,9 @@ def build_observations(obs):
             o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust";
         o['userid'] = o['schoolid']
         o['link_obs'] =  reverse('show_rtiobservation',kwargs={'code':o['telescope'].site.code,'tel':o['telescope'].code,'obs':o['imageid']})
-        o['link_site'] = o['telescope'].site.code;
-        o['link_tel'] = o['link_site']+"/"+o['telescope'].code;
-        o['link_user'] = "user/"+str(o['rti_username']);
+        o['link_site'] = o['telescope'].site.code + '/'
+        o['link_tel'] = o['link_site']+"/"+o['telescope'].code + '/'
+        o['link_user'] = "user/"+str(o['rti_username']) + '/'
         o['object'] = re.sub(r" ?\([^\)]*\)",'',o['objectname']) # Remove brackets
         o['object'] = re.sub(r"/\s\s+/", ' ', o['object'])      # Remove redundant whitespace
         o['object'] = re.sub(r"[^\w\-\+0-9 ]/i",'',o['object']) # Remove non-useful characters

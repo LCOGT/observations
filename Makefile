@@ -25,27 +25,30 @@ TAG0 := webbase
 TAG1 := observations_${BRANCH}
 PREFIX := '/observations'
 
-.PHONY: all observations test login install
+.PHONY: all sudo observations test login install
 
-all: webbase observations test
+all: sudo webbase observations test
+
+sudo:
+	@if ! sudo -n whoami | grep -q -F root; then echo "  You must be able to sudo without a password; run visudo as root," && echo "  such that you have a line like 'ADMINS ALL = NOPASSWD:ALL'"; false; fi;
 
 login:
-	docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@lcogt.net"
+	sudo docker login --username="lcogtwebmaster" --password="lc0GT!" --email="webmaster@lcogt.net"
 
 webbase:
 	cat docker/webbase.dockerfile | envsubst > Dockerfile && \
-	docker build -t $(NAME):$(TAG0) --rm . && rm -f Dockerfile
+	sudo docker build -t $(NAME):$(TAG0) --rm . && rm -f Dockerfile
 
 observations:
 	export BUILDDATE=${BUILDDATE} && \
 	export BRANCH=${BRANCH} && \
 	export PREFIX=${PREFIX} && \
 	cat docker/observations.dockerfile | envsubst > Dockerfile && \
-	docker build -t $(NAME):$(TAG1) --rm . && rm -f Dockerfile
+	sudo docker build -t $(NAME):$(TAG1) --rm . && rm -f Dockerfile
 
 test:
 	env NAME=${NAME} VERSION=${TAG1} ./test/runtests.sh
 
-install: test login
-	@if ! docker images ${NAME} | awk '{ print $$2 }' | grep -q -F ${TAG1}; then echo "${NAME}:${TAG1} is not yet built. Please run 'make'"; false; fi
-	docker push ${NAME}:${TAG1}
+install: sudo test login
+	@if ! sudo docker images ${NAME} | awk '{ print $$2 }' | grep -q -F ${TAG1}; then echo "${NAME}:${TAG1} is not yet built. Please run 'make'"; false; fi
+	sudo docker push ${NAME}:${TAG1}
