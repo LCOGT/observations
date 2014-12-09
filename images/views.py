@@ -1331,7 +1331,6 @@ def build_recent_observations(num):
     return recent_obs
 
 def identity(request):
-    now = datetime.now()
     '''
     Main function for looking up the origname, tracking number or organization's observations.
     Then passes all the meta data that observations need to be displayed either as a group or on a single page
@@ -1345,23 +1344,18 @@ def identity(request):
     if tracknum:
         query += '&tracknum__in=%s' % tracknum
     observation = framedb_lookup(query)
-    print datetime.now() - now
     org_names = collate_org_names(observation)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
         return render_to_response('images/404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
-        print datetime.now() - now
         obs = build_framedb_observations(observation,org_names)
-        print datetime.now() - now
         filters = get_fits(observation[0])
-        print datetime.now() - now
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
         except Exception,e:
             print e, observation[0]['site']
             site = None
-        print datetime.now() - now
         return render_to_response('images/observation.html', { 'n':1,
                                                                 'site' : site,
                                                                 'obs':obs[0],
@@ -1472,7 +1466,10 @@ def avm_from_lookup(objectname):
     objectname = objectname.strip()
     obj = "+".join(objectname.split(" "))
     lookup_url = "http://lcogt.net/lookUP/json/?name=%s&callback=lk" % obj
-    resp = urllib2.urlopen(lookup_url)
+    try:
+        resp = urllib2.urlopen(lookup_url,timeout=10)
+    except urllib2.URLError, e:
+        return None
     content = resp.read()
     try:
         obj = json.loads(content[3:-3])
