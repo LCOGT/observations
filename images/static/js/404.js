@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	fourOfour({'about':'http://rti.lcogt.net/observations/2011/10/10/process-2174-1.jpg','thumb':'http://rti.lcogt.net/observations/2011/10/10/process-2174-1_120.jpg'}, 'http://lcogt.net/observations/search?query=NGC+404', { 'about' : '', 'label': ''});
+	fourOfour({'about':'http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1.jpg','thumb':'http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1_120.jpg'}, 'http://lcogt.net/observations/search?query=NGC+404', { 'about' : '', 'label': ''});
 	$.ajax({
 		url: "http://lcogt.net/observations/search.json?query=NGC+404&filter=RGB",
 		dataType: "jsonp",

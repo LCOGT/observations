@@ -330,9 +330,8 @@ def search_rtiarchive(form,input):
         obs = Image.objects.all()
         if form['query']:
             obs = obs.filter(objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
-            print len(obs)
-        if form['sites']:
-            obs = obs.filter(telescope__site=form['sites'])
+        if form['sites'] in ('ogg','coj'):
+            obs = obs.filter(telescope__site__code=form['sites'])
         if form['filters']:
             obs = obs.filter(filter=form['filters'])
         if not form['alldates'] and form['startdate'] and form['enddate']:
@@ -376,6 +375,7 @@ def search(request,format=None):
             input['form'] = form
             input['description'] = 'Search results (LCOGT)'
             input['perpage'] = n_per_page
+            input['searchstring'] = request.GET.get('query',None)
             #input['pager'] = build_pager(request,n)
 
 
@@ -427,7 +427,6 @@ def view_site(request,code,format=None):
     input = input_params(request)
     data = get_site_data(code)
     obs = data['obs']
-    print "code = '" + code + "'"
     site = Site.objects.get(code=code)
     input['observations'] = len(obs)
     input['title'] = site.name

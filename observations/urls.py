@@ -9,6 +9,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('images.views',
+    url(r'^$','index', name='home'),
     url(r'^search/$','search',name="search"),
     url(r'^search\.(?P<format>\w+)$','search',name="search"),
 
@@ -42,8 +43,7 @@ urlpatterns = patterns('images.views',
     url(r'^(?P<code>\w\w\w)/show/$','view_site_slideshow', name='slideshow_site'),
     url(r'^(?P<code>\w\w\w)/$','view_site', name='show_site'),
     url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$','view_telescope',name='show_telescope'),
-    url(r'^(?P<code>\w\w\w)\.(?P<format>\w+)$','view_site',name='site_api'),
-    url(r'^$','index', name='home'),
+    url(r'^(?P<code>\w\w\w)\.(?P<format>\w+)/$','view_site',name='site_api'),
   ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if not settings.PRODUCTION:

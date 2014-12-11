@@ -1,8 +1,8 @@
 {% extends 'images/list.html' %}
 {% load images_extras %}
 
-{% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ form.query }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
-{% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ form.query }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
+{% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ input.searchstring }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
+{% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ input.searchstring }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
 	<script>
