@@ -4,7 +4,7 @@ import os, sys
 import platform
 import site
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 import django.template
 django.template.add_to_builtins('django.templatetags.future')
 TEST = 'test' in sys.argv
@@ -120,6 +120,8 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.request",)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -153,6 +155,9 @@ INSTALLED_APPS = (
     'images',
     #'debug_toolbar',
 )
+
+DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
+SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
 FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
 

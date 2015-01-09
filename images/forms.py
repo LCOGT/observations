@@ -26,7 +26,7 @@ class SearchForm(forms.Form):
         self.fields['startdate'].initial = "2014-04-01"
         self.fields['enddate'].initial = datetime.now().strftime("%Y-%m-%d")  
         self.fields['exposurecondition'].initial = 'gt'
-        self.fields['alldates'].initial = True
+        self.fields['alldates'].initial = False
 
     def clean_startdate(self):
         if self.cleaned_data['startdate']:

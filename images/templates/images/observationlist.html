@@ -3,7 +3,7 @@
 							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
 								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumbnail'><a href='{{ o.link_obs }}'><img src='{{ o.thumbnail }}' alt='{{ o.objectname }}' /></a></span>
-									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.objectname }}'>{{ o.objectname }}</div><div class="ellipsis">By <a href="{% url 'home' %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a></div></div>
+									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.objectname }}'>{{ o.objectname }}</div><div class="ellipsis">By {%if o.link_user%}<a href="{% url 'home' %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a>{%else%}<span class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</span>{%endif%}</div></div>
 					
 									<div class='more-info'>
 										<div class='name'>Title: <a href="{% url 'search' %}?query={{ o.objectname }}" property='dc:title'>{{ o.objectname }}</a></div>

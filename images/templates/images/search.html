@@ -1,10 +1,12 @@
 {% extends 'images/list.html' %}
 {% load images_extras %}
 
-{% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ input.searchstring }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
-{% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ input.searchstring }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
+{% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ searchstring }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
+{% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ searchstring }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
+ <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui.css">
+ <script src="{{STATIC_URL}}js/jquery-ui.min.js"></script>
 	<script>
 	<!--
 	categories = {{categorylookup|safe}}
@@ -13,6 +15,13 @@
 			if(categories[$(this).val()]) $('#avm_lookup').html(" &larr;"+categories[$(this).val()]+"")
 			else $('#avm_lookup').html("")
 		});
+		$("#id_alldates").click(function(e){
+			$('#searchdates').toggle();
+		});
+		$( ".datepicker" ).datepicker({
+				dateFormat: "yy-mm-dd",
+				defaultDate: 0,
+				});
 	});
 	// -->
 	</script>
@@ -20,11 +29,11 @@
 
 {% block search %}{% if n >= 0 %}<div class="searchbox">
 									<form action="{% url 'search' %}" method='GET'>
-										<input type='text' name='query' class='searchbox' title='e.g. NGC 2011' /><input type='submit' value='Search' class='searchbtn' />
+										<input type='text' name='query' class='searchbox' title='e.g. NGC 2020' /><input type='submit' value='Search' class='searchbtn' />
 										<br /><span style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url 'search' %}/show{% if input.linkquery %}?{{input.linkquery}}{% endif %}"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ STATIC_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href=""><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ STATIC_URL }}img/rti_archive_slideshow.jpg"></a>
 {% endif %}
 								</div>{% else %}{% endif %}{% endblock %}
 
@@ -33,30 +42,50 @@
 							<br />
 {% endblock %}
 
-{% block alternate %}{% endblock %}
+{% block alternate-formats %}
+{% if n > 0 %}
+					<div class="row lastrow">
+							<p>Alternative outputs: 
+								<a title="View RSS feed" rel="alternate" type="application/xml" href="{%url 'search_api' format='rss'%}{% url_add_query %}">RSS</a>,
+								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url 'search_api' format='kml' %}">Sky for Google Earth</a>, and
+								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url 'search_api' format='json' %}">JSON</a>
+							</p>
+					</div>
+{% endif %}
+{% endblock %}
 
 {% block main-content %}
 {% if n > 0 %}
 						<div class="row">
-							<p>There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{% if n > 1 %} Newest observations are shown first.{% endif %}{% if input.avmcode %} You could also search for <a href="{% url 'show_avm' avm=input.avmcode %}">{{ input.avmname }}</a>.{% endif %}</p>
+							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}Showing {{n}} observations taken between {{firstobs|relativetime}} and {{lastobs|relativetime}}. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
 						</div>
 						
 						<div class="row">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-							<ul class='observation-results' data-json="{% url 'home' %}search.json{% if input.linkquery %}?{{input.linkquery}}{% if input.pager.page > 1 %}&page={{input.pager.page}}{% endif %}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<ul class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs %}
 							</ul>
-							{% if pager %}
-							<div class="pager">{{ pager|safe }}</div>
+							{% if n > 18 and onlyrti %}
+							<div class="pagination">
+							    <span class="step-links">
+							        <a href="{% url_add_query lastobs=lastobs %}">Next 18 of {{n}} &rarr;</a>
+							    </span>
+							</div>
+							{% elif not onlyrti %}
+							<div class="pagination">
+							    <span class="step-links">
+							        <a href="{% url_add_query lastobs=lastobs %}"> Older observations &rarr;</a>
+							    </span>
+							</div>
 							{% endif %}
 						</div>
 {% else %}
 		<div class="row">
 			<div class="padder"></div>
 {% if n == 0 %}
-			<p>We found <strong>0</strong> results matching your search. Dont panic! Try making your search less specific.</p>
+			<p>We found <strong>0</strong> results matching your search. Don't panic! Try making your search less specific.</p>
 {% else %}
 			<p>There are several ways to search through all our public observations. Use any combination of the options below to help narrow your search.</p>
 {% endif %}
@@ -88,8 +117,10 @@
 					</div>
 					<div class="fourcol lastcol">
 						<label class="option">All dates: {{form.alldates}}</label>
-						<label class="option inline">or use date range</label> {{form.startdate}} to {{form.enddate}}
+						<span id="searchdates">
+						<label class="option inline">or use date range</label> <input type=text class="datepicker" name="startdate" value="{{form.startdate.value}}" /> to <input type=text class="datepicker" name="enddate" value="{{form.enddate.value}}"/>
 						{% if form.startdate.errors or form.enddate.errors %}<span class="error form-error">{{form.startdate.errors.as_text}} {{form.enddate.errors.as_text}}</span>{% endif %}
+						</span>
 					</div>
 				</fieldset>
 			</div>

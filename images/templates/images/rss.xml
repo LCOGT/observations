@@ -1,0 +1,23 @@
+{% load images_extras %}<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+<channel>
+ <title>{{config.title}}</title>
+ <link>{{config.link}}</link>
+ <description>{{config.description}}</description>
+ <language>en-gb</language>
+ <pubDate>{% now "D, d M o H:i:s T" %}</pubDate>
+ <lastBuildDate>{% now "D, d M o H:i:s T" %}</lastBuildDate>
+ <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+ <generator>RedDragon (cwl)</generator>
+ <copyright>Las Cumbres Observatory Global Telescope Network</copyright>
+
+{% for o in obs %}
+     <item>
+         <title>{{o.objectname}}</title>
+         <description><![CDATA[{%if o.link_user%}<a href="{% url 'show_user' o.link_user %}">{{ o.user }}</a>{%else%}{{ o.user }}{%endif%} took an image of {{o.objectname}} ({{o.ra|degreestohms}}, {{o.dec|degreestodms}}) taken from {{ o.site }}.]]></description>
+         <link>http://{{HOSTNAME}}{{PREFIX}}{{o.link_obs}}</link>
+         <pubDate>{{o.whentaken|datestamp}}</pubDate>
+     </item>
+{% endfor %}
+</channel>
+</rss>
