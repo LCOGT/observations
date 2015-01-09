@@ -87,6 +87,19 @@ def negative(value, arg):
     return round(value)-round(arg)
     degreestohours,hourstodegreesdegreestodms
 
+@register.simple_tag(takes_context=True)
+def url_add_query(context, **kwargs):
+    request = context.get('request')
+
+    get = request.GET.copy()
+    get.update(kwargs)
+
+    path = '%s?' % request.path
+    for query, val in get.items():
+        path += '%s=%s&' % (query, val)
+
+    return path[:-1]
+
 register.filter('degreestohours', degreestohours)
 register.filter('hourstodegrees', hourstodegrees)
 register.filter('degreestodms', degreestodms)

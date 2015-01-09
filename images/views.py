@@ -15,7 +15,7 @@ from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.encoding import smart_unicode
 from email.utils import parsedate_tz
-from images.models import Site, Telescope, Filter, Image, ObservationStats
+from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.forms import SearchForm
 from string import replace
 import math
@@ -305,12 +305,15 @@ def search_framedb(form):
     # remove exterior whitespace and join interior with '+'
         name = "+".join(form['query'].strip().split())
         qstring += "&object_name=%s" % name
-    if not form['alldates'] and form['startdate'] and form['enddate']:
-        start = form['startdate'].strptime("%Y-%m-%d")
-        end = form['enddate'].strptime("%Y-%m-%d")
+    if form['startdate'] and form['enddate']:
+        start = form['startdate'].strftime("%Y-%m-%d")
+        end = form['enddate'].strftime("%Y-%m-%d")
         qstring += "&date_obs__gt=%s&date_obs__lt=%s" % (start,end)
+    elif not form['startdate'] and form['enddate']:
+        end = form['enddate'].strftime("%Y-%m-%d")
+        qstring += "&date_obs__lt=%s" % (end)
     else:
-        qstring += "&day_obs__gt=2014-04-01"
+        qstring += "&date_obs__gt=2014-04-01"
     if form['sites']:
         qstring += form['sites']
     if form['filters']:
@@ -323,87 +326,113 @@ def search_framedb(form):
         obs = []
     return obs
 
-def search_rtiarchive(form,input):
+def search_rtiarchive(form):
     obs = []
     n = -1
-    if input['query']:
-        obs = Image.objects.all()
-        if form['query']:
-            obs = obs.filter(objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
-        if form['sites'] in ('ogg','coj'):
-            obs = obs.filter(telescope__site__code=form['sites'])
-        if form['filters']:
-            obs = obs.filter(filter=form['filters'])
-        if not form['alldates'] and form['startdate'] and form['enddate']:
-            sd = "%s%02d%02d000000" % (form['startdate'].year,form['startdate'].month,form['startdate'].day)
-            ed = "%s%02d%02d235959" % (form['enddate'].year,form['enddate'].month,form['enddate'].day)
-            obs = obs.filter(whentaken__gte=sd,whentaken__lte=ed)
-        if form['exposure']:
-            try:
-                form['exposure'] = float(form['exposure'])
-                if(form['exposurecondition']=='gt'):
-                    obs = obs.filter(exposuresecs__gt=form['exposure'])
-                elif(form['exposurecondition']=='lt'):
-                    obs = obs.filter(exposuresecs__lt=form['exposure'])
-                else:
-                    obs = obs.filter(exposuresecs=form['exposure'])
-            except:
-                form['exposure'] = 0;
+    obs = Image.objects.all()
+    if form['query']:
+        obs = obs.filter(objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % form['query'])
+    if form['sites'] in ('ogg','coj'):
+        obs = obs.filter(telescope__site__code=form['sites'])
+    if form['filters']:
+        obs = obs.filter(filter=form['filters'])
+    if form['startdate'] and form['enddate']:
+        sd = "%s%02d%02d000000" % (form['startdate'].year,form['startdate'].month,form['startdate'].day)
+        ed = "%s%02d%02d235959" % (form['enddate'].year,form['enddate'].month,form['enddate'].day)
+        obs = obs.filter(whentaken__gte=sd,whentaken__lte=ed)
+    if form['enddate']:
+        ed = "%s235959" % form['enddate'].strftime(wistime_format)
+        obs = obs.filter(whentaken__lte=ed)
+    if form['exposure']:
+        try:
+            form['exposure'] = float(form['exposure'])
+            if(form['exposurecondition']=='gt'):
+                obs = obs.filter(exposuresecs__gt=form['exposure'])
+            elif(form['exposurecondition']=='lt'):
+                obs = obs.filter(exposuresecs__lt=form['exposure'])
+            else:
+                obs = obs.filter(exposuresecs=form['exposure'])
+        except:
+            form['exposure'] = 0;
 
-        obs = obs.order_by('-whentaken')
+    obs = obs.order_by('-whentaken')
     return list(obs)
 
 def search(request,format=None):
-    input = input_params(request)
+    page_data = input_params(request)
     if not request.GET:
         form = SearchForm()
         return render(request,'images/search.html', {'form':form})
     else:
+        #page_data ={}
         form = SearchForm(request.GET)
         if form.is_valid():
-            obs = []
+            lastobs = request.GET.get('lastobs',None)
+            if lastobs:
+                form.cleaned_data['enddate'] = datetime.strptime(lastobs, wistime_format).date()
+            elif not form.cleaned_data['enddate']:
+                form.cleaned_data['enddate'] = date.today()
+            obs, lastobs, n, onlyrti = fetch_observations(form.cleaned_data,lastobs)
 
-            # Fetch RTI images
-            rti_obs = search_rtiarchive(form.cleaned_data,input)
-            framedb_obs = search_framedb(form.cleaned_data)
-            n = len(rti_obs) + len(framedb_obs)
+            page_data['onlyrti'] = onlyrti
+            page_data['title'] = "Search Results"
+            page_data['link'] = 'search'
+            page_data['description'] = 'Search results (LCOGT)'
+            page_data['perpage'] = n_per_page
+            page_data['searchstring'] = request.GET.get('query',None)
+            if lastobs:
+                page_data['lastobs'] = lastobs
 
-            input['observations'] = n
-            input['title'] = "Search Results"
-            input['link'] = 'search'
-            input['linkquery'] = input['query']
-            input['form'] = form
-            input['description'] = 'Search results (LCOGT)'
-            input['perpage'] = n_per_page
-            input['searchstring'] = request.GET.get('query',None)
-            #input['pager'] = build_pager(request,n)
-
-
-            # if(n > n_per_page):
-            #     obs = build_observations(obs[input['pager']['start']:input['pager']['end']])
-            # else:
-            robs = build_observations(rti_obs[0:20])
-            obs = framedb_obs + robs
-
-
-            if input['doctype'] == "json" or format == 'json':
-                return view_json(request,build_observations_json(obs),input)
-            elif input['doctype'] == "kml":
-                return view_kml(request,obs,input)
-            elif input['doctype'] == "rss":
-                return view_rss(request,obs,input)
+            if page_data['doctype'] == "json" or format == 'json':
+                return view_json(request,build_observations_json(obs),page_data)
+            elif page_data['doctype'] == "kml":
+                return view_kml(request,obs,page_data)
+            elif page_data['doctype'] == "rss":
+                return view_rss(request,obs,page_data)
             else:
-                if input['slideshow']:
-                    return render(request,'images/slideshow.html', {'input':input,
-                                                                    'obs':obs,
-                                                                    'n':n,
-                                                                    'link':input['link']})
+                page_data['n'] = n
+                if n == 0:
+                    page_data['form'] = form
                 else:
-                    return render(request,'images/search.html', {'input':input,
-                                                                    'obs':obs,
-                                                                    'n':n})
+                    page_data['firstobs'] = obs[0]['whentaken']
+                page_data['obs'] = obs
+                if page_data['slideshow']:
+                    return render(request,'images/slideshow.html',page_data )
+                else:
+                    return render(request,'images/search.html', page_data)
         else:
             return render(request,'images/search.html', {'form':form})
+
+def fetch_observations(data,lastobs):
+    obs = []
+    onlyrti = False
+    rti_n = 0
+    # earliest_obs = search_include_framedb(data['query'])
+    if not data['enddate'] or data['enddate'] > date(2014,4,1):
+        obs = search_framedb(data)
+    if len(obs) < n_per_page:
+        # Fetch RTI images
+        rti_obs = search_rtiarchive(data)
+        rti_n = len(rti_obs)
+        obs += build_observations(rti_obs)
+    total_n = len(obs)
+    if total_n == rti_n:
+        onlyrti = True
+    obs = obs[0:18]
+    if obs:
+        lastobs = obs[-1]['whentaken']
+    else:
+        lastobs = None
+    return obs, lastobs, total_n, onlyrti
+
+def search_include_framedb(objectname):
+    query = "/find?tagid__in=LCOEPO,FTP&limit=1&order_by=date_obs&object_name=%s" % objectname
+    details = framedb_lookup(query)
+    if details:
+        return details[0]['date_obs']
+    else:
+        return None
+
 
 def get_site_data(code):
     observations = []
@@ -1784,36 +1813,8 @@ def view_rss(request,obs,config):
 
     if not('title' in config):
         config['title'] = 'LCOGT'
-    try:
-        schoolname = o['user'].schoolname
-    except:
-        schoolname = 'unknown'
 
-    output = '<?xml version="1.0" encoding="utf-8" ?>\n'
-    output += '<rss version="2.0">\n'
-    output += '<channel>\n'
-    output += ' <title>'+config['title']+'</title>\n'
-    output += ' <link>'+base_url+config['link']+'</link>\n'
-    output += ' <description>'+config['description']+'</description>\n'
-    output += ' <language>en-gb</language>\n'
-    output += ' <pubDate>'+datestamp('')+'</pubDate>\n'
-    output += ' <lastBuildDate>'+datestamp('')+'</lastBuildDate>\n'
-    output += ' <docs>http://blogs.law.harvard.edu/tech/rss</docs>\n'
-    output += ' <generator>RedDragon (cwl)</generator>\n'
-    output += ' <copyright>Las Cumbres Observatory Global Telescope Network</copyright>\n'
-
-    for o in obs:
-        output += ' <item>\n'
-        output += '     <title>'+o['objectname']+'</title>\n'
-        output += '     <description><![CDATA[<a href="'+base_url+o['link_user']+'">'+schoolname+'</a> took an image of '+o['objectname']+' ('+degreestohms(o['ra'])+', '+degreestodms(o['dec'])+') with <a href="'+base_url+o['link_tel']+'">'+o['telescope'].name+'</a>.]]></description>\n'
-        output += '     <link>'+base_url+o['link_obs']+'</link>\n'
-        output += '     <pubDate>'+datestamp(o['whentaken'])+'</pubDate>\n'
-        output += ' </item>\n'
-
-    output += '</channel>\n'
-    output += '</rss>\n'
-
-    return HttpResponse(output,mimetype=config['mimetype'])
+    return render(request,'images/rss.xml',{'config':config,'obs':obs}, content_type=config['mimetype'])
 
 
 def relativetime(value):
@@ -1874,7 +1875,7 @@ def datestamp(value):
         dt = datetime(int(value[0:4]),int(value[4:6]),int(value[6:8]),int(value[8:10]),int(value[10:12]),int(value[12:14]))
     else:
         dt = datetime.today()
-    return dt.strftime("%a, %d %b %Y %H:%M:%S +0000");
+    return dt.strftime(DATETIME_FORMAT);
 
 def datestamp_basic(value):
     if value:

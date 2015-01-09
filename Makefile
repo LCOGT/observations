@@ -19,7 +19,7 @@
 #
 #-----------------------------------------------------------------------------------------------------------------------
 NAME := lcogtwebmaster/lcogt
-BRANCH := $(shell git name-rev --name-only HEAD)
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 BUILDDATE := $(shell date +%Y%m%d%H%M)
 TAG0 := webbase
 TAG1 := observations_${BRANCH}
