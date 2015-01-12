@@ -14,6 +14,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.encoding import smart_unicode
+from django.contrib.sites.models import Site as DjSite
 from email.utils import parsedate_tz
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.forms import SearchForm
@@ -241,7 +242,6 @@ def index(request):
 
 def view_group(request,mode,format=None):
     input = input_params(request)
-
     sites = Site.objects.all()
 
     if(mode == "recent"):
@@ -772,7 +772,7 @@ def view_username(request,username):
     elif input['doctype'] == "rss":
         return view_rss(request,obs,input)
     else:
-        data = {'user': org_name, 'n':n,'start': datetime(2005,1,1),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+        data = {'user': org_name, 'n':n,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
         if input['slideshow']:
             return render_to_response('images/slideshow.html', data,context_instance=RequestContext(request))
         else:
@@ -1235,9 +1235,11 @@ def input_params(request):
         slideshow = True
 
     query = request.META.get('QUERY_STRING', '')
+    url_path = DjSite.objects.get_current().domain
 
 
-    return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
+
+    return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query,'site_path':url_path}
 
 
 def getCategoryLevel(avm,input):
@@ -1875,7 +1877,7 @@ def datestamp(value):
         dt = datetime(int(value[0:4]),int(value[4:6]),int(value[6:8]),int(value[8:10]),int(value[10:12]),int(value[12:14]))
     else:
         dt = datetime.today()
-    return dt.strftime(DATETIME_FORMAT);
+    return dt.strftime(settings.DATETIME_FORMAT);
 
 def datestamp_basic(value):
     if value:
