@@ -21,7 +21,8 @@ from images.forms import SearchForm
 from string import replace
 import math
 import re
-import urllib, urllib2, httplib, json
+from httplib import REQUEST_TIMEOUT, HTTPSConnection
+import urllib, urllib2, json
 import MySQLdb
 
 n_per_line = 6
@@ -789,7 +790,7 @@ def view_category_list(request):
         data = {'categorylookup':categorylookup,'category':categories,'n':0,'obs':obs,'previous':'','next':''}
         return render_to_response('images/categorylist.html', data,context_instance=RequestContext(request))
     else:
-        return render_to_response('images/404.html', data,context_instance=RequestContext(request))
+        return render_to_response('404.html', data,context_instance=RequestContext(request))
 
 
 def view_category(request,category):
@@ -1269,7 +1270,7 @@ def getCategoryLevel(avm,input):
 
 def framedb_lookup(query):
     try:
-        conn = httplib.HTTPSConnection("data.lcogt.net")
+        conn = HTTPSConnection("data.lcogt.net", timeout=20)
         params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
         #query = "/find?%s" % params
         conn.request("POST",query,params)
@@ -1277,6 +1278,7 @@ def framedb_lookup(query):
         r = response.read()
         data = json.loads(r)
     except:
+    #except Exception, e:
         return False
     return data
 
@@ -1285,7 +1287,7 @@ def tracknum_lookup(tracknum):
         # Avoid sending junk to the API
         return False
     try:
-        conn = httplib.HTTPSConnection("lcogt.net")
+        conn = HTTPSConnection("lcogt.net", timeout=20)
         params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
         query = "/observe/service/request/get/userrequest/%s" % tracknum
         conn.request("POST",query,params)
@@ -1342,7 +1344,10 @@ def look_up_org_names(usernames):
 def collate_org_names(observations):
     ''' Small function to find the organizations of observers from a list of observations
     '''
-    tracknums = [o['tracknum'] for o in observations]
+    if observations:
+        tracknums = [o['tracknum'] for o in observations]
+    else:
+        tracknums = []
     if tracknums:
         usernames = find_user_ids(tracknums)
         org_names = look_up_org_names(usernames)
@@ -1356,8 +1361,11 @@ def build_recent_observations(num):
     ##### Store the TAG IDs in a config not here
     qstring = "/find?tagid__in=LCOEPO,FTP&limit=%s&order_by=-date_obs&full_header=1" % int(num)
     observations = framedb_lookup(qstring)
-    org_names = collate_org_names(observations)
-    recent_obs = build_framedb_observations(observations,org_names)
+    if observations:
+        org_names = collate_org_names(observations)
+        recent_obs = build_framedb_observations(observations,org_names)
+    else:
+        recent_obs = []
     return recent_obs
 
 def identity(request):
@@ -1377,7 +1385,7 @@ def identity(request):
     org_names = collate_org_names(observation)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
-        return render_to_response('images/404.html', context_instance=RequestContext(request))
+        return render_to_response('404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
         obs = build_framedb_observations(observation,org_names)
         filters = get_fits(observation[0])
@@ -1991,8 +1999,8 @@ def binMonths(obs,input,bins):
     return input
 
 def unknown(request):
-    return render_to_response('images/404.html', context_instance=RequestContext(request))
+    return render_to_response('404.html', context_instance=RequestContext(request))
 
 def broken(request,msg):
-    return render_to_response('images/500.html', {'msg':msg}, context_instance=RequestContext(request))
+    return render_to_response('500.html', {'msg':msg}, context_instance=RequestContext(request))
 
