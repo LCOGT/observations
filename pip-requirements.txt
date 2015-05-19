@@ -1,6 +1,0 @@
---extra-index-url=http://versionsba.lco.gtn/svn/telsoft/Lco/PyPi
-MySQL-python==1.2.5
-Django==1.4.19
-South==0.8.4
-python-memcached==1.53
-flup==1.0.2
