@@ -1,26 +1,3 @@
-#
-# observations dockerfile
-#
-FROM lcogtwebmaster/lcogt:webbase
-MAINTAINER LCOGT <webmaster@lcogt.net>
-RUN yum -y update; yum clean all
-
-ADD . /var/www/apps/observations
-WORKDIR /var/www/apps/observations
-RUN cat docker/config/nginx.conf | envsubst '$PREFIX $OBSERVATIONS_UWSGI_PORT_8001_TCP_ADDR' > /etc/nginx/nginx.conf
-
-RUN pip install -r pip-requirements.txt
-RUN python manage.py collectstatic --noinput;
-
-ENV PYTHONPATH /var/www/apps
-ENV DJANGO_SETTINGS_MODULE observations.settings
-ENV BRANCH ${BRANCH}
-ENV BUILDDATE ${BUILDDATE}
-ENV PREFIX ${PREFIX}
-
-EXPOSE 8000
-EXPOSE 8001
-
 ################################################################################
 #
 # Runs the LCOGT Python Django Observations webapp using nginx + uwsgi
@@ -40,7 +17,7 @@ EXPOSE 8001
 # docker push registry.lcogt.net/observations:latest
 #
 # To run with nginx + uwsgi both exposed:
-# docker run -d -p 8000:8000 -p 8001:8001 -m="128m" --name=observations registry.lcogt.net/observations:latest
+# docker run -d -p 8010:8010 -p 8011:8011 -m="128m" --name=observations registry.lcogt.net/observations:latest
 #
 # See the notes in the code below about NFS mounts.
 #
@@ -65,8 +42,8 @@ COPY config/uwsgi.ini /etc/uwsgi.ini
 COPY config/nginx/* /etc/nginx/
 COPY config/processes.ini /etc/supervisord.d/processes.ini
 
-# nginx runs on port 8000, uwsgi runs on port 8001
-EXPOSE 8000 8001
+# nginx runs on port 8010, uwsgi runs on port 8011
+EXPOSE 8010 8011
 
 # Entry point is the supervisord daemon
 ENTRYPOINT [ "/usr/bin/supervisord", "-n" ]
@@ -74,12 +51,11 @@ ENTRYPOINT [ "/usr/bin/supervisord", "-n" ]
 # Copy the LCOGT Mezzanine webapp files
 COPY app /var/www/apps/observations
 
-# Install the LCOGT NEO exchange Python required packages
+# Install the Python required packages
 RUN pip install pip==1.3 && pip install uwsgi==2.0.8 \
-		&& pip install -r /var/www/apps/observations/pip_requirements.txt \
+		&& pip install -r /var/www/apps/observations/pip-requirements.txt
 
-# Setup the LCOGT Mezzanine webapp
-RUN python /var/www/apps/observations/manage.py validate
+# Setup the LCOGT Observations webapp
 RUN python /var/www/apps/observations/manage.py collectstatic --noinput
 # If any schema changed have happened but not been appliedc
 RUN python /var/www/apps/observations/manage.py syncdb --noinput

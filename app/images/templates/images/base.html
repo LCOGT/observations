@@ -9,7 +9,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/lcogt/favicon.ico" type="image/x-icon" />
 	{% if settings.PRODUCTION %}
-	<link rel="stylesheet" href="http://lcogt.net/sites/default/themes/lcogt/css/style.css" type="text/css">
+	<link rel="stylesheet" href="http://lcogt.net/static/css/style.css" type="text/css">
 	{% else %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/style.css" type="text/css">
 	{% endif %}
@@ -45,7 +45,7 @@
 			<div id="screen">
 				<div id="container">
 					<div id="header">
-						{% block logo-content %}<div id="logo"><a href="http://lcogt.net/" title="Home" rel="home"><img src="http://lcogt.net/sites/default/themes/lcogt/logo.png" alt="Home" id="logo-image" /></a></div>{% endblock %}
+						{% block logo-content %}<div id="logo"><a href="http://lcogt.net/" title="Home" rel="home"><img src="http://lcogt.net/files/logo.png" alt="Home" id="logo-image" /></a></div>{% endblock %}
 						<div id="site-name">
 							<strong><a href="http://lcogt.net/" title="Home" rel="home"><span>Las Cumbres Observatory <em>Global Telescope Network</em></span></a></strong>
 						</div>
@@ -57,9 +57,9 @@
 								<h2 class="element-invisible">Main menu</h2>
 								<ul id="main-menu" class="block menu">
 									<li class="onecol home active"><a href="http://lcogt.net/" class="active">Home</a></li>
-									<li class="onecol network"><a href="http://lcogt.net/observatory" title="Information and live status of the global telescope network.">Observatory</a></li>
-									<li class="onecol science"><a href="http://lcogt.net/science">Science</a></li>
-									<li class="onecol education"><a href="http://lcogt.net/education">Education</a></li>
+									<li class="onecol network"><a href="http://lcogt.net/observe" title="Information and live status of the global telescope network.">Observating Portal</a></li>
+									<li class="onecol science"><a href="http://lcogt.net/astronomers">Astronomers</a></li>
+									<li class="onecol education"><a href="http://lcogt.net/public">Public</a></li>
 									<li class="twocol search lastcol">
 										<form action="http://lcogt.net/search/" method="get" id="search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
 											<h2 class="element-invisible">Search form</h2>
