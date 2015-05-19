@@ -14,13 +14,15 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.encoding import smart_unicode
+from django.contrib.sites.models import Site as DjSite
 from email.utils import parsedate_tz
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.forms import SearchForm
 from string import replace
 import math
 import re
-import urllib, urllib2, httplib, json
+from httplib import REQUEST_TIMEOUT, HTTPSConnection
+import urllib, urllib2, json
 import MySQLdb
 
 n_per_line = 6
@@ -241,7 +243,6 @@ def index(request):
 
 def view_group(request,mode,format=None):
     input = input_params(request)
-
     sites = Site.objects.all()
 
     if(mode == "recent"):
@@ -772,7 +773,7 @@ def view_username(request,username):
     elif input['doctype'] == "rss":
         return view_rss(request,obs,input)
     else:
-        data = {'user': org_name, 'n':n,'start': datetime(2005,1,1),'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
+        data = {'user': org_name, 'n':n,'mostrecent':mostrecent,'obs':obs,'link':input['link'],'pager':input['pager']['html'],'uri':uri}
         if input['slideshow']:
             return render_to_response('images/slideshow.html', data,context_instance=RequestContext(request))
         else:
@@ -789,7 +790,7 @@ def view_category_list(request):
         data = {'categorylookup':categorylookup,'category':categories,'n':0,'obs':obs,'previous':'','next':''}
         return render_to_response('images/categorylist.html', data,context_instance=RequestContext(request))
     else:
-        return render_to_response('images/404.html', data,context_instance=RequestContext(request))
+        return render_to_response('404.html', data,context_instance=RequestContext(request))
 
 
 def view_category(request,category):
@@ -1235,9 +1236,11 @@ def input_params(request):
         slideshow = True
 
     query = request.META.get('QUERY_STRING', '')
+    url_path = DjSite.objects.get_current().domain
 
 
-    return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query}
+
+    return {'doctype':doctype,'mimetype':mimetype,'callback':callback,'path':path,'slideshow':slideshow,'query':query,'site_path':url_path}
 
 
 def getCategoryLevel(avm,input):
@@ -1267,7 +1270,7 @@ def getCategoryLevel(avm,input):
 
 def framedb_lookup(query):
     try:
-        conn = httplib.HTTPSConnection("data.lcogt.net")
+        conn = HTTPSConnection("data.lcogt.net", timeout=20)
         params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
         #query = "/find?%s" % params
         conn.request("POST",query,params)
@@ -1275,6 +1278,7 @@ def framedb_lookup(query):
         r = response.read()
         data = json.loads(r)
     except:
+    #except Exception, e:
         return False
     return data
 
@@ -1283,7 +1287,7 @@ def tracknum_lookup(tracknum):
         # Avoid sending junk to the API
         return False
     try:
-        conn = httplib.HTTPSConnection("lcogt.net")
+        conn = HTTPSConnection("lcogt.net", timeout=20)
         params = urllib.urlencode({'username':'dthomas+guest@lcogt.net','password':'guest'})
         query = "/observe/service/request/get/userrequest/%s" % tracknum
         conn.request("POST",query,params)
@@ -1340,7 +1344,10 @@ def look_up_org_names(usernames):
 def collate_org_names(observations):
     ''' Small function to find the organizations of observers from a list of observations
     '''
-    tracknums = [o['tracknum'] for o in observations]
+    if observations:
+        tracknums = [o['tracknum'] for o in observations]
+    else:
+        tracknums = []
     if tracknums:
         usernames = find_user_ids(tracknums)
         org_names = look_up_org_names(usernames)
@@ -1354,8 +1361,11 @@ def build_recent_observations(num):
     ##### Store the TAG IDs in a config not here
     qstring = "/find?tagid__in=LCOEPO,FTP&limit=%s&order_by=-date_obs&full_header=1" % int(num)
     observations = framedb_lookup(qstring)
-    org_names = collate_org_names(observations)
-    recent_obs = build_framedb_observations(observations,org_names)
+    if observations:
+        org_names = collate_org_names(observations)
+        recent_obs = build_framedb_observations(observations,org_names)
+    else:
+        recent_obs = []
     return recent_obs
 
 def identity(request):
@@ -1375,7 +1385,7 @@ def identity(request):
     org_names = collate_org_names(observation)
     if not observation:
         #return broken(request,"There was a problem finding the requested observation in the database.")
-        return render_to_response('images/404.html', context_instance=RequestContext(request))
+        return render_to_response('404.html', context_instance=RequestContext(request))
     if len(observation) == 1:
         obs = build_framedb_observations(observation,org_names)
         filters = get_fits(observation[0])
@@ -1875,7 +1885,7 @@ def datestamp(value):
         dt = datetime(int(value[0:4]),int(value[4:6]),int(value[6:8]),int(value[8:10]),int(value[10:12]),int(value[12:14]))
     else:
         dt = datetime.today()
-    return dt.strftime(DATETIME_FORMAT);
+    return dt.strftime(settings.DATETIME_FORMAT);
 
 def datestamp_basic(value):
     if value:
@@ -1989,8 +1999,8 @@ def binMonths(obs,input,bins):
     return input
 
 def unknown(request):
-    return render_to_response('images/404.html', context_instance=RequestContext(request))
+    return render_to_response('404.html', context_instance=RequestContext(request))
 
 def broken(request,msg):
-    return render_to_response('images/500.html', {'msg':msg}, context_instance=RequestContext(request))
+    return render_to_response('500.html', {'msg':msg}, context_instance=RequestContext(request))
 

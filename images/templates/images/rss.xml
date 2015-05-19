@@ -14,8 +14,8 @@
 {% for o in obs %}
      <item>
          <title>{{o.objectname}}</title>
-         <description><![CDATA[{%if o.link_user%}<a href="{% url 'show_user' o.link_user %}">{{ o.user }}</a>{%else%}{{ o.user }}{%endif%} took an image of {{o.objectname}} ({{o.ra|degreestohms}}, {{o.dec|degreestodms}}) taken from {{ o.site }}.]]></description>
-         <link>http://{{HOSTNAME}}{{PREFIX}}{{o.link_obs}}</link>
+         <description><![CDATA[{%if o.link_user%}<a href="http://{{config.site_path}}{{o.link_user }}">{{ o.user }}</a>{%else%}{{ o.user }}{%endif%} took an image of {{o.objectname}} ({{o.ra|degreestohms}}, {{o.dec|degreestodms}}) from {{ o.site }} node of LCOGT.]]></description>
+         <link>http://{{config.site_path}}{{o.link_obs}}</link>
          <pubDate>{{o.whentaken|datestamp}}</pubDate>
      </item>
 {% endfor %}

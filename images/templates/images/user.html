@@ -12,7 +12,7 @@
 
 {% block main-content %}
 						<div class="row">
-							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} has been using the network since {{ start }}. They have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was <span class="mostrecent">{{ mostrecent }}</span>.{% endif %}</p>
+							<p>{% if uri %}<a href="{{uri}}">{% endif %}{{ user }}{% if uri %}</a>{% endif %} have {{ n }} observations (total exposure time of <span title="{{ input.exposuretime }} seconds">{{ input.exposuretime|niceduration }}</span>).{% if mostrecent %} Their most recent observation was <span class="mostrecent">{{ mostrecent }}</span>.{% endif %}</p>
 {% include "images/summary.html" with input=input user=user %}
 						</div>
 						<div class="row lastrow">

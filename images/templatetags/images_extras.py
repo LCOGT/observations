@@ -1,6 +1,7 @@
 from django import template
 from datetime import datetime
 from images.utils import *
+from django.conf import settings
 
 register = template.Library()
 
@@ -94,7 +95,7 @@ def url_add_query(context, **kwargs):
     get = request.GET.copy()
     get.update(kwargs)
 
-    path = '%s?' % request.path
+    path = '%s%s?' % (settings.PREFIX,request.path)
     for query, val in get.items():
         path += '%s=%s&' % (query, val)
 

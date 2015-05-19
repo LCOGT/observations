@@ -46,7 +46,7 @@
 {% if n > 0 %}
 					<div class="row lastrow">
 							<p>Alternative outputs: 
-								<a title="View RSS feed" rel="alternate" type="application/xml" href="{%url 'search_api' format='rss'%}{% url_add_query %}">RSS</a>,
+								<a title="View RSS feed" rel="alternate" type="application/xml" href="{%url 'search_api' format='rss'%}?{{ request.GET.urlencode}}">RSS</a>,
 								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url 'search_api' format='kml' %}">Sky for Google Earth</a>, and
 								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url 'search_api' format='json' %}">JSON</a>
 							</p>
