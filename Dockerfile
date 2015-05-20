@@ -17,7 +17,7 @@
 # docker push registry.lcogt.net/observations:latest
 #
 # To run with nginx + uwsgi both exposed:
-# docker run -d -p 8000:8000 -p 8001:8001 -m="128m" --name=observations registry.lcogt.net/observations:latest
+# docker run -d -p 8000:80 -p 9090:8001 -m="128m" --name=observations registry.lcogt.net/observations:latest
 #
 # See the notes in the code below about NFS mounts.
 #
@@ -42,8 +42,8 @@ COPY config/uwsgi.ini /etc/uwsgi.ini
 COPY config/nginx/* /etc/nginx/
 COPY config/processes.ini /etc/supervisord.d/processes.ini
 
-# nginx runs on port 8000, uwsgi runs on port 8001
-EXPOSE 8000 8001
+# nginx runs on port 80, uwsgi runs on port 9090
+EXPOSE 80 9090
 
 # Entry point is the supervisord daemon
 ENTRYPOINT [ "/usr/bin/supervisord", "-n" ]

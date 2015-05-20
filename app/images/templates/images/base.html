@@ -8,7 +8,7 @@
 	<meta name="DC.Title" content="Las Cumbres Observatory Global Telescope Network" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/lcogt/favicon.ico" type="image/x-icon" />
-	{% if settings.PRODUCTION %}
+	{% if PRODUCTION %}
 	<link rel="stylesheet" href="http://lcogt.net/static/css/style.css" type="text/css">
 	{% else %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/style.css" type="text/css">
@@ -148,12 +148,10 @@
 						<ul class="menu">
 							<li class="first leaf"><a title="Contact LCOGT" href="http://lcogt.net/contact">Contact</a></li>
 							<li class="leaf"><a href="http://lcogt.net/images">Image Galleries</a></li>
-							<li class="leaf"><a title="A full list of all LCOGT staff" href="http://lcogt.net/people">Staff list</a></li>
-							<li class="last leaf"><a href="http://lcogt.net/glossary">Glossary</a></li>
+							<li class="last leaf"><a title="A full list of all LCOGT staff" href="http://lcogt.net/people">Staff list</a></li>
 						</ul>
-						<a href="http://twitter.com/lcogt"><img title="Follow us on Twitter" alt="Twitter" src="http://lcogt.net/sites/default/themes/lcogt/images/twitter.png"></a> 
-						<a href="http://facebook.com/lcogt"><img title="Connect with us on Facebook" alt="Facebook" src="http://lcogt.net/sites/default/themes/lcogt/images/facebook.png"></a> 
-						<a href="/blog/feed"><img title="Subscribe to our news blog" alt="RSS Feed" src="http://lcogt.net/sites/default/themes/lcogt/images/feed.png"></a>
+						<a href="http://twitter.com/lcogt"><img title="Follow us on Twitter" alt="Twitter" src="{{STATIC_URL}}img/twitter.png"></a> 
+						<a href="http://facebook.com/lcogt"><img title="Connect with us on Facebook" alt="Facebook" src="{{STATIC_URL}}img/facebook.png"></a> 
 					</div>
 				</div>
 			</div>
