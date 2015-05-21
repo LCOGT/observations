@@ -8,10 +8,10 @@
 	<meta name="DC.Title" content="Las Cumbres Observatory Global Telescope Network" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 	<link rel="shortcut icon" href="http://lcogt.net/sites/default/themes/lcogt/favicon.ico" type="image/x-icon" />
-	{% if PRODUCTION %}
-	<link rel="stylesheet" href="http://lcogt.net/static/css/style.css" type="text/css">
-	{% else %}
+	{% if not PRODUCTION %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/style.css" type="text/css">
+	{% else %}
+	<link rel="stylesheet" href="http://lcogt.net/static/css/style.css" type="text/css">
 	{% endif %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/rti_archive.css" type="text/css">{% block css-content %}{% endblock %}{% block feeds %}{% endblock %}
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.7.1.min.js"></script>
