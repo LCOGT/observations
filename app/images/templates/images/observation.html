@@ -149,10 +149,10 @@
                     <td class='first'>Share:</td>
                     <td>
                         <a href="http://twitter.com/home/?status={{ obs.objectname|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt">
-                            <img title="Tweet this" alt="Twitter" src="http://lcogt.net/sites/default/themes/lcogt/images/twitter.png">
+                            <img title="Tweet this" alt="Twitter" src="{{STATIC_URL}}img/twitter.png">
                         </a>
                         <a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}">
-                            <img title="Share on Facebook" alt="Facebook" src="http://lcogt.net/sites/default/themes/lcogt/images/facebook.png">
+                            <img title="Share on Facebook" alt="Facebook" src="{{STATIC_URL}}img/facebook.png">
                         </a>
                     </td>
                 </tr>

@@ -8,6 +8,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 admin.autodiscover()
 
+
+handler500 = 'images.views.server_error'
+
 urlpatterns = patterns('images.views',
     url(r'^$','index', name='home'),
     url(r'^search/$','search',name="search"),

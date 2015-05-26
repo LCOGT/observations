@@ -1,7 +1,7 @@
 /*
 	LCOGT Master CSS
 	Created 15 September 2011
-	Last updated 3 February 2012
+	Last updated 18 May 2015
  */
 .access { display: none; }
 body {
@@ -29,6 +29,11 @@ ul ul ul ul { list-style-type: circle; }
 ol { list-style-type: decimal; }
 ol ol { list-style-type: lower-alpha; }
 ol ol ol { list-style-type: decimal; }
+ul.newslist {list-style: outside none none; margin: 0;padding-left: 0;}
+ul.newslist li {margin-bottom:4px;}
+li .blog-date, li .blog-title, li .seminar-date, li .seminar-title { display: table-cell;}
+li .blog-date {width:60px;}
+li .seminar-date {width:100px;}
 
 a { color: #3366DD; text-decoration: none; }
 a:visited { color: #3366DD; }
@@ -87,8 +92,8 @@ li.search .contextual-links-region input.search { width: 256px!important; margin
 li.search .contextual-links-region {   }
 /* End of Drupal style fix */
 
-#page-wrapper { background: url('http://lcogt.net/sites/default/themes/lcogt/images/new-bg.png') repeat-x transparent; }
-#page { background: url('http://lcogt.net/sites/default/themes/lcogt/images/new-header-bg.png') transparent no-repeat; background-position: center top; }
+#page-wrapper { background: url('http://lcogt.net/static/img/new-bg.png') repeat-x transparent; }
+#page { background: url('http://lcogt.net/static/img/new-header-bg.png') transparent no-repeat; background-position: center top; }
 
 p.skip-link { display: none; }
 p.last { margin-right: 0px; }
@@ -109,6 +114,7 @@ p.last { margin-right: 0px; }
 
 body.home #main { border-bottom: 4px solid #999999; }
 body.network #main { border-bottom: 4px solid #3366DD; }
+body.observatory #main { border-bottom: 4px solid #3366DD; }
 body.science #main { border-bottom: 4px solid rgb(251, 201, 0); }
 body.education #main { border-bottom: 4px solid rgb(0, 157, 0); }
 body.search #main { border-bottom: 4px solid #df0000; }
@@ -116,6 +122,8 @@ body.home ul#main-menu { border-bottom: 4px solid #999999; }
 body.home ul#main-menu li.home a, ul#main-menu li.home:hover a { color: white; background-color: #999999; }
 body.network ul#main-menu { border-bottom: 4px solid #3366DD; }
 body.network ul#main-menu li.network a, ul#main-menu li.network:hover a { color: white; background-color: #3366DD; }
+body.observatory ul#main-menu { border-bottom: 4px solid #3366DD; }
+body.observatory ul#main-menu li.observatory a, ul#main-menu li.observatory:hover a { color: white; background-color: #3366DD; }
 body.science ul#main-menu { border-bottom: 4px solid rgb(251, 201, 0); }
 body.science ul#main-menu li.science a, #main ul#main-menu li.science:hover a { color: black; background-color: rgb(251, 201, 0); }
 body.education ul#main-menu { border-bottom: 4px solid rgb(0, 157, 0); }
@@ -131,7 +139,7 @@ body.search ul#main-menu li.search { color: white; background-color: #df0000!imp
 .blue-2-grad a { color: white }
 .blue-2-bg, .blue-2-bg a { background-color: #263c6f; color: white; }
 .blue-2, .blue-2 a { color: #263c6f; }
-.blue-3-grad { -o-background-size: 100% 100%;-moz-background-size: 100% 100%;-webkit-background-size: 100% 100%;background-size: 100% 100%;/* Internet Explorer */*background: #3366dd;background: #3366dd\0/;filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr=#FF263c6f, endColorstr=#FF3366dd);/* Recent browsers */background-image: -webkit-gradient(linear,left top, left bottom,from(#263c6f),to(#3366dd));background-image: -webkit-linear-gradient(top,#263c6f,#3366dd);background-image: -moz-linear-gradient(top,#263c6f,#3366dd);background-image: -o-linear-gradient(top,#263c6f,#3366dd);background-image: linear-gradient(top,#263c6f,#3366dd);color: white; }
+.blue-3-grad, .fancybtn-blue { -o-background-size: 100% 100%;-moz-background-size: 100% 100%;-webkit-background-size: 100% 100%;background-size: 100% 100%;/* Internet Explorer */*background: #3366dd;background: #3366dd\0/;filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr=#FF263c6f, endColorstr=#FF3366dd);/* Recent browsers */background-image: -webkit-gradient(linear,left top, left bottom,from(#263c6f),to(#3366dd));background-image: -webkit-linear-gradient(top,#263c6f,#3366dd);background-image: -moz-linear-gradient(top,#263c6f,#3366dd);background-image: -o-linear-gradient(top,#263c6f,#3366dd);background-image: linear-gradient(top,#263c6f,#3366dd);color: white; }
 .blue-3-grad a { color: white }
 .blue-3-bg, .blue-3-bg a { background-color: #3366dd; color: white; }
 .blue-3, .blue-3 a { color: #3366dd; }
@@ -441,7 +449,7 @@ ul.block {
 ul.block li {
 	display: inline-block;
 }
-ul.block, .content ul {
+ul.block, .content ul.quicklinks {
 	list-style:none;
 	list-style-position: outside;
 	padding:0;
@@ -453,6 +461,11 @@ ul.block, .content ul {
 
 .content li {
 	margin-bottom: 8px;
+}
+
+ul.quicklinks li:before {
+    content: "» ";
+    content: "\0BB \020"; /* For Opera */
 }
 .observations-front li {
 	margin: 0px 0px 0px 0px;
@@ -529,7 +542,7 @@ body.admin-menu #main ul.menu input.search {
 	-moz-border-radius-bottomright: 8px;
 	border-bottom-right-radius: 8px;
 	background-color: #e6e6e6;
-	background-image: url("http://lcogt.net/sites/default/themes/lcogt/images/zoom_icon&16.png");
+	background-image: url("http://lcogt.net/static/img/zoom_icon&16.png");
  	background-position:center center;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -666,6 +679,41 @@ dd.forum{ background: url('/sites/default/themes/lcogt/images/forum.png') no-rep
 .fancybtn-gray .arrow {
 /*	background-image: url("/sites/default/themes/lcogt/images/playback_play_icon&24.png");*/
 }
+
+/* Flat blue button */
+.flatbtnblue {
+	color: #fff!important;
+	text-align: center;
+	text-decoration: none!important;
+	height: inherit;
+	line-height: inherit;
+	border: 1px solid rgba(0,0,0,0.2);
+	/* Internet Explorer */*background: #3366DD;
+	background: #3366DD;
+	box-shadow: -1px 1px 4px rgba(0,0,0,0.2);
+	-moz-box-shadow: -1px 1px 4px rgba(0,0,0,0.2);
+	-webkit-box-shadow: -1px 1px 4px rgba(0,0,0,0.2);
+	font: inherit;
+	-webkit-appearance: none;
+	display: inline-block;
+	padding: 7px 16px;
+	vertical-align: middle;
+	font-size: 1em;
+	min-width: 1em;
+	text-decoration: none;
+}
+.flatbtnblue:hover, .flatbtnblue:active, .flatbtnblue:focus {
+	text-decoration: none;
+	cursor: pointer!important;
+	background: #3366AA;
+	color:#FFFFFF;
+	border: 1px solid rgba(0,0,0,0.2);
+	text-shadow: 0px 0px 0px rgba(0,0,0,0.5);
+	box-shadow: 0px 1px 4px rgba(0,0,0,0.1);
+	-moz-box-shadow: 0px 1px 4px rgba(0,0,0,0.1);
+	-webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.1);
+}
+
 .onecol .fancybtn, .onecol .fancybtn-gray {
 	display: block;
 }
@@ -703,12 +751,8 @@ ul.polaroids li.polaroid {
 	font-size: 0.8em;
 	width: 144px;
 	height: 192px;
-	margin: 0 16px 16px 0px;
+	margin: 0 8px 16px 0px;
 	-webkit-transition: -webkit-transform .15s linear;
-	-webkit-transform: rotate(-1deg);
-	-moz-transform: rotate(-1deg);
-	-o-transform: rotate(-1deg);
-	transform: rotate(-1deg);
 }
 ul.polaroids img {
 	display: block;
@@ -720,12 +764,10 @@ ul.polaroids img {
 	width: 124px;
 	height: 124px;
 }
-ul.polaroids li:nth-child(even) { -webkit-transform: rotate(0.5deg); -moz-transform: rotate(0.5deg); -o-transform: rotate(0.5deg); transform: rotate(0.5deg); }
-ul.polaroids li:nth-child(3n) { -webkit-transform: none; -moz-transform: none; -o-transform: none; transform: none; position: relative; top: -3px; }
-ul.polaroids li:nth-child(5n) { -webkit-transform: rotate(1deg); -moz-transform: rotate(1deg); -o-transform: rotate(1deg); transform: rotate(1deg); position: relative; right: 0px; }
-ul.polaroids li:nth-child(6n) { margin-right: 0px; }
-ul.polaroids li:nth-child(8n) { position: relative; right: 5px; top: 8px; }
+ul.polaroids li:nth-child(4n) { margin-right: 0px; }
+/*ul.polaroids li:nth-child(8n) { position: relative; right: 5px; top: 8px; }
 ul.polaroids li:nth-child(11n) { position: relative; left: -5px; top: 3px; }
+*/
 ul.polaroids li:hover { -webkit-transform: scale(1.25); -moz-transform: scale(1.25); -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.5); -moz-box-shadow: 0 3px 6px rgba(0,0,0,.5); position: relative; z-index: 5; }
 .polaroid p {
 	margin:auto;
@@ -738,12 +780,14 @@ ul.polaroids li:hover { -webkit-transform: scale(1.25); -moz-transform: scale(1.
 .staff-list .user-picture { margin-top:10px; }
 .staff-list .user-picture img { width: 124px; height: 124px;}
 
+.yellow-highlight { color: #840;background-color: #ffffcc;border: 1px solid #c3c39e; padding:4px; margin:8px 0 8px 0;}
+
 li.node-readmore {
 /*	background: url('/sites/default/themes/lcogt/images/bullet.jpg') no-repeat;*/
 	padding-left: 1em!important;
 }
 ul.list-papers li.paper-item, .view-display-id-bk_papers .views-row, .publication-item {
-	background: url('http://lcogt.net/sites/default/themes/lcogt/images/doc_lines_icon&16.png') no-repeat;
+	background: url('http://lcogt.net/static/img/doc_lines_icon&16.png') no-repeat;
 	background-position:0px 0px;
 	padding-left: 24px!important;
 	margin-bottom: 8px!important;
@@ -834,6 +878,18 @@ ul.bios li .views-label-field-fullname {
 	float:left;
 	margin-right:4px;
 }
+
+ul.pager {
+	list-style: none;
+}
+
+ul.pager li.previous {
+	float:left;
+}
+ul.pager li.next {
+	float:right;
+}
+
 .pager {
 	display:block;
 	height: 16px;
@@ -853,6 +909,362 @@ ul.bios li .views-label-field-fullname {
 	border-radius:4px;
 }
 
+/* Big Button pages */
+
+body.banner #main { border-bottom: 4px solid #999999; }
+
+.home_banner_region{
+	background-image: url('images/science_bg_ngc2359.jpg');
+	height:500px;
+	border-bottom: 4px solid #999999;
+	display:block;
+}
+
+.science_banner_region{
+	background-image: url('images/public_bg_ngc7331.jpg');
+	height:500px;
+	border-bottom: 4px solid #999999;
+	display:block;
+	text-align: center;
+}
+
+.public_banner_region{
+	background-image: url('images/home_bg_M42.jpg');
+	height:500px;
+	border-bottom: 4px solid #999999;
+	display:block;
+	text-align: center;
+}
+
+/* Big, horizontal decision buttons */
+
+.home_banner_region ul.lg_grey_buttons
+{
+	text-align:center;
+	list-style: none;
+	position: relative;
+	top:40%;
+    margin: 0px;
+}
+
+
+.home_banner_region ul.lg_grey_buttons li
+{
+	display: block;
+	float: left;
+	width:35%;
+	padding:10px;
+	height: 3em;
+	font-size: 3em;
+}
+
+
+ul.lg_grey_buttons li.lg_public {
+    background-image: url('images/silhouette-1-meter_sm.png');
+    background-repeat: no-repeat;
+    padding-right: 110px;
+    background-position: 95% center;
+    text-align: right;
+}
+
+ul.lg_grey_buttons li.lg_astronomers {
+    background-image: url('images/silhouette-2-meter_sm.png');
+    background-repeat: no-repeat;
+    background-position: 8px center;
+    padding-left: 110px;
+    text-align: left;
+    margin-left: 32px;
+}
+
+.home_banner_region>ul.lg_grey_buttons li a,
+.science_banner_region>ul.lg_grey_buttons li a,
+.public_banner_region>ul.lg_grey_buttons li a { width: auto; }
+
+
+/* Big verticle decision buttons */
+.science_banner_region ul.lg_grey_buttons,
+.public_banner_region ul.lg_grey_buttons {
+	display: inline-block;
+	list-style-type: none;
+	position: relative;
+	top:15%;
+	padding-left: 0;
+}
+
+.science_banner_region ul.lg_grey_buttons li,
+.public_banner_region ul.lg_grey_buttons li {
+    font-size: 2em;
+	line-height: 1.2em;
+	display: block;
+	margin-bottom: 16px;
+    background-image: url('images/silhouette-2-meter_tny.png');
+    background-repeat: no-repeat;
+    background-position: 16px center;
+    padding-left: 50px;
+    text-align: left;
+    margin-left:8px;
+}
+
+ul.lg_grey_buttons li{
+	color:#ffffff;
+	background:#000000;
+	opacity: 0.6;
+	filter: alpha(opacity=60); 
+}
+
+ul.lg_grey_buttons li:hover
+{
+    opacity: 0.75;
+    color:#777;
+    filter: alpha(opacity=75); 
+}
+
+ul.lg_grey_buttons li a
+{
+	display: block;
+	width: 100%;
+	padding: 1em;
+	color: #FFF;
+	text-decoration: none;
+	margin-left:8px;
+}
+.seminar-banner h1.title{color:#fff;font-size: 1.6em;}
+.seminar-banner{
+	position:relative;
+	top:-16px;
+	background: url('http://lcogt.net/files/media/seminar_series.jpg') repeat scroll center center / 976px auto transparent; text-shadow: 0px 0px 10px black;
+    border-bottom: 4px solid #cccccc;
+    clear: both;
+    font-size: 1.6em;
+    padding: 0.5em;
+}
+
+#seminar-home {
+    line-height: 3em;
+    text-align: center;
+}
+
+.pagination {
+	border-top:1px dashed #404040;
+	padding-top:8px;
+}
+
+ul.pagination {
+	list-style: outside none none;
+	margin: 0;
+	padding-left: 0;
+	text-align: center;
+}
+
+ul.pagination li { display: inline; }
+
+
+/* Publications */
+.largenumber {
+    color: #404040;
+    font-family: Century Gothic,sans-serif;
+    font-weight: bold;
+    margin-top: 0;
+    font-size: 2em;
+    text-align: center;
+}
+.description{
+	text-align: center;
+}
+
+ul.list-papers {
+	list-style:none;
+	padding-left: 0px;
+}
+ul.list-papers li{
+    margin-bottom: 8px !important;
+    min-height: 16px;
+}
+
+.paper-authors,
+.description{
+	color:#999;
+	font-size: 90%;
+}
+
+.paper-status{
+	padding:0px 0px 6px 0px;
+}
+
+.lcogt-author {
+	color:#555;
+}
+
+.metrics_section{
+	width:100%;
+	border-bottom: 1px #555 solid;
+}
+.navlist{
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+}
+
+.navlist li{
+    margin: 0;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+
+/* Styles for the HotWired conference */
+
+.displayed {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 600px;
+	height: 176px;
+}
+
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+.ourfont {
+	font-family: Helvetica, "Bitstream Vera Sans", Arial, sans-serif;
+}
+
+.rightnav {
+	width: 100%;
+	border-style: solid solid none solid;
+	border-color: gray;
+	border-size: 1px;
+	border-width: 1px;
+}
+
+.rightnav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.rightnav ul li {
+	border-bottom: 2px solid gray;
+}
+
+.rightnav li a {
+	font-size: 14px;
+	font-weight: bold;
+	display: block;
+	background: transparent url(http://lcogt.net/files/arrowgray.gif) 100% 0;
+	color: black;
+	height: 24px; /*Set to height of bg image- padding within link (ie: 32px - 4px - 4px)*/
+	padding: 4px 0 4px 10px;
+	line-height: 24px; /*Set line-height of bg image- padding within link (ie: 32px - 4px - 4px)*/
+	text-decoration: none;
+}
+
+.rightnav li a:link, .arrowgreen li a:visited {
+}
+
+.rightnav li a:hover {
+	text-shadow: 0.1em 0.1em #fff;
+	background-position: 100% -64px;
+}
+
+.rightnav li a.selected {
+	/*color: white;*/
+	text-shadow: 0.1em 0.1em #fff;
+	background-position: 100% 0px;
+	background-image: none;
+	background-color: darkgray;
+}
+
+.smallwords {
+	font-size: 14px;
+	margin-right: 10px;
+}
+
+#conference table, #conference table th, #conference table td {
+	border: none !important;
+}
+
+#conference table td {
+	margin-bottom: 10px;
+}
+
+#conference .field-item {
+    width: 100%;
+}
+
+ul.buttonlisthoriz {
+margin: 0;
+padding: 0;
+list-style-type: none;
+text-align: center;
+}
+ul.buttonlisthoriz li {
+display: inline;
+}
+
+.btn {
+  display: block;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+  text-decoration: none;
+	color: #fff;
+}
+
+.btn-transparent,
+.btn-transparent:visited {
+  background-color: transparent;
+  border-color: #fff;
+  border-width: 2px;
+}
+
+.btn-blue,
+.btn-blue:visited {
+  background-color: #3366dd;
+  color: #fff;
+  border-width: 2px;
+}
+
+.btn-blue:hover {
+  background: rgba(0, 0, 0, .5);
+  text-decoration: none;
+  color:#fff;
+}
+
+.btn-jumbo {
+  padding: 13px 20px;
+  font-size: 22px;
+  line-height: 1.33;
+  border-radius: 6px;
+}
+
+/* responsive design parts */
 
 @media (max-width: 1024px), (max-device-width: 1024px) { 
 	#logo img { max-width:100%!important; }
@@ -886,6 +1298,52 @@ ul.bios li .views-label-field-fullname {
 	body.front .view-features-list { max-width: 100%; width: 98%; }
 	.lastcol { margin-right: 16px; }
 	ul.polaroids li { margin-right: 16px!important; }
+
+	/* Big, horizontal decision buttons */
+
+	ul.lg_grey_buttons li.lg_public {
+		padding-right: 0px
+	}
+
+	.home_banner_region,
+	.science_banner_region,
+	.public_banner_region{
+	height:100%;
+	text-align: center;
+	}
+
+	.home_banner_region>ul.lg_grey_buttons li a,
+	.science_banner_region>ul.lg_grey_buttons li a,
+	.public_banner_region>ul.lg_grey_buttons li a { width: auto; }
+
+
+	/* Big verticle decision buttons */
+	.home_banner_region ul.lg_grey_buttons,
+	.science_banner_region ul.lg_grey_buttons,
+	.public_banner_region ul.lg_grey_buttons {
+		display: inline-block;
+		list-style-type: none;
+		position: relative;
+		top:15%;
+		padding-left: 0;
+	}
+
+	.home_banner_region ul.lg_grey_buttons li,
+	.science_banner_region ul.lg_grey_buttons li,
+	.public_banner_region ul.lg_grey_buttons li {
+	    font-size: 2em;
+		line-height: 2.1em;
+		display: block;
+		margin-bottom: 16px;
+	    background-image: url('images/silhouette-2-meter_tny.png');
+	    background-repeat: no-repeat;
+	    background-position: 16px center;
+	    padding-left: 50px;
+	    text-align: left;
+	    margin-left:8px;
+	    width:100%;
+	    float:none;
+	}
 }
 @media (max-width: 630px), (max-device-width: 630px) {
 	#site-name { display: none; }
@@ -924,7 +1382,48 @@ ul.bios li .views-label-field-fullname {
 	#logo { width: 100%; text-align: center; float: none; display:block; }
 	#logo img { height: 60px; }
 	#header { height: 87px }
-}
+
+	/* Big, horizontal decision buttons */
+
+	.home_banner_region,
+	.science_banner_region,
+	.public_banner_region{
+	height:100%;
+	}
+
+	.home_banner_region>ul.lg_grey_buttons li a,
+	.science_banner_region>ul.lg_grey_buttons li a,
+	.public_banner_region>ul.lg_grey_buttons li a { width: auto; }
+
+
+	/* Big verticle decision buttons */
+	.home_banner_region ul.lg_grey_buttons,
+	.science_banner_region ul.lg_grey_buttons,
+	.public_banner_region ul.lg_grey_buttons {
+		display: inline-block;
+		list-style-type: none;
+		position: relative;
+		top:15%;
+		padding-left: 0;
+	}
+
+	.home_banner_region ul.lg_grey_buttons li,
+	.science_banner_region ul.lg_grey_buttons li,
+	.public_banner_region ul.lg_grey_buttons li {
+	    font-size: 1.4em;
+		line-height: 1.2em;
+		display: block;
+		margin-bottom: 16px;
+	    background-image: url('images/silhouette-2-meter_tny.png');
+	    background-repeat: no-repeat;
+	    background-position: 16px center;
+	    padding-left: 50px;
+	    text-align: left;
+	    margin-left:8px;
+	    width:100%;
+	    float:none;
+	}
+
 @media handheld {
 	#footer img { width: 24px; }	
 }
