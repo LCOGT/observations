@@ -33,13 +33,16 @@ RUN yum -y install epel-release \
 # nginx runs on port 80, uwsgi runs on port 9090
 EXPOSE 80 9090
 
-# The entry point is our init script, which runs startup tasks, then
-# execs the supervisord daemon
-ENTRYPOINT [ "/init" ]
+# Set the PREFIX env variable
+ENV PREFIX /observations
 
 # Setup the Python Django environment
 ENV PYTHONPATH /var/www/apps
 ENV DJANGO_SETTINGS_MODULE observations.settings
+
+# The entry point is our init script, which runs startup tasks, then
+# execs the supervisord daemon
+ENTRYPOINT [ "/init" ]
 
 # Copy configuration files
 COPY config/init /init
