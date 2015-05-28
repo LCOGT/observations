@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Substitute the prefix into the nginx configuration
+echo "Running with PREFIX=${PREFIX}"
+sed -i -e "s:@PREFIX@:${PREFIX}:g" /etc/nginx/nginx.conf
+
+# Run under supervisord
+exec /usr/bin/supervisord -n -c /etc/supervisord.conf
