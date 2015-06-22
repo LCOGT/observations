@@ -11,13 +11,11 @@
 # requirement to map all exposed container ports onto host ports.
 #
 # Build with
-# docker build -t registry.lcogt.net/observations:latest .
+# docker build -t docker.lcogt.net/observations:latest .
 #
-# Push to Registry with
-# docker push registry.lcogt.net/observations:latest
+# Push to Docker registry with
+# docker push docker.lcogt.net/observations:latest
 #
-# To run with nginx + uwsgi both exposed:
-# docker run -d -p 8000:80 -p 9090:8001 -m="128m" --name=observations registry.lcogt.net/observations:latest
 #
 ################################################################################
 FROM centos:centos7
@@ -31,7 +29,7 @@ RUN yum -y install epel-release \
         && yum -y clean all
 
 # nginx runs on port 80, uwsgi runs on port 9090
-EXPOSE 80 9090
+EXPOSE 80
 
 # Set the PREFIX env variable
 ENV PREFIX /observations
