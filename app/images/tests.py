@@ -1,9 +1,17 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+'''
+Observations: Open access archive app for Las Cumbres Observatory Global Telescope Network
+Copyright (C) 2014-2015 LCOGT
 
-Replace this with more appropriate tests for your application.
-"""
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+'''
 
 from django.test import TestCase
 
