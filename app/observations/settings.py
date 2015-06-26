@@ -14,12 +14,10 @@ GNU General Public License for more details.
 '''
 # Django settings for Observations project.
 
-
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 from django.utils.crypto import get_random_string
-import django.template
-import os, sys
-import platform
+import os
+import sys
 import site
 
 
@@ -30,36 +28,44 @@ PREFIX = os.environ.get('PREFIX', '')
 BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 VERSION = '0.2'
-DEBUG = True if os.environ.get('DEBUG',None) else not PRODUCTION
+DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
 TEMPLATE_DEBUG = DEBUG
 DOMAIN = 'lcogt.net'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
-HOME = os.environ.get('HOME','/tmp')
+HOME = os.environ.get('HOME', '/tmp')
 
 
 DATABASES = {
- 'default' : {
-    'NAME'    : os.environ.get('OBS_DB_NAME',''),
-    "USER"    : os.environ.get('OBS_DB_USER',''),
-    "PASSWORD": os.environ.get('OBS_DB_PASSWD',''),
-    "HOST"    : os.environ.get('OBS_DB_HOST',''),
-    "OPTIONS" : {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
-    "ENGINE"  : "django.db.backends.mysql",
+    'default': {
+        'NAME': os.environ.get('OBS_DB_NAME', ''),
+        "USER": os.environ.get('OBS_DB_USER', ''),
+        "PASSWORD": os.environ.get('OBS_DB_PASSWD', ''),
+        "HOST": os.environ.get('OBS_DB_HOST', ''),
+        "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
+        "ENGINE": "django.db.backends.mysql",
+    },
+    'rbauth': {
+        'NAME': os.environ.get('RBAUTH_DB_NAME', ''),
+        "USER": os.environ.get('RBAUTH_DB_USER', ''),
+        "PASSWORD": os.environ.get('RBAUTH_DB_PASSWD', ''),
+        "HOST": os.environ.get('RBAUTH_DB_HOST', ''),
+        "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
+        "ENGINE": "django.db.backends.mysql",
     }
 }
 
 if False:
     CACHES = {
-              'default': {
-                          'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-                          'LOCATION': '127.0.0.1:11211',
-                          },
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+        },
     }
 
 
 ADMINS = (
-          ('Edward Gomez', 'egomez@lcogt.net'),
-         )
+    ('Edward Gomez', 'egomez@lcogt.net'),
+)
 MANAGERS = ADMINS
 
 TIME_ZONE = 'Europe/London'
@@ -72,9 +78,9 @@ USE_I18N = True
 
 STATIC_ROOT = '/var/www/html/static/'
 STATIC_URL = PREFIX + '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR,'images', 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'images', 'static'), ]
 
-##### Upload directory
+# Upload directory
 MEDIA_ROOT = os.path.join(CURRENT_PATH, 'media')
 MEDIA_URL = PREFIX + '/media/'
 
@@ -86,20 +92,31 @@ SECRET_KEY = get_random_string(50, chars)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+ALLOWED_HOSTS = ['.lco.gtn', '.lcogt.net']
 
 ROOT_URLCONF = 'observations.urls'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.request",)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ]
+        }
+    }
+]
 
 MIDDLEWARE_CLASSES = (
+    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    'opbeat.contrib.django.middleware.Opbeat404CatchMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,34 +128,38 @@ MIDDLEWARE_CLASSES = (
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'observations.wsgi.application'
 
-TEMPLATE_DIRS = (
-    CURRENT_PATH +'/images/templates/',
-)
-
 FIXTURE_DIRS = (
-  CURRENT_PATH + '/observations/images/fixtures/',
+    CURRENT_PATH + '/observations/images/fixtures/',
 )
 
 INSTALLED_APPS = (
+    'opbeat.contrib.django',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'south',
     'images',
 )
+
+OPBEAT = {
+    'ORGANIZATION_ID': os.environ.get('OBS_OPBEAT_ORGID',''),
+    'APP_ID': os.environ.get('OBS_OPBEAT_APPID',''),
+    'SECRET_TOKEN': os.environ.get('OBS_OPBEAT_TOKEN',''),
+    'DEBUG': DEBUG,
+}
 
 DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
 FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
 
+if sys.argv[1] == 'test':
+    OPBEAT['APP_ID'] = None
+
 if not PRODUCTION:
-  try:
-      from local_settings import *
-  except:
-      pass
-
-
+    try:
+        from local_settings import *
+    except:
+        pass
