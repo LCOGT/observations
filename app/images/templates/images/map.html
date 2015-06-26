@@ -1,8 +1,9 @@
 {% extends 'images/base.html' %}
+{% load static from staticfiles %}
 {% load images_extras %}
 
 {% block script-content %}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/raphael-min.js"></script>
+	<script type="text/javascript" src="{% static "js/raphael-min.js" %}"></script>
 	<script>
 	<!--
 	ras = {{ ras|safe }}

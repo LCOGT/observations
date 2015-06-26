@@ -1,12 +1,13 @@
 {% extends 'images/list.html' %}
+{% load static from staticfiles %}
 {% load images_extras %}
 
 {% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ searchstring }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
 {% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ searchstring }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
 {% block script-content %}
- <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui.css">
- <script src="{{STATIC_URL}}js/jquery-ui.min.js"></script>
+ <link rel="stylesheet" href="{% static "css/jquery-ui.css" %}">
+ <script src="{% static "js/jquery-ui.min.js" %}"></script>
 	<script>
 	<!--
 	categories = {{categorylookup|safe}}
@@ -33,7 +34,7 @@
 										<br /><span style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href=""><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ STATIC_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href=""><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{% static "img/rti_archive_slideshow.jpg" %}"></a>
 {% endif %}
 								</div>{% else %}{% endif %}{% endblock %}
 

@@ -1,5 +1,7 @@
-{% extends 'images/base.html' %} {% load url from future %}{% load images_extras %} {% block script-content %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/rti_archive_observation.js"></script>
+{% extends 'images/base.html' %} 
+{% load images_extras %}
+{% block script-content %}
+<script type="text/javascript" src="{% static "js/rti_archive_observation.js" %}"></script>
 {% endblock %} {%block header %}{{ obs.objectname }}{%endblock%} {%block title %}{{ obs.objectname }}{%endblock%} {% block breadcrumb %} {% if framedb_obs %}
 <a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'show_site' site.code %}">{{ site.name }}</a> &raquo; {{ obs.telescope }} &raquo; {{ obs.objectname }}
 <br />{% else %}
@@ -141,7 +143,7 @@
                     <td class='first'>License:</td>
                     <td>
                         <a href="{{ obs.license }}" rel="license cc:license">
-                            <img src="{{ STATIC_URL }}img/{{ obs.licenseimage }}" style="height:1.5em;" title="Some rights reserved" />
+                            <img src="{% static "img/{{ obs.licenseimage }}" %}" style="height:1.5em;" title="Some rights reserved" />
                         </a>
                     </td>
                 </tr>
@@ -149,10 +151,10 @@
                     <td class='first'>Share:</td>
                     <td>
                         <a href="http://twitter.com/home/?status={{ obs.objectname|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt">
-                            <img title="Tweet this" alt="Twitter" src="{{STATIC_URL}}img/twitter.png">
+                            <img title="Tweet this" alt="Twitter" src="{% static "img/twitter.png" %}">
                         </a>
                         <a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}">
-                            <img title="Share on Facebook" alt="Facebook" src="{{STATIC_URL}}img/facebook.png">
+                            <img title="Share on Facebook" alt="Facebook" src="{% static "img/facebook.png" %}">
                         </a>
                     </td>
                 </tr>

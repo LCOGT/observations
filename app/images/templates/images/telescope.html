@@ -1,4 +1,5 @@
 {% extends 'images/list.html' %}
+{% load static from staticfiles %}
 {% load images_extras %}
 
 {% block script-content %}
@@ -10,7 +11,7 @@
 	var lon{% if telescope.site.longitude %} = {{ telescope.site.longitude }}{% endif %};
 	var json = "{% url 'home' %}{{link}}.json";
 	</script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/rti_archive_virtualsky.js"></script>
+	<script type="text/javascript" src="{% static "js/rti_archive_virtualsky.js" %}"></script>
 {% endblock %}
 {%block header %}{{ telescope.name }}{%endblock%}
 {%block title %}{{ telescope.name }}{%endblock%}
