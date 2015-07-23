@@ -1123,13 +1123,13 @@ def view_observation(request, code, tel, obs):
     if input['doctype'] == "json":
         # print obs
         return view_json(request, build_observations_json(obs), input)
-    return render_to_response('images/observation.html', {'n': 1,
+    return render(request,'images/observation.html', {'n': 1,
                                                           'telescope': telescope,
                                                           'obs': obs[0],
                                                           'otherobs': otherobs,
                                                           'filters': filters,
                                                           'base': base_url,
-                                                          'framedb_obs': False}, context_instance=RequestContext(request))
+                                                          'framedb_obs': False})
 
 
 def get_sci_fits(params):

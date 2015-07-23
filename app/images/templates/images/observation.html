@@ -1,5 +1,6 @@
 {% extends 'images/base.html' %} 
 {% load images_extras %}
+{% load staticfiles %}
 {% block script-content %}
 <script type="text/javascript" src="{% static "js/rti_archive_observation.js" %}"></script>
 {% endblock %} {%block header %}{{ obs.objectname }}{%endblock%} {%block title %}{{ obs.objectname }}{%endblock%} {% block breadcrumb %} {% if framedb_obs %}

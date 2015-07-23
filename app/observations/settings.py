@@ -27,6 +27,8 @@ PRODUCTION = True if CURRENT_PATH.startswith('/var/www') else False
 PREFIX = os.environ.get('PREFIX', '')
 BASE_DIR = os.path.dirname(CURRENT_PATH)
 
+FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
+
 VERSION = '0.2'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
 TEMPLATE_DEBUG = DEBUG
@@ -64,7 +66,7 @@ if False:
 
 
 ADMINS = (
-    ('Edward Gomez', 'egomez@lcogt.net'),
+    #('Edward Gomez', 'egomez@lcogt.net'),
 )
 MANAGERS = ADMINS
 
@@ -94,7 +96,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-ALLOWED_HOSTS = ['.lco.gtn', '.lcogt.net']
+ALLOWED_HOSTS = ['*']
 
 ROOT_URLCONF = 'observations.urls'
 
@@ -150,12 +152,70 @@ OPBEAT = {
     'DEBUG': DEBUG,
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'neox.log',
+            'formatter': 'verbose',
+            'filters': ['require_debug_false']
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django': {
+            'handlers':['file'],
+            'propagate': True,
+            'level':'ERROR',
+        },
+        'observations' : {
+            'handlers' : ['file','console'],
+            'level'    : 'DEBUG',
+        },
+        'images' : {
+            'handlers' : ['file','console'],
+            'level'    : 'ERROR',
+        }
+    }
+}
+
+
 DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
 FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
 
-if sys.argv[1] == 'test':
+if 'test' in sys.argv:
     OPBEAT['APP_ID'] = None
 
 if not PRODUCTION:
