@@ -1333,8 +1333,6 @@ def getCategoryLevel(avm, input):
                     nm = ""
                 input['avmup'].insert(0, {'code': avmup, 'name': nm})
         for c in categorylookup:
-            if(re.match(avm, c)):
-                print avm, c
             if(re.match(avm, c) and c != avm and len(c) == len(avm) + 2):
                 input['avmdn'].append({'code': c, 'name': categorylookup[c]})
 

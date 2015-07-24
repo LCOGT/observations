@@ -58,7 +58,7 @@
 								<h2 class="element-invisible">Main menu</h2>
 								<ul id="main-menu" class="block menu">
 									<li class="onecol home"><a href="http://lcogt.net/" class="active">Home</a></li>
-									<li class="onecol network"><a href="http://lcogt.net/observe" title="Log in to the Observation and Proposal Portal">Observating Portal</a></li>
+									<li class="onecol network"><a href="http://lcogt.net/observe" title="Log in to the Observation and Proposal Portal">Observing Portal</a></li>
 									<li class="onecol science"><a href="http://lcogt.net/astronomers" title="Information about the observatory and observatory science.">Astronomers</a></li>
 									<li class="onecol education active"><a href="http://lcogt.net/public" title="Image galleries, education activities and resources.">Public</a></li>
 									<li class="twocol search lastcol">
@@ -83,7 +83,7 @@
 										<br /><span style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</span>
 									</form>
 {% if n > 1 %}
-									<a href="{% url 'home' %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{{ STATIC_URL }}img/rti_archive_slideshow.jpg"></a>
+									<a href="{% url 'home' %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{% static 'img/rti_archive_slideshow.jpg' %}"></a>
 {% endif %}
 {% if n <= 1 %}
 									<div class="padder"></div>
