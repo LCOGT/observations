@@ -717,7 +717,7 @@ def view_object(request, object):
         if object['avm']['code'] != "":
             obser = obser.filter(
                 observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
-        a = obser.values('schoolid').annotate(
+        a = obser.values('schoolid','rti_username').annotate(
             count=Count('schoolid')).order_by('-count')
         if a:
             u = user_look_up(a[0]['rti_username'])
@@ -752,13 +752,13 @@ def view_object(request, object):
         # Calculate how many in each bin
         ns = [{'label': 'Under 1 second', 'max': 1, 'observations': 0}, {'label': '1-10 seconds', 'min': 1, 'max': 10, 'observations': 0}, {'label': '10-30 seconds', 'min':
                                                                                                                                             10, 'max': 30, 'observations': 0}, {'label': '30-90 seconds', 'min': 30, 'max': 90, 'observations': 0}, {'label': 'Over 90 seconds', 'min': 90, 'observations': 0}]
-        obser = obser.filter(exposuresecs__gt=1)
+        obser = obser.filter(exposure__gt=1)
         b[0] = n - len(obser)
-        obser = obser.filter(exposuresecs__gt=10)
+        obser = obser.filter(exposure__gt=10)
         b[1] = n - b[0] - len(obser)
-        obser = obser.filter(exposuresecs__gt=30)
+        obser = obser.filter(exposure__gt=30)
         b[2] = n - b[0] - b[1] - len(obser)
-        obser = obser.filter(exposuresecs__gt=90)
+        obser = obser.filter(exposure__gt=90)
         b[3] = n - b[0] - b[1] - b[2] - len(obser)
         b[4] = len(obser)
 
@@ -2103,7 +2103,7 @@ def binMonths(obs, input, bins):
             date = parsetime(o['whentaken'])
         except:
             date = parsetime(o.whentaken)
-            e += o.exposuresecs
+            e += o.exposure
         month = date.month - 12 * (now.year - date.year)
         m = now.month - month
         if (m < bins):

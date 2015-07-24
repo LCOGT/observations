@@ -12,13 +12,13 @@
 
 {% block main-content %}
 						<div class="row">
-							{%if object.ra %}<p>Position: <a href="{% url 'search' %}?RA={{ object.ra }}&DEC={{ object.dec }}&SR=3" title="Search for observations near these coordinates">RA: {{ object.ra|degreestohms }}, Dec: {{ object.dec|degreestodms }}</a>. {% endif %}{% if object.avm.code %}Category: <a href="{% url 'view_category' object.avm.code %}">{{ object.avm.name|lowercase }}</a>. {% endif %}{%if object.ra %} Find out <a href="{{ object.service.url }}">more about {{ object.name }} from {{ object.service.name }}</a>. {% endif %}There are {{ n }} LCOGT observations tagged as {{ object.name }}.</p>
+							{%if object.ra %}<p>Position: <a href="{% url 'search' %}?RA={{ object.ra }}&DEC={{ object.dec }}&SR=3" title="Search for observations near these coordinates">RA: {{ object.ra|degreestohms }}, Dec: {{ object.dec|degreestodms }}</a>. {% endif %}{% if object.avm.code %}Category: <a href="{% url 'show_avm' object.avm.code %}">{{ object.avm.name|lowercase }}</a>. {% endif %}{%if object.ra %} Find out <a href="{{ object.service.url }}">more about {{ object.name }} from {{ object.service.name }}</a>. {% endif %}There are {{ n }} LCOGT observations tagged as {{ object.name }}.</p>
 {% if input.exposure %}
 							<p class="skip-link"><em><a href="#results">Skip to observations</a></em></p>
 							<div class="gray-7-bg closeable">
 								<div class="padded">
 									<h2>Summary</h2>
-									{% if input.mostobservedby %}<p>{{ object.name }} was most observed by <a href="{% url 'view_user' input.mostobservedby.id %}">{{ input.mostobservedby.name }}</a> ({{ input.mostobservedby.count }} observations)</p>{% endif %}
+									{% if input.mostobservedby %}<p>{{ object.name }} was most observed by <a href="{% url 'show_user' input.mostobservedby.id %}">{% if  input.mostobservedby.name%}{{ input.mostobservedby.name }}{%else%}Name Unspecified{% endif %}</a> ({{ input.mostobservedby.count }} observations)</p>{% endif %}
 									{% if input.bins %}
 									<div class="temporalstats">
 										<p>A summary of all observations over the past year:</p>

@@ -66,6 +66,3 @@ urlpatterns = [
 
 if not settings.PRODUCTION:
     urlpatterns += staticfiles_urlpatterns()
-    # urlpatterns += [
-    #     url(r'^static/(?P<path>.*)$', views.serve),
-    # ]
