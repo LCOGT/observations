@@ -1788,8 +1788,12 @@ def build_observations_json(obs):
             filter = filter_props(o['filter'])
         except:
             filter = ["Unknown"]
+        if o.get('origname',''):
+            page_url = reverse('identity') + "?origname="+o['origname']
+        else:
+            page_url = o.get('link_obs','')
         ob = {
-            "about": base_url + o['link_obs'],
+            "about": page_url,
             "label": o['objectname'],
             "observer": {
                 "about": '',  # base_url+o['link_user'],
@@ -1872,7 +1876,7 @@ def view_json(request, obs, config):
     output = '\n'.join([l.rstrip() for l in s.splitlines()])
     if 'callback' in config and config['callback'] != "":
         output = config['callback'] + "(" + output + ")"
-    return HttpResponse(output, mimetype=config['mimetype'])
+    return HttpResponse(output, content_type='application/json')
 
 
 def view_kml(request, obs, config):
@@ -1921,7 +1925,7 @@ def view_kml(request, obs, config):
     output += '</Document>\n'
     output += '</kml>\n'
 
-    return HttpResponse(output, mimetype=config['mimetype'])
+    return HttpResponse(output, content_type=config['mimetype'])
 
 
 def view_rss(request, obs, config):
