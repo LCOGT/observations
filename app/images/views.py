@@ -521,8 +521,11 @@ def view_site(request, code, format=None):
 
 
 def view_site_slideshow(request, code, format=None):
-    site = Site.objects.get(code=code)
-    return render(request, 'images/slideshow.html', {'site': site})
+    if code:
+        site = Site.objects.get(code=code)
+        return render(request, 'images/slideshow.html', {'site': site})
+    else:
+        return Http404
 
 
 def old_view_site(request, code):
