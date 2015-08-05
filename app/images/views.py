@@ -1906,11 +1906,14 @@ def view_kml(request, obs, config):
         schoolname = 'unknown'
 
     for o in obs:
+        if type(o['telescope']) == type('a'):
+            telname = o['telescope']
+        else:
+            telname = o['telescope'].name
         output += ' <Placemark>\n'
         output += '     <name>' + o['objectname'] + '</name>\n'
         output += '     <description><![CDATA[\n'
-        output += '         <p>Observed by ' + schoolname + ' on ' + datestamp(o['whentaken']) + ' with <a href="' + base_url + o[
-            'link_tel'] + '.kml">' + o['telescope'].name + '</a>.<br /><a href="' + o['link_obs'] + '"><img src="' + o['thumbnail'] + '" /></a></p>\n'
+        output += '         <p>Observed by ' + schoolname + ' on ' + datestamp(o['whentaken']) + ' with <a href="' + base_url + o.get('link_tel','') + '.kml">' + telname + '</a>.<br /><a href="' + o.get('link_obs','') + '"><img src="' + o.get('thumbnail','') + '" /></a></p>\n'
         output += '         <p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
         output += '     ]]></description>\n'
         output += '     <LookAt>\n'
