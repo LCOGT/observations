@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 '''
 Observations: Open access archive app for Las Cumbres Observatory Global Telescope Network
 Copyright (C) 2014-2015 LCOGT
@@ -1519,7 +1519,10 @@ def build_framedb_observations(observations, org_names=None):
              '0m4a': '0.4-meter', '0m4b': '0.4-meter'}
     reduction = {'10.0': 'Quicklook image',
                  '90.0': 'Final quality', '00.0': 'Uncalibrated image'}
-    numobs = len(observations)
+    if observations:
+      numobs = len(observations)
+    else:
+      numobs = 0
     for o in observations:
         id_name = o['origname'].split('.')[0]
         thumbnail = "http://data.lcogt.net/thumbnail/%s/?height=150&width=150&label=0" % id_name
@@ -1906,7 +1909,7 @@ def view_kml(request, obs, config):
         output += ' <Placemark>\n'
         output += '     <name>' + o['objectname'] + '</name>\n'
         output += '     <description><![CDATA[\n'
-        output += '         <p>Observed by <a href="' + base_url + o['link_user'] + '.kml">' + schoolname + '</a> on ' + datestamp(o['whentaken']) + ' with <a href="' + base_url + o[
+        output += '         <p>Observed by ' + schoolname + ' on ' + datestamp(o['whentaken']) + ' with <a href="' + base_url + o[
             'link_tel'] + '.kml">' + o['telescope'].name + '</a>.<br /><a href="' + o['link_obs'] + '"><img src="' + o['thumbnail'] + '" /></a></p>\n'
         output += '         <p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
         output += '     ]]></description>\n'
