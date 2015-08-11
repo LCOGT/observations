@@ -29,15 +29,13 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from django.utils.encoding import smart_unicode
 from email.utils import parsedate_tz
-from httplib import REQUEST_TIMEOUT, HTTPSConnection
 from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from string import replace
 import json
 import math
 import re
-import urllib
-import urllib2
+import requests
 
 n_per_line = 6
 n_per_page = 18
@@ -1342,19 +1340,17 @@ def getCategoryLevel(avm, input):
 
     return input
 
-
 def framedb_lookup(query):
     try:
-        conn = HTTPSConnection("data.lcogt.net", timeout=20)
-        params = urllib.urlencode(
-            {'username': 'dthomas+guest@lcogt.net', 'password': 'guest'})
-        #query = "/find?%s" % params
-        conn.request("POST", query, params)
-        response = conn.getresponse()
-        r = response.read()
-        data = json.loads(r)
+        client = requests.session()
+
+        # First have to authenticate
+        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
+        # Because we are sending log in details it has to go over SSL
+        data_url = 'https://data.lcogt.net%s' % query
+        resp = client.post(data_url, data=login_data, timeout=20)
+        data = resp.json()
     except:
-        # except Exception, e:
         return False
     return data
 
@@ -1364,15 +1360,12 @@ def tracknum_lookup(tracknum):
         # Avoid sending junk to the API
         return False
     try:
-        conn = HTTPSConnection("lcogt.net", timeout=20)
-        params = urllib.urlencode(
-            {'username': 'dthomas+guest@lcogt.net', 'password': 'guest'})
-        query = "/observe/service/request/get/userrequest/%s" % tracknum
-        conn.request("POST", query, params)
-        response = conn.getresponse()
-        r = response.read()
-        # print "Response - %s " % response.status
-        data = json.loads(r)
+        client = requests.session()
+        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
+        # Because we are sending log in details it has to go over SSL
+        data_url = 'https://lcogt.net/observe/service/request/get/userrequest/%s' % tracknum
+        resp = client.post(data_url, data=login_data, timeout=20)
+        data = resp.json()
     except:
         return False
     return data

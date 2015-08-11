@@ -10,7 +10,7 @@
 	var lon{% if site.longitude %} = {{ site.longitude }}{% endif %};
 	var json = "{% url 'site_api' site.code 'json' %}";
 	</script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/rti_archive_virtualsky.js"></script>
+	<script type="text/javascript" src="{% static "js/rti_archive_virtualsky.js" %}"></script>
 {% endblock %}
 
 {%block header %}{{ site.name }}{%endblock%}
