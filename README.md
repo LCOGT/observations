@@ -48,5 +48,5 @@ To build and run the Docker image for this application, just run:
 
 To build a production Docker image:
 
-    $ docker build -t registry.lcogt.net/observations:release
-    $ docker push registry.lcogt.net/observations:release
+    $ docker build -t docker.lcogt.net/observations:release
+    $ docker push docker.lcogt.net/observations:release
