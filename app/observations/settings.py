@@ -90,6 +90,8 @@ MEDIA_URL = PREFIX + '/media/'
 chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 SECRET_KEY = get_random_string(50, chars)
 
+SESSION_COOKIE_NAME = "observations.sessionid"
+
 # List of callables that know how to import templates from various sources.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

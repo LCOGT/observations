@@ -639,16 +639,14 @@ def view_object(request, object):
 
     # On the first page (HTML version only) we do a lookUP
     if page == 1 and input['doctype'] == "html":
-        opener = urllib2.build_opener()
-        opener.addheaders = [('Accept', 'application/xml'),
-                             ('Content-Type', 'application/xml'),
-                             ('User-Agent', 'LCOGT/1.0')]
-        req = urllib2.Request(
-            url='http://lcogt.net/lookUP/xml/?name=%s' % original)
+        headers = {'Accept': 'application/xml',
+                   'Content-Type': 'application/xml',
+                   'User-Agent' : 'LCOGT/1.0'}
+        url='http://lcogt.net/lookUP/xml/?name=%s' % original
         # Allow 3 seconds for timeout
         try:
-            f = urllib2.urlopen(req, None, 5)
-            xml = f.read()
+            f = requests.get(url, timeout=5, headers=headers)
+            xml = f.content
         except:
             return unknown(request)
         service = re.search('service href="([^\"]*)">([^\<]*)<', xml)
@@ -1065,16 +1063,13 @@ def view_observation(request, code, tel, obs):
 
     # Check for AVM code
     if not(obstats[0].avmcode):
-        opener = urllib2.build_opener()
-        opener.addheaders = [('Accept', 'application/xml'),
-                             ('Content-Type', 'application/xml'),
-                             ('User-Agent', 'LCOGT/1.0')]
-        obj = re.sub(r" ", '\+', obs[0]['object'])
-        req = urllib2.Request(url='http://lcogt.net/lookUP/xml/?name=%s' % obj)
-        # Allow 3 seconds for timeout
+        headers = {'Accept': 'application/xml',
+                   'Content-Type': 'application/xml',
+                   'User-Agent' : 'LCOGT/1.0'}
+        url='http://lcogt.net/lookUP/xml/?name=%s' % obs
         try:
-            f = urllib2.urlopen(req, None, 3)
-            xml = f.read()
+            f = requests.get(url, timeout=5, headers=headers)
+            xml = f.content
             m = re.search('avmcode="([^\"]*)"', xml)
             n = re.search('service href="([^\"]*)"', xml)
             if(m):
@@ -1135,7 +1130,6 @@ def view_observation(request, code, tel, obs):
 
 
 def get_sci_fits(params):
-    opener = urllib2.build_opener()
     telids = {'ogg': 1, 'coj': 2}
     telid = telids.get(params['telescope'].site.code, '')
     url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
@@ -1155,12 +1149,12 @@ def get_sci_fits(params):
             #filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
 
         for rid in range(0, len(rids)):
-            req = urllib2.Request(url=url + '&obs-id=' + rids[rid])
+            sci_url = '%s&obs-id=%s' % (url, rids[rid])
 
             # Allow 6 seconds for timeout
             try:
-                f = urllib2.urlopen(req, None, 6)
-                xml = f.read()
+                f = requests.get(url=sci_url, timeout=6)
+                xml = f.content
 
                 jpg = re.search('file-jpg type=\"url\">([^\<]*)<', xml)
                 fit = re.search('file-hfit type=\"url\">([^\<]*)<', xml)
@@ -1209,10 +1203,10 @@ def get_ipac_fits(origname, date, propid, tracknum, reqnum):
         propid, date, date, tracknum)
     lookup_url = baseurl + qstring.replace(" ", "%20")
     try:
-        resp = urllib2.urlopen(lookup_url, timeout=10)
-    except urllib2.URLError, e:
+        resp = requests.get(lookup_url, timeout=10)
+    except:
         return False
-    text = resp.read()
+    text = resp.content
     vals = [x.strip() for x in text.split(
         "\n") if x[:1] != '\\' and x[:1] != '' and x[:1] != '|']
     files = [v.split()[0] for v in vals]
@@ -1598,12 +1592,11 @@ def avm_from_lookup(objectname):
     obj = "+".join(objectname.split(" "))
     lookup_url = "http://lcogt.net/lookUP/json/?name=%s&callback=lk" % obj
     try:
-        resp = urllib2.urlopen(lookup_url, timeout=10)
-    except urllib2.URLError, e:
+        resp = requests.get(lookup_url, timeout=10)
+    except:
         return None
-    content = resp.read()
+    obj = json.loads(resp.content[3:-3])
     try:
-        obj = json.loads(content[3:-3])
         if obj['category']['avmcode']:
             params = {
                 'code': obj['category']['avmcode'],
