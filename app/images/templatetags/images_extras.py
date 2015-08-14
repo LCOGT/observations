@@ -109,7 +109,7 @@ def url_add_query(context, **kwargs):
     get = request.GET.copy()
     get.update(kwargs)
 
-    path = '%s%s?' % (settings.PREFIX,request.path)
+    path = '%s?' % (request.path)
     for query, val in get.items():
         path += '%s=%s&' % (query, val)
 
