@@ -4,5 +4,12 @@
 echo "Running with PREFIX=${PREFIX}"
 sed -i -e "s:@PREFIX@:${PREFIX}:g" /etc/nginx/nginx.conf
 
+# Django static files
+python /var/www/apps/observations/manage.py collectstatic --noinput
+
+# If any schema changed have happened but not been applied
+#python /var/www/apps/observations/manage.py syncdb --noinput
+#python /var/www/apps/observations/manage.py migrate --noinput
+
 # Run under supervisord
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
