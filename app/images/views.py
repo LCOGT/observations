@@ -1166,8 +1166,7 @@ def get_sci_fits(params):
                     if fit:
                         tmp['fits'] = fit.group(1)
                     filters.append(tmp)
-            except Exception, e:
-                print e
+            except:
                 filters.append({'img': '', 'fits': ''})
     return filters
 
@@ -1593,6 +1592,8 @@ def avm_from_lookup(objectname):
     lookup_url = "http://lcogt.net/lookUP/json/?name=%s&callback=lk" % obj
     try:
         resp = requests.get(lookup_url, timeout=10)
+        if not resp:
+            return None
     except:
         return None
     obj = json.loads(resp.content[3:-3])
@@ -1604,7 +1605,7 @@ def avm_from_lookup(objectname):
             }
         else:
             return None
-    except Exception, e:
+    except:
         return None
     return params
 
