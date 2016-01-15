@@ -59,7 +59,8 @@
 
 {% block fullcontent %}
 {% if n > 0 %}
-						<div class="row">
+<div class="container">
+    <div class="row">
 							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}Showing {{n}} observations taken between {{firstobs|relativetime}} and {{lastobs|relativetime}}. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
 						</div>
 
@@ -67,9 +68,9 @@
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
-							<ul class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<div class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs %}
-							</ul>
+							</div>
 							{% if n > 18 and onlyrti %}
 							<div class="pagination">
 							    <span class="step-links">
@@ -84,6 +85,7 @@
 							</div>
 							{% endif %}
 						</div>
+          </div>
 {% else %}
 		<div class="row">
       <div class="container">
@@ -110,73 +112,21 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label col-sm-2" for="id_alldates">By date range:</label>
+              <label class="control-label col-sm-2" for="id_alldates">Date range:</label>
               <div class="col-sm-10">
                 <input id="id_alldates" type="checkbox" name="alldates" />
                 <p class="help-block">Limit your search to a particular range of dates.</p>
-              </div>
-            </div>
 
-            <div class="form-group">
-              <div class="col-md-6">
               <label class="sr-only" for="startdate">Start date</label>
               <input type="text" class="form-control"  name="startdate" placeholder="Start date" value="{{form.startdate.value}}"/>
-            </div>
-
-            <div class="col-md-6">
               <label class="sr-only" for="enddate">End date</label>
+
               <input type=text class="form-control" name="enddate" placeholder="End date" value="{{form.enddate.value}}"/>
-            </div>
             {% if form.startdate.errors or form.enddate.errors %}<span class="error form-error">{{form.startdate.errors.as_text}} {{form.enddate.errors.as_text}}</span>{% endif %}
           </div>
+        </div>
 
-
-			<!-- div class="row">
-				<fieldset>
-					<legend>By position: </legend>
-					<div class="twocol">
-						<p class="gray-5">Limit your search to a specific patch of sky by astronomical coordinates (Right Ascension and Declination). The search radius is limited to less than 10 degrees.</p>
-					</div>
-					<div class="fourcol lastcol">
-							<label for="RA" class="inline">RA:</label> <input type="text" maxlength="15" name="RA" id="RA" value="{{ form.RA }}" class="form-text" style="width:5em;" /> ,
-							<label for="DEC" class="inline">Dec:</label> <input type="text" maxlength="15" name="DEC" id="DEC" value="{{ form.DEC }}" class="form-text" style="width:5em;" /> ,
-							<label for="SR" class="inline">radius (degrees):</label> <input type="text" maxlength="15" name="SR" id="SR" value="{{ form.SR }}" class="form-text" style="width:4em;" />
-					</div>
-				</fieldset>
-			</div>
-			<div class="spacer"></div-->
-				<fieldset>
-					<legend>By observatory site:</legend>
-					<div class="form-group">
-						<p class="gray-5">Limit your search to a specific observatory site.</p>
-					</div>
-					<div class="fourcol lastcol">
-						<label for="edit-telid" class="hidden">Site: </label>{{form.sites}}
-					</div>
-				</fieldset>
-
-				<fieldset>
-					<legend>By wavelength filter:</legend>
-					<div class="twocol">
-						<p class="gray-5">Limit your search by the type of astronomical <a href="http://lcogt.net/network/instrumentation/filtertypes">filter</a>.</p>
-					</div>
-					<div class="fourcol lastcol">
-						<label for="edit-filter" class="hidden">Wavelength filter: </label>{{form.filters}}
-					</div>
-				</fieldset>
-
-				<fieldset>
-					<legend>By exposure length: </legend>
-					<div class="twocol">
-						<p class="gray-5">Limit your search by the length of the exposure in seconds.</p>
-					</div>
-					<div class="fourcol lastcol">
-						<label for="exposure" class="hidden">Exposure length: </label>
-						{{form.exposurecondition}} {{form.exposure}} seconds
-					</div>
-				</fieldset>
-
-					<input type="submit" name="submit" id="edit-submit" value="Search" class="btn btn-default bt-xl" />
+					<input type="submit" name="submit" id="edit-submit" value="Search" class="btn btn-default btn-xl" />
       </form>
       </div>
 		</div>

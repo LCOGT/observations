@@ -26,7 +26,7 @@
 							{% endif %}
 							<div>
 
-							<div class='row observation-results' data-json="{% url 'home' %}{% if link == 'recent' %}search{% else %}{{ link }}{% endif %}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="{% if link == 'recent' %}add{% else %}update{% endif %}" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<div class='observation-results' data-json="{% url 'home' %}{% if link == 'recent' %}search{% else %}{{ link }}{% endif %}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="{% if link == 'recent' %}add{% else %}update{% endif %}" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs %}
 							</div>
 						</div>
