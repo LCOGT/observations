@@ -1,0 +1,162 @@
+{% load staticfiles %}
+{% load extra_options %}
+<!DOCTYPE html>
+<html>
+<head>
+{% block headercomment %}{% endblock %}
+	<title>{%block header %}{%endblock%} | LCOGT</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="DC.Title" content="Las Cumbres Observatory Global Telescope Network" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+	<link rel="shortcut icon" href="http://lcogt.net/files/favicon.ico" type="image/x-icon" />
+	{% if not PRODUCTION %}
+	<link rel="stylesheet" href="{% static "css/style.css" %}" type="text/css">
+	{% else %}
+	<link rel="stylesheet" href="http://lcogt.net/static/css/style.css" type="text/css">
+	{% endif %}
+	<link rel="stylesheet" href="{% static "css/rti_archive.css" %}" type="text/css">{% block css-content %}{% endblock %}{% block feeds %}{% endblock %}
+	<script type="text/javascript" src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/rti_archive.js" %}"></script>{% block script-content %}{% endblock %}
+	<script type="text/javascript">
+	<!--
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-2087713-1']);
+		_gaq.push(['_trackPageview']);
+		
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+		// -->
+	</script>
+</head>
+<body class="{% block body-class %}education {%endblock%}{% if user.is_authenticated %}{% else %}not-{% endif %}logged-in">
+
+	<div id="page-wrapper">
+		<div id="page">
+			<div id="lcogt-bar">
+				{% block login %}<div id="login" class="block"></div>
+{% endblock %}
+				<div>
+					<a href="http://lcogt.net/" title="LCOGT Home" rel="home"><span class="l">L</span><span class="wide">as </span><span class="c">C</span><span class="wide">umbres </span><span class="o">O</span><span class="wide">bservatory </span><span class="g">G</span><span class="wide">lobal </span><span class="t">T</span><span class="wide">elescope Network</span></a>
+				</div>
+			</div>
+
+			<div id="screen">
+				<div id="container">
+					<div id="header">
+						{% block logo-content %}<div id="logo"><a href="http://lcogt.net/" title="Home" rel="home"><img src="http://lcogt.net/files/logo.png" alt="Home" id="logo-image" /></a></div>{% endblock %}
+						<div id="site-name">
+							<strong><a href="http://lcogt.net/" title="Home" rel="home"><span>Las Cumbres Observatory <em>Global Telescope Network</em></span></a></strong>
+						</div>
+					</div>
+			
+					<div id="main">
+						{% block navigation %}<div class="row rowfull nogaps graybg">
+							<nav id="navigation" role="navigation">
+								<h2 class="element-invisible">Main menu</h2>
+								<ul id="main-menu" class="block menu">
+									<li class="onecol home"><a href="http://lcogt.net/" class="active">Home</a></li>
+									<li class="onecol network"><a href="http://lcogt.net/observe" title="Log in to the Observation and Proposal Portal">Observing Portal</a></li>
+									<li class="onecol science"><a href="http://lcogt.net/astronomers" title="Information about the observatory and observatory science.">Astronomers</a></li>
+									<li class="onecol education active"><a href="http://lcogt.net/public" title="Image galleries, education activities and resources.">Public</a></li>
+									<li class="twocol search lastcol">
+										<form action="http://lcogt.net/search/" method="get" id="search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+											<h2 class="element-invisible">Search form</h2>
+											<label class="element-invisible" for="edit-search-block-form--2">Search </label>
+											<input title="Enter the terms you wish to search for." onblur="if (this.value == &#039;&#039;) { this.value = &#039;Search LCOGT...&#039;; }" onfocus="if (this.value == &#039;Search LCOGT...&#039;) { this.value = &#039;&#039;; }" class="search form-text" type="text" id="q" name="q" value="Search LCOGT..." size="15" maxlength="128" /><input title="Search" class="btn form-submit" type="submit" id="edit-submit" name="op" value="" />
+										</form>
+									</li>
+								</ul>
+							</nav>
+						</div>{% endblock %}
+
+						<div class="row rowlast">
+							{% block title-block %}
+							<div class="fourcol">{% block breadcrumb %}{% endblock %}								<h1>{% block title %}Observations{% endblock %}</h1>
+							</div>
+							<div class="twocol lastcol">{% block search %}
+								<div class="searchbox">
+									<form action='{% url 'search' %}' method='GET'>
+										<input type='text' name='query' class='searchbox' title='e.g. NGC 2020' /><input type='submit' value='Search observations' class='searchbtn' />
+										<br /><span style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</span>
+									</form>
+{% if n > 1 %}
+									<a href="{% url 'home' %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{% static 'img/rti_archive_slideshow.jpg' %}"></a>
+{% endif %}
+{% if n <= 1 %}
+									<div class="padder"></div>
+{% endif %}
+								</div>
+{% endblock %}
+							</div>
+							{% endblock %}
+						</div>
+												
+
+						
+						{% block main-content %}{% endblock %}
+						{% block alternate-formats %}{% endblock %}
+
+{% block alternate %}
+{% if sites or telescopes or categories %}
+						<div class="row rowlast gray-7-grad">
+							<div class="sixcol lastcol">
+{% if sites %}
+								<div class="nogaps twocol" id="bysite">
+									<div class="padder">
+
+
+										<h2>{% block sites-list-title %}By site:{% endblock %}</h2>
+										<ul>
+{% for site in sites %}										<li><a href="{% url 'show_site' site.code %}">{{ site.name }}</a></li>{% endfor %}
+										</ul>
+									</div>
+								</div>
+{% endif %}
+{% if telescopes %}
+								<div class="nogaps twocol" id="bytelescope">
+									<div class="padder">
+										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
+										<ul>
+{% for telescope in telescopes %}										<li><a href="{% url 'show_telescope' telescope.site.code telescope.code %}">{{ telescope.name }}</a></li>{% endfor %}
+										</ul>
+									</div>
+								</div>
+{% endif %}
+{% if categories %}
+								<div class="nogaps twocol" id="bycategory">
+									<div class="padder">
+										<h2>{% block categories-list-title %}<a href="{% url 'category_list' %}">By category</a>:{% endblock %}</h2>
+										<ul>
+{% for c in categories %}										<li><a href="{% url 'category_show' c.link %}">{{ c.name }}</a></li>{% endfor %}
+										</ul>
+									</div>
+								</div>
+{% endif %}
+							</div>
+						</div>
+{% endif %}
+{% endblock %}
+
+
+					</div>
+
+					<div class="clear-block"></div>
+					<div id="footer">
+						Copyright &copy; {%now "Y"%} Las Cumbres Observatory Global Telescope Network. All rights reserved.
+						<ul class="menu">
+							<li class="first leaf"><a title="Contact LCOGT" href="http://lcogt.net/contact">Contact</a></li>
+							<li class="leaf"><a href="http://lcogt.net/images">Image Galleries</a></li>
+							<li class="last leaf"><a title="A full list of all LCOGT staff" href="http://lcogt.net/people">Staff list</a></li>
+						</ul>
+						<a href="http://twitter.com/lcogt"><img title="Follow us on Twitter" alt="Twitter" src="{% static "img/twitter.png" %}"></a> 
+						<a href="http://facebook.com/lcogt"><img title="Connect with us on Facebook" alt="Facebook" src="{% static "img/facebook.png" %}"></a> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

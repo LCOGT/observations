@@ -31,7 +31,6 @@ FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
 
 VERSION = '0.2'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
-TEMPLATE_DEBUG = DEBUG
 DOMAIN = 'lcogt.net'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
 HOME = os.environ.get('HOME', '/tmp')
@@ -151,7 +150,6 @@ OPBEAT = {
     'ORGANIZATION_ID': os.environ.get('OBS_OPBEAT_ORGID',''),
     'APP_ID': os.environ.get('OBS_OPBEAT_APPID',''),
     'SECRET_TOKEN': os.environ.get('OBS_OPBEAT_TOKEN',''),
-    'DEBUG': DEBUG,
 }
 
 LOGGING = {
@@ -223,5 +221,6 @@ if 'test' in sys.argv:
 if not PRODUCTION:
     try:
         from local_settings import *
-    except:
+    except Exception, e:
+        print "Error in local settings %s" % e
         pass

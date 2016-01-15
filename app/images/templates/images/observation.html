@@ -1,15 +1,32 @@
-{% extends 'images/base.html' %} 
+{% extends 'images/base.html' %}
 {% load images_extras %}
 {% load staticfiles %}
 {% block script-content %}
 <script type="text/javascript" src="{% static "js/rti_archive_observation.js" %}"></script>
-{% endblock %} {%block header %}{{ obs.objectname }}{%endblock%} {%block title %}{{ obs.objectname }}{%endblock%} {% block breadcrumb %} {% if framedb_obs %}
-<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'show_site' site.code %}">{{ site.name }}</a> &raquo; {{ obs.telescope }} &raquo; {{ obs.objectname }}
-<br />{% else %}
-<a href="{% url 'home' %}">Observations</a> &raquo; <a href="{% url 'show_site' telescope.site.code %}">{{ telescope.site.name }}</a>{% if telescope %} &raquo; {{ telescope.name }}{% endif %} &raquo; {{ obs.objectname }}
-<br />{% endif %} {% endblock %} {% block telescopes-list-title %}Nearby telescopes:{% endblock %} {% block main-content %}
-<div class="row" class='observation' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#' xmlns:avm='http://www.communicatingastronomy.org/avm/1.0/'>
-    <div class='sixoften'>
+{% endblock %}
+
+{%block header %}{{ obs.objectname }}{%endblock%}
+
+{%block title %}Observation of {{ obs.objectname }}{%endblock%}
+
+{% block breadcrumb %}
+{% if framedb_obs %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'home' %}">Observations</a></li>
+  <li><a href="{% url 'show_site' site.code %}">{{ site.name }}</a></li>
+  <li class="active">{{ obs.telescope }} : {{ obs.objectname }}</li>
+</ol>
+{% else %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'home' %}">Observations</a></li>
+  <li><a href="{% url 'show_site' telescope.site.code %}">{{ telescope.site.name }}</a></li>
+  <li class="active">{% if telescope %}{{ telescope.name }}{% endif %}
+  <li class="active">{{ obs.objectname }}</li>
+</ol>
+{% endif %}
+{% endblock %}
+
+{% block main-content %}
         <a href='{{ obs.fullimage_url }}' title='Click for full size version'>
             <img src='{{ obs.fullimage_url }}' class='observation-image' alt='{{ obs.title }}' />
         </a>
@@ -25,35 +42,38 @@
             {% endfor %}
         </ul>
         {% endif %}
-    </div>
-    <div class='fouroften observation-metadata lastcol'>
-        <div class="padder">
-            <table class='avm'>
+{% endblock %}
+
+{% block right_panel %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">Observation Information</div>
+            <table class='table table-condensed'>
                 <tr style='display:none;'>
                     <td class='first'>Title:</td>
                     <td property='dc:title'>{{ obs.title }}</td>
                 </tr>
                 {% if not framedb_obs %}
                 <tr>
-                    <td class='first'>Views:</td>
+                    <th scope="row" class='first'>Views:</th>
                     <td>{{ obs.views }}
                         <div id='observation-stats'></div>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Observer:</td>
+                    <th scope="row" class='first'>Observer:</th>
                     <td>
                         <span property="UCD:obs.observer">{{ obs.user }}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Date:</td>
+                    <th scope="row">Date:</th>
                     <td>
                         <time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Coordinates:</td>
+                    <th scope="row">Coordinates:</th>
                     <td>
                         <span class='Spatial-ReferenceValue' title='{{ obs.ra }};{{ obs.dec }}'>
                             <span property='UCD:pos.eq.RA' content='{{ obs.ra }}'>{{ obs.ra|degreestohms }}</span>,
@@ -62,24 +82,23 @@
                         <span class='Spatial-CoordinateFrame'>FK5</span>
                         <span class='Spatial-Equinox'>J2000</span>
                         <br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.ra|degreestohours }}&amp;de={{ obs.dec }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a>, <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.ra|degreestohours }}&amp;dec={{ obs.dec }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a> or <a href='{% url 'home' %}{{ telescope.site.code }}/{{ telescope.code }}/{{ obs.imageid }}.kml' title="View these coordinates in Sky for Google Earth">Sky for Google Earth</a>.
-                        <br /><a href='{% url 'home' %}search?RA={{ obs.ra }}&DEC={{ obs.dec }}&SR=3'>Find nearby observations...</a>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td class='first'>Observer:</td>
+                    <th scope="row">Observer:</th>
                     <td>
                         <span property="UCD:obs.observer">{{ obs.user }}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Date:</td>
+                    <th scope="row">Date:</th>
                     <td>
                         <time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Coordinates:</td>
+                    <th scope="row">Coordinates:</th>
                     <td>
                         <span class='Spatial-ReferenceValue' title='{{ obs.ra }};{{ obs.dec }}'>
                             <span property='UCD:pos.eq.RA' content='{{ obs.ra }}'>{{ obs.ra|degreestohms }}</span>,
@@ -88,26 +107,25 @@
                         <span class='Spatial-CoordinateFrame'>FK5</span>
                         <span class='Spatial-Equinox'>J2000</span>
                         <br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.ra|hmstohours }}&amp;de={{ obs.dec|dmstodegrees }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.ra|hmstohours }}&amp;dec={{ obs.dec|dmstodegrees }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a>.
-                        <br /><a href='{% url 'home' %}search?RA={{ obs.ra|hmstohours }}&DEC={{ obs.dec|dmstodegrees }}&SR=3'>Find nearby observations...</a>
                     </td>
                 </tr>
                 {% endif %}
                 <tr>
-                    <td class='first'>Telescope:</td>
+                    <th scope="row">Telescope:</th>
                     <td property='UCD:instr.tel'><a href="{% url 'home' %}{{ telescope.site.code }}/{{ telescope.code }}">{{ obs.telescope }}</a>
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Filter:</td>
+                    <th scope="row">Filter:</th>
                     <td>{{ obs.filter|safe }}</td>
                 </tr>
                 <tr>
-                    <td class='first'>Exposure:</td>
+                    <th scope="row">Exposure:</th>
                     <td>
                         <span property='UCD:obs.exposure'>{{ obs.exposure }}</span>s{% if filters|length > 1 %} (total){% endif %}</td>
                 </tr>
                 <tr>
-                    <td class='first'>Data:</td>
+                    <th scope="row">Data:</th>
                     <td>
                         {% if filters %}
                         <ul class='filters'>
@@ -132,16 +150,16 @@
                 </tr>
                 {% endif%} {% if obs.avmcode %}
                 <tr>
-                    <td class='first'>Category:</td>
+                    <th scope="row">Category:</th>
                     <td><a href="{% url 'home' %}category/{{ obs.avmcode }}">{{ obs.avmname }}</a>
                     </td>
                 </tr>{% endif %}
                 <tr>
-                    <td class='first'>Credit:</td>
+                    <th scope="row">Credit:</th>
                     <td>{{ obs.credit }}</td>
                 </tr>
                 <tr>
-                    <td class='first'>License:</td>
+                    <th scope="row">License:</th>
                     <td>
                         <a href="{{ obs.license }}" rel="license cc:license">
                             <img src="{% static "img/cc-by-nc.png" %}" style="height:1.5em;" title="Some rights reserved" />
@@ -149,21 +167,24 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class='first'>Share:</td>
+                    <th scope="row">Share:</th>
                     <td>
                         <a href="http://twitter.com/home/?status={{ obs.objectname|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt">
-                            <img title="Tweet this" alt="Twitter" src="{% static "img/twitter.png" %}">
+                            <i class="fa fa-twitter"></i>
                         </a>
                         <a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}">
-                            <img title="Share on Facebook" alt="Facebook" src="{% static "img/facebook.png" %}">
+                            <i class="fa fa-facebook"></i>
                         </a>
                     </td>
                 </tr>
             </table>
+          </div>
+{% endblock %}
+
+{% block alternate %}
+        <div class="row">
+          <div class="col-md-12">
+            {{obs.other}}
+          </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    {{ obs.other }}
-</div>
 {% endblock %}

@@ -1,10 +1,11 @@
 {% load images_extras %}
 {% for o in obs %}
-							<li class="onecol{% if forloop.counter|divisibleby:6 %} lastcol{% else %}{% endif %}">
+
+						<div class="col-xs-6 col-md-2">
 								<div class='thumb' about='{{ o.link_obs }}'>
-									<span class='thumbnail'><a href="{%if o.origname %}{% url 'identity' %}?origname={{o.origname}}{%else%}{{ o.link_obs }}{%endif%}"><img src="{{ o.thumbnail }}" alt='{{ o.objectname }}' /></a></span>
+									<span class='thumbnail'><a href="{%if o.origname %}{% url 'identity' %}?origname={{o.origname}}{%else%}{{ o.link_obs }}{%endif%}"><img src="{{ o.thumbnail }}" alt='{{ o.objectname }}' class="img-rounded"/></a></span>
 									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.objectname }}'>{{ o.objectname }}</div><div class="ellipsis">By {%if o.link_user%}<a href="{% url 'home' %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a>{%else%}<span class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</span>{%endif%}</div></div>
-					
+
 									<div class='more-info'>
 										<div class='name'>Title: <a href="{% url 'search' %}?query={{ o.objectname }}" property='dc:title'>{{ o.objectname }}</a></div>
 										<div class='position'>RA: {{ o.ra|degreestohms }}, Dec: {{ o.dec|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.ra }}&amp;de={{ o.dec}}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.ra }}&amp;dec={{ o.dec }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
@@ -14,8 +15,8 @@
 										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
 									</div>
 								</div>
-							</li>
+							</div>
 {% empty %}
-<h3>Oops!<h3> 
+<h3>Oops!<h3>
 <p>The image database is currently having problems. We're working on fixing this. Sorry for the delay.</p>
 {% endfor %}

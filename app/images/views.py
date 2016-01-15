@@ -254,7 +254,7 @@ def index(request):
     for o in obstats:
         obs.append(o.image)
     popular = build_observations(obs)
-
+    
     return render_to_response('images/index.html', {'latest': latest,
                                                     'trending': trending,
                                                     'popular': popular,
