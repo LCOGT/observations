@@ -34,8 +34,8 @@ ENV DJANGO_SETTINGS_MODULE observations.settings
 ENV PREFIX /observations
 
 # Install packages and update base system
-RUN yum -y install epel-release \
-        && yum -y install libjpeg-devel nginx python-pip mysql-devel python-devel supervisor \
+RUN yum -y install epel-release
+RUN yum -y install libjpeg-devel nginx python-pip mysql-devel python-devel supervisor \
         && yum -y groupinstall "Development Tools" \
         && yum -y update \
         && yum -y clean all
