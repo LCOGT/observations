@@ -5,24 +5,15 @@
 {% block header %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for {{ searchstring }}{% endif %}{% else %}Search public observations{% endif %}{%endblock%}
 {% block title %}{% if n >= 0 %}Results of your search{% if form.query != "" %} for <em>&quot;{{ searchstring }}&quot;</em>{% endif %}{% else %}Search public observations{% endif %}{% endblock %}
 
-{% block script-content %}
+{% block header_script %}
  <link rel="stylesheet" href="{% static "css/jquery-ui.css" %}">
  <script src="{% static "js/jquery-ui.min.js" %}"></script>
 	<script>
 	<!--
-	categories = {{categorylookup|safe}}
 	$(document).ready(function(){
-		$('input#AVM').bind("keyup",function(e){
-			if(categories[$(this).val()]) $('#avm_lookup').html(" &larr;"+categories[$(this).val()]+"")
-			else $('#avm_lookup').html("")
-		});
-		$("#id_alldates").click(function(e){
-			$('#searchdates').toggle();
-		});
-		$( ".datepicker" ).datepicker({
-				dateFormat: "yy-mm-dd",
-				defaultDate: 0,
-				});
+    $('.dates input').datepicker({
+        format: "yyyy-mm-dd"
+    });
 	});
 	// -->
 	</script>
@@ -106,7 +97,7 @@
               </div>
             </div>
 
-          <div class="form-group">
+          <div class="form-group dates">
               <label class="control-label col-sm-2" for="id_alldates">Date range:</label>
 
             <div class="col-sm-5">
