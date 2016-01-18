@@ -201,7 +201,7 @@ li.end-of-line {
 	text-align: center;
 	font-size:0.9em;
 	width: 90%;
-	margin: auto; 
+	margin: auto;
 	margin-top: 4px;
 }
 .thumb .more-info { display: none; }
@@ -220,7 +220,7 @@ li.end-of-line {
 	-moz-box-shadow:0px 0px 20px rgba(255,255,255,0.5);
 	-webkit-box-shadow:0px 0px 20px rgba(255,255,255,0.5);
 }
-.virtualskyinfocredit{ 
+.virtualskyinfocredit{
 	font-size:0.8em;
 	float:left;
 	position:absolute;
@@ -240,6 +240,7 @@ div.show-details {
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
 	font-size: 1em;
+	z-index: 100;
 }
 div.show-details-inner {
 	padding: 32px;
@@ -461,7 +462,7 @@ div.time {
 }
 
 /* Responsive styling */
-@media (max-width: 1024px), (max-device-width: 1024px) { 
+@media (max-width: 1024px), (max-device-width: 1024px) {
 	.fouroften, .sixoften { max-width: 100%; }
 	.sixoften { width: 58%; margin-right: 2%; }
 	.fouroften { max-width: 40%; margin-right: 0px;}
@@ -484,7 +485,7 @@ div.time {
 		max-height: none;
 		max-height: auto;
 	}
-	
+
 	.thumb a.more-info-hint { right: 2.5%; max-width: 90%; line-height: 1.5em; padding: 4px 8px; }
 	div.time {
 		float: none;

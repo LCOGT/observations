@@ -28,15 +28,10 @@
 	</script>
 {% endblock %}
 
-{% block search %}{% if n >= 0 %}<div class="searchbox">
-									<form action="{% url 'search' %}" method='GET'>
-										<input type='text' name='query' class='searchbox' title='e.g. NGC 2020' /><input type='submit' value='Search' class='searchbtn' />
-										<br /><span style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</span>
-									</form>
-{% if n > 1 %}
-									<a href=""><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{% static "img/rti_archive_slideshow.jpg" %}"></a>
+{% if n >= 0 %}
+{% block search %}
+{% endblock %}
 {% endif %}
-								</div>{% else %}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
               <ol class="breadcrumb">
@@ -111,22 +106,22 @@
               </div>
             </div>
 
-            <div class="form-group">
+          <div class="form-group">
               <label class="control-label col-sm-2" for="id_alldates">Date range:</label>
-              <div class="col-sm-10">
-                <input id="id_alldates" type="checkbox" name="alldates" />
-                <p class="help-block">Limit your search to a particular range of dates.</p>
 
-              <label class="sr-only" for="startdate">Start date</label>
+            <div class="col-sm-5">
+              <label for="startdate">Start date</label>
               <input type="text" class="form-control"  name="startdate" placeholder="Start date" value="{{form.startdate.value}}"/>
-              <label class="sr-only" for="enddate">End date</label>
-
+            </div>
+            <div class="col-sm-5">
+              <label for="enddate">End date</label>
               <input type=text class="form-control" name="enddate" placeholder="End date" value="{{form.enddate.value}}"/>
             {% if form.startdate.errors or form.enddate.errors %}<span class="error form-error">{{form.startdate.errors.as_text}} {{form.enddate.errors.as_text}}</span>{% endif %}
+            <p class="help-block">Limit your search to a particular range of dates.</p>
           </div>
         </div>
 
-					<input type="submit" name="submit" id="edit-submit" value="Search" class="btn btn-default btn-xl" />
+					<input type="submit" name="submit" id="edit-submit" value="Search" class="btn btn-default btn-lg" />
       </form>
       </div>
 		</div>

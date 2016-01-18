@@ -9,7 +9,7 @@ $(document).ready(function(){
 
 	// Check for failure to load images and use a dummy image
 	if($('img.observation-image').length > 0) imageLoadError('img.observation-image');
-	if($('.thumbnail img').length > 0) imageLoadError('.thumbnail img');
+	if($('.thumb-img img').length > 0) imageLoadError('.thumb-img img');
 	if($('.stream img').length > 0) imageLoadError('.stream img');
 
 	if($('input.searchbox').length > 0){
@@ -31,19 +31,19 @@ $(document).ready(function(){
 	});
 
 	formatObservations();
-	
+
 	$(document).on('click','.more-info-hint',function(event){
-		var li = $(this).closest('li');
+		var li = $(this).closest('.thumb');
 		var idx = $(this).attr('id');
 		idx = parseInt(idx.substring(idx.lastIndexOf('-')+1));
 		var img = li.find('img').attr('src');
 		var link = li.find('a').attr('href');
 		var observer = li.find('.observer').attr('title');
-		
+
 		if($('.show-details').size() == 0) $('body').append('<div class="show-details"><div class="show-details-inner"></div></div>');
 		var img = img.replace("_120.jpg","_150.jpg");
 		var img_full = img.replace("_120.jpg",".jpg");
-		$('.show-details-inner').html('<div class="show-details-close">&times;</div><a href="'+link+'" title="Click for full size version"><img src="'+img+'" style="width:150px;height:150px;" /></a>'+$('.observation-results li .more-info').eq(idx).html()+'<div class="observer">Observer: <a href="'+$('a.observer').eq(idx).attr('href')+'">'+observer+'</a></div>');
+		$('.show-details-inner').html('<div class="show-details-close">&times;</div><a href="'+link+'" title="Click for full size version"><img src="'+img+'" style="width:150px;height:150px;" /></a>'+$('.observation-results .more-info').eq(idx).html()+'<div class="observer">Observer: <a href="'+$('a.observer').eq(idx).attr('href')+'">'+observer+'</a></div>');
 		centreDiv('.show-details');
 		if ($('.show-details').is(':visible')) $('.show-details').fadeOut("fast");
 		else $('.show-details').fadeIn("fast");
@@ -111,14 +111,14 @@ $(document).ready(function(){
 			var d = el.find('time').attr('datetime');
 			var r = relative_time_short(d);
 			if(!r) r = "Info";
-			el.find('.thumbnail a').after('<a href="#" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info"><time datetime="'+d+'">'+r+'</time></a>');
+			el.find('.thumb-img').append('<a href="#" class="more-info-hint" id="more-info-hint-'+index+'" title="Quick info"><time datetime="'+d+'">'+r+'</time></a>');
 			$("#more-info-hint-"+index).fadeIn(1000);
 		}
 	}
 
 	function formatObservations(){
 		// Javascript for results thumbnails
-		$(".observation-results li").each(function(index) {
+		$(".observation-results .thumb").each(function(index) {
 			addMoreInfoHint($(this),index);
 		});
 	}

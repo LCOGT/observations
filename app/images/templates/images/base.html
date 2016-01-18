@@ -75,36 +75,33 @@
     {% block title_banner %}
     <div class="jumbotron general-header">
       <div class="container">
-        <h1>
-          {% block title %}Observations{% endblock %}
-        </h1>
+        <h1>Observations</h1>
       </div>
     </div>
     {% endblock %}
 
     <div class="container">
+      <div class="row"><h2>{% block title %}{% endblock %}</h2></div>
       <div class="row">
-        {% block search %}
+        {% block breadcrumb %}{% endblock %}
+      </div>
+      {% block search %}
+      <div class="row">
 
           <div class="col-lg-12">
+            <form action="{% url 'search' %}" method='GET'>
             <div class="input-group">
               <input type="text" class="form-control" placeholder="e.g. NGC 2020" name='query' />
               <span class="input-group-btn">
                 <input type='submit' value='Search observations' class='btn btn-default' />
               </span>
             </div><!-- /input-group -->
+          </form>
             <div style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
-            {% if n > 1 %}
-                        <a href="{% url 'home' %}{{link}}/show"><img alt="Slideshow icon" title="Start slideshow of these observations" style="float: right;" src="{% static 'img/rti_archive_slideshow.jpg' %}"></a>
-            {% endif %}
           </div><!-- /.col-lg-6 -->
+        </div>
+          {% endblock %}
 
-          </div>
-{% endblock %}
-      </div>
-      <div class="row">
-        {% block breadcrumb %}{% endblock %}
-      </div>
       <div class="row">
         {% if messages %}
         <div class="messages">
@@ -210,6 +207,7 @@
 
         <!-- Bootstrap Core JavaScript -->
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/rti_archive.js' %}"></script>
 
         {% block extra_js %}{% endblock %}
 
