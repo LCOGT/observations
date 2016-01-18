@@ -23,10 +23,8 @@ MAINTAINER LCOGT <webmaster@lcogt.net>
 
 # The entry point is our init script, which runs startup tasks, then
 # execs the supervisord daemon
-ENTRYPOINT [ "/init" ]
-
-# nginx runs on port 80, uwsgi runs on port 9090
 EXPOSE 80
+ENTRYPOINT [ "/init" ]
 
 # Setup the Python Django environment
 ENV PYTHONPATH /var/www/apps
@@ -37,8 +35,8 @@ ENV PREFIX /observations
 
 # Install packages and update base system
 RUN yum -y install epel-release \
-        && yum -y install nginx supervisor \
-        && yum -y install gcc make mysql-devel python-devel python-pip \
+        && yum -y install libjpeg-devel nginx python-pip mysql-devel python-devel supervisor \
+        && yum -y groupinstall "Development Tools" \
         && yum -y update \
         && yum -y clean all
 
