@@ -14,6 +14,7 @@
 {% block telescopes-list-title %}Other telescopes at this site:{% endblock %}
 
 {% block main-content %}
+				<div class="container">
 						<div class="row">
 							<p>There are {{ n }} observations classified as {{ category|lowercase }}. The classification is automatic based on the observation title set by the observer so may include incorrect results when objects of different types have similar names or when observers have mis-labelled their observations.{% if input.avmdn and input.avmdn|length > 0 %} Sub-categories: {% for cat in input.avmdn %}<a href="{% url 'show_avm' cat.code %}">{{ cat.name }}</a>{% if not forloop.last %}; {% else %}.{% endif %}{% endfor %}{% endif %}</p>
 						</div>
@@ -22,12 +23,12 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 
-							<ul class='observation-results' data-json="{% url 'home' %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+							<div class='observation-results' data-json="{% url 'home' %}{{ link }}.json{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs %}
-							</ul>
+							</div>
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 						</div>
+					</div>
 {% endblock %}
-

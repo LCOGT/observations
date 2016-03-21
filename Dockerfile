@@ -37,6 +37,10 @@ ENV PREFIX /observations
 RUN yum -y install epel-release \
         && yum -y install nginx python-pip mysql-devel python-devel supervisor \
         && yum -y groupinstall "Development Tools" \
+        && yum -y install ImageMagick \
+        && yum -y install 'http://www.astromatic.net/download/stiff/stiff-2.4.0-1.x86_64.rpm' \
+        && yum -y install 'http://www.astromatic.net/download/sextractor/sextractor-2.19.5-1.x86_64.rpm' \
+        && yum -y update \
         && yum -y clean all
 
 # Install the Python required packages
