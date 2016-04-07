@@ -254,7 +254,7 @@ def index(request):
     for o in obstats:
         obs.append(o.image)
     popular = build_observations(obs)
-    
+
     return render_to_response('images/index.html', {'latest': latest,
                                                     'trending': trending,
                                                     'popular': popular,
@@ -1346,6 +1346,25 @@ def framedb_lookup(query):
     except:
         return False
     return data
+
+def frame_by_basename(basename):
+    '''
+    Use Archive API to get the frame corresponding to supplied basename
+    '''
+
+    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
+    response = requests.get(
+        settings.ARCHIVE_API + 'frames/?BASENAME={}'.format(basename),
+        headers=headers
+    ).json()
+    if len(response['results']) > 0:
+        result = response['results'][0]
+        frame ={
+            'id': result['id'],
+            'url': result['url'],
+            'filename': result['filename']
+        }
+    return frame
 
 
 def tracknum_lookup(tracknum):
