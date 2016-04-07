@@ -1347,6 +1347,23 @@ def framedb_lookup(query):
         return False
     return data
 
+def recent_frames(proposal_id, timestamp=None, num_frames=10):
+    '''
+    Use Archive API to get most recent data images
+    proposal_id - ID of the proposal being searched
+    timestamp [optional] - date and time to search from
+    num_frames [optional] - number of frames to return
+    '''
+    url =settings.ARCHIVE_API + 'frames/?PROPID={}&RLEVEL=90'.format(proposal_id)
+    if timestamp:
+        url +='&start={}'.format(timestamp)
+    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
+    response = requests.get(url,headers=headers).json()
+    if len(response['results']) > 0:
+        return response['results']
+    else:
+        return []
+
 def frame_by_basename(basename):
     '''
     Use Archive API to get the frame corresponding to supplied basename
