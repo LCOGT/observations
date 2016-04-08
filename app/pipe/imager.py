@@ -97,7 +97,7 @@ def select_images(frames):
     hdr = fits.getheader(ref_image, 1)
     objectname = hdr['OBJECT'].strip().replace(' ','_')
     filename = '%s-%s.jpg' % (objectname, hdr['REQNUM'])
-    return ref_image, frames, filename
+    return ref_image, frames, filename, hdr
 
 def read_aligned(filelist):
     # Scale the images
@@ -179,16 +179,49 @@ def download_frames(frames, tmpdir, feedback=False):
 
     return file_list
 
+def move_image_to_day_dir(hdr, filename):
+    path = hdr['DATE'].replace('-','/')
+    directory = os.path.join(settings.IMAGE_PATH, path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    shutil.move(filename,directory)
+    return
+
+# def save_image_object(hdr, filename):
+#     if new_image:
+#         image = Image(
+#                     imageid =
+#                     whentaken =
+#                     schoolid =
+#                     objectname =
+#                     ra =
+#                     dec =
+#                     filter =
+#                     exposure =
+#                     requestids =
+#                     telescope =
+#                     filename =
+#                     rti_username =
+#                     observer =
+#                     processingtype =
+#                     instrumentname =
+#                     archive_link =
+#         )
+
+
 def run_colour_imager(frames, args):
     tmpdir = tempfile.mkdtemp()
+
     frame_files = download_frames(frames=frames, tmpdir=tmpdir, feedback=args.feedback)
 
-    ref_image, images_to_align, filename = select_images(frames=frame_files)
+    ref_image, images_to_align, filename, hdr = select_images(frames=frame_files)
+    filename = os.path.join(tmpdir,filename)
 
     img_list = read_write_data(images_to_align)
     img_list = reproject_files(img_list[0], img_list, tmpdir)
     resp = create_colour_stiff(img_list, filename)
 
+    move_image_to_day_dir(hdr, filename)
     # Remove the temporary files
     shutil.rmtree(tmpdir)
     if resp:
