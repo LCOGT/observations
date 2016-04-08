@@ -2,4 +2,10 @@ MySQL-python==1.2.5
 Django>1.8,<1.8.99
 requests
 git+git://github.com/LCOGT/alipy.git#egg=alipy
+astropy
+astroscrappy
+Cython
+ipython
+numpy
+Pillow
 opbeat

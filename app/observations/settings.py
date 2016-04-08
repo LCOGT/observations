@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'images',
+    'pipe',
 )
 
 OPBEAT = {
@@ -206,6 +207,10 @@ LOGGING = {
         },
         'images' : {
             'handlers' : ['file','console'],
+            'level'    : 'ERROR',
+        },
+        'imager' : {
+            'handlers' : ['console'],
             'level'    : 'ERROR',
         }
     }

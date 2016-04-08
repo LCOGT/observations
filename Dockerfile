@@ -44,9 +44,9 @@ RUN yum -y install epel-release \
         && yum -y clean all
 
 # Install the Python required packages
-COPY app/requirements.txt /var/www/apps/observations/requirements.txt
-RUN pip install pip==1.3 && pip install uwsgi==2.0.8 \
-        && pip install -r /var/www/apps/observations/requirements.txt
+COPY app/requirements.pip /var/www/apps/observations/requirements.pip
+RUN pip install uwsgi==2.0.8 \
+    && pip install -r /var/www/apps/observations/requirements.pip
 
 # Copy configuration files
 COPY config/init /init

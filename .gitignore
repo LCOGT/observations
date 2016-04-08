@@ -3,3 +3,6 @@
 *.pot
 *.pyc
 local_settings.py
+.pysex.*
+stiff.*
+*.jpg

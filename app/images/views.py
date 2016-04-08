@@ -1347,7 +1347,7 @@ def framedb_lookup(query):
         return False
     return data
 
-def recent_frames(proposal_id, timestamp=None, num_frames=10):
+def recent_frames(proposal_id, datestamp=None, num_frames=10):
     '''
     Use Archive API to get most recent data images
     proposal_id - ID of the proposal being searched
