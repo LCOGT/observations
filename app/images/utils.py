@@ -90,11 +90,11 @@ def datestamp(value):
             dt = datetime()
     else:
         dt = datetime()
-    return dt.strftime("%a %d %B %Y, %H:%M UT");
+    return dt.strftime("%a %d %B %Y, %H:%M UT")
 
 def isodatestamp(value):
     if value:
         dt = parsetime(value)
     else:
         dt = datetime()
-    return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00");
+    return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00")

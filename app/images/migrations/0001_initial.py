@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('ra', models.FloatField(null=True, blank=True)),
                 ('dec', models.FloatField(null=True, blank=True)),
                 ('filter', models.CharField(max_length=30, null=True, blank=True)),
-                ('exposure', models.FloatField(null=True, blank=True)),
+                ('exposure', models.FloatField(null=True, verbose_name=b'total exposure time', blank=True)),
                 ('requestids', models.CharField(max_length=50, null=True, blank=True)),
                 ('filename', models.CharField(max_length=150, null=True, blank=True)),
                 ('rti_username', models.CharField(max_length=150, null=True, blank=True)),

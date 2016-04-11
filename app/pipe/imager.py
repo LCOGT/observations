@@ -187,26 +187,26 @@ def move_image_to_day_dir(hdr, filename):
     shutil.move(filename,directory)
     return
 
-# def save_image_object(hdr, filename):
-#     if new_image:
-#         image = Image(
-#                     imageid =
-#                     whentaken =
-#                     schoolid =
-#                     objectname =
-#                     ra =
-#                     dec =
-#                     filter =
-#                     exposure =
-#                     requestids =
-#                     telescope =
-#                     filename =
-#                     rti_username =
-#                     observer =
-#                     processingtype =
-#                     instrumentname =
-#                     archive_link =
-#         )
+def save_image_object(hdr, filename):
+    image = Image(
+                    imageid = hdr['BLKUID']
+                    dateobs = hdr['DATE-OBS']
+                    objectname = hdr['OBJECT']
+                    ra = hmstodegrees(hdr['RA'])
+                    dec = dmstodegrees(hdr['DEC'])
+                    filters = 'COLOUR'
+                    exposure =
+                    requestids = hdr['TRACKNUM']
+                    filename = filename
+                    username =
+                    observer =
+                    processingtype = 'STIFF'
+                    instrumentname = hdr['INSTRUME']
+                    )
+    telescope = Telescope.objects.filter(site__code=hdr['SITEID'], enclosure=hdr['ENCID'], code=hdr['TELID'])
+    if telescope.count() > 0
+        image.telescope = telescope[0]
+    image.save()
 
 
 def run_colour_imager(frames, args):

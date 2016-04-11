@@ -34,6 +34,7 @@ class Site(models.Model):
 class Telescope(models.Model):
     site = models.ForeignKey(Site)
     code = models.CharField(max_length=4, blank=True, null=True)
+    enclosure = models.CharField(max_length=4, blank=True, null=True)
     name = models.CharField(max_length=64,  blank=True, null=True)
     short = models.CharField(max_length=10, blank=True, null=True)
     drupalnode = models.IntegerField(blank=True, null=True)
@@ -52,18 +53,17 @@ class Filter(models.Model):
         return self.name
 
 class Image(models.Model):
-    imageid = models.IntegerField(primary_key=True)
-    whentaken = models.CharField(max_length=42, blank=True,null=True)
-    schoolid = models.IntegerField(blank=True,null=True)
+    imageid = models.IntegerField(primary_key=True, help_text="Block ID if from ODIN")
+    dateobs = models.DateTimeField(default=datetime.utcnow())
     objectname = models.CharField(max_length=100,blank=True,null=True)
     ra = models.FloatField(blank=True,null=True)
     dec = models.FloatField(blank=True,null=True)
-    filter = models.CharField(max_length=30, blank=True,null=True)
-    exposure = models.FloatField(blank=True,null=True)
+    filters = models.CharField(max_length=30, blank=True,null=True)
+    exposure = models.FloatField('total exposure time', blank=True,null=True)
     requestids = models.CharField(max_length=50, blank=True,null=True)
     telescope = models.ForeignKey(Telescope)
     filename = models.CharField(max_length=150, blank=True,null=True)
-    rti_username = models.CharField(max_length=150, blank=True,null=True)
+    username = models.CharField(help_text="If processingtype is STIFF this is ODIN username else RTI username", max_length=150, blank=True,null=True)
     observer = models.CharField(max_length=150, blank=True,null=True)
     processingtype = models.CharField(max_length=20, blank=True, null=True)
     instrumentname = models.CharField(max_length=60, blank=True, null=True)
@@ -72,7 +72,7 @@ class Image(models.Model):
         db_table = u'images'
         verbose_name = u'image'
         verbose_name_plural = u'images'
-    def datestamp(self): 
+    def datestamp(self):
         if self.whentaken:
             s = datetime(*time.strptime(self.whentaken , wistime_format)[0:5])
             d = "%s" % s.strftime("%a, %d %b %Y")
@@ -80,7 +80,7 @@ class Image(models.Model):
             d = "Error"
         return d
     def __unicode__(self):
-        return "%s taken by %s" % (self.objectname, self.rti_username)
+        return "%s taken by %s" % (self.objectname, self.observer)
 
 class ObservationStats(models.Model):
     image = models.ForeignKey(Image)
