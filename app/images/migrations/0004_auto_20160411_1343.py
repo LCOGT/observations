@@ -16,14 +16,10 @@ class Migration(migrations.Migration):
             model_name='image',
             name='schoolid',
         ),
-        migrations.RemoveField(
-            model_name='image',
-            name='whentaken',
-        ),
         migrations.AlterField(
             model_name='image',
             name='dateobs',
-            field=models.DateTimeField(default=datetime.datetime(2016, 4, 11, 10, 11, 22, 990816)),
+            field=models.DateTimeField(default=datetime.datetime.utcnow),
         ),
         migrations.AlterField(
             model_name='image',
