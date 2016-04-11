@@ -1704,7 +1704,7 @@ def build_observations(obs):
             o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
         else:
             o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s.jpg" % (
-                o['dateobs'].year, o['dateobs'].month, o['dateobs'].day, o['filename'][0:-4])
+                o['dateobs'].year, o['dateobs'].strftime('%m'), o['dateobs'].strftime('%d'), o['filename'][0:-4])
             o['thumbnail'] = o['fullimage_url'][0:-4] + "_120.jpg"
         o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
         o['licenseimage'] = 'cc-by-nc.png'
