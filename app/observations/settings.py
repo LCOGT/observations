@@ -187,7 +187,7 @@ LOGGING = {
             'filters': ['require_debug_false']
         },
         'console': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
         }
     },
@@ -207,12 +207,12 @@ LOGGING = {
             'level'    : 'DEBUG',
         },
         'images' : {
-            'handlers' : ['file','console'],
-            'level'    : 'ERROR',
+            'handlers' : ['console'],
+            'level'    : 'DEBUG',
         },
         'imager' : {
             'handlers' : ['console'],
-            'level'    : 'ERROR',
+            'level'    : 'DEBUG',
         }
     }
 }

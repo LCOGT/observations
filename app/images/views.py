@@ -373,14 +373,9 @@ def search_rtiarchive(form):
     if form['filters']:
         obs = obs.filter(filter=form['filters'])
     if form['startdate'] and form['enddate']:
-        sd = "%s%02d%02d000000" % (
-            form['startdate'].year, form['startdate'].month, form['startdate'].day)
-        ed = "%s%02d%02d235959" % (
-            form['enddate'].year, form['enddate'].month, form['enddate'].day)
-        obs = obs.filter(dateobs__gte=sd, dateobs__lte=ed)
+        obs = obs.filter(dateobs__gte=form['startdate'], dateobs__lte=form['enddate'])
     if form['enddate']:
-        ed = "%s235959" % form['enddate'].strftime(wistime_format)
-        obs = obs.filter(dateobs__lte=ed)
+        obs = obs.filter(dateobs__lte=form['enddate'])
     if form['exposure']:
         try:
             form['exposure'] = float(form['exposure'])
@@ -1837,13 +1832,8 @@ def build_observations_json(obs):
             "filter":  {
                 "name": re.sub(r"\"", '', filter[0]),
             },
-            # "instr" : {
-            #     "about" : '',
-            #     "tel" : re.sub(r"\"",'',o['telescope'].name)
-            # },
-            #"views" : o['views'],
             "time": {
-                "creation": o['whentaken'].isoformat()
+                "creation": o['dateobs'].isoformat()
             },
             "exposure": o['exposure'],
             "credit": {
@@ -1851,16 +1841,6 @@ def build_observations_json(obs):
                 "label": o['credit']
             }
         }
-        # if len(filter)==2:
-        #     ob['filter']['about'] = "http://lcogt.net/"+filter[1]
-        # if 'schooluri' in o:
-        #     ob['observer']['school'] = re.sub(r"\"",'',o['schooluri'])
-        # if 'avmcode' in o and o['avmcode']!="":
-        #     ob['avm'] = { "code": o['avmcode'], }
-        # if 'avmname' in o and o['avmname']!="":
-        #     ob['avm']['name'] = o['avmname']
-        # if 'views' in o:
-        #     ob['views'] = o['views']
 
         if len(obs) > 1:
             observations.append(ob)
