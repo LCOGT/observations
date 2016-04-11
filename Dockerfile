@@ -46,7 +46,7 @@ RUN yum -y install epel-release \
 # Install the Python required packages
 COPY app/requirements.pip /var/www/apps/observations/requirements.pip
 RUN pip install uwsgi==2.0.8 \
-    && pip install -r /var/www/apps/observations/requirements.pip
+    && pip install -r /var/www/apps/observations/requirements.pip \
     && pip install astroscrappy
 
 # Copy configuration files
