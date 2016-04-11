@@ -1649,8 +1649,6 @@ def avm_from_lookup(objectname):
 
 def build_observations(obs):
 
-    print(obs)
-
     observations = []
 
     if not(obs):
