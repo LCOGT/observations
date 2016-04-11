@@ -80,7 +80,10 @@ def hmstohours(value):
     return float(el[0]) + float(el[1])/60. + float(el[2])/3600.
 
 def parsetime(value):
-    return datetime(int(value[0:4]),int(value[4:6]),int(value[6:8]),int(value[8:10]),int(value[10:12]),int(value[12:14]))
+    if type(value) == int:
+        return datetime(int(value[0:4]),int(value[4:6]),int(value[6:8]),int(value[8:10]),int(value[10:12]),int(value[12:14]))
+    else:
+        return value
 
 def datestamp(value):
     if value:

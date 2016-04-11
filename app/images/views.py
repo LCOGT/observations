@@ -36,6 +36,9 @@ import json
 import math
 import re
 import requests
+import logging
+
+logger = logging.getLogger('images')
 
 n_per_line = 6
 n_per_page = 18
@@ -1644,12 +1647,14 @@ def avm_from_lookup(objectname):
         return None
     return params
 
-
 def build_observations(obs):
+
+    print(obs)
 
     observations = []
 
     if not(obs):
+        logger.error("build_observations: No observations provided")
         return obs
 
     for ob in obs:
@@ -1726,7 +1731,7 @@ def build_observations(obs):
         o['object'] = re.sub(r"/\s\s+/", ' ', o['object'])
         # Remove non-useful characters
         o['object'] = re.sub(r"[^\w\-\+0-9 ]/i", '', o['object'])
-
+        observations.append(o)
     return observations
 
 
