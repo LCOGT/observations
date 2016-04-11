@@ -72,13 +72,6 @@ class Image(models.Model):
         db_table = u'images'
         verbose_name = u'image'
         verbose_name_plural = u'images'
-    def datestamp(self):
-        if self.whentaken:
-            s = datetime(*time.strptime(self.whentaken , wistime_format)[0:5])
-            d = "%s" % s.strftime("%a, %d %b %Y")
-        else:
-            d = "Error"
-        return d
     def __unicode__(self):
         return "%s taken by %s" % (self.objectname, self.observer)
 
