@@ -3,7 +3,7 @@ Django>1.8,<1.8.99
 requests
 git+git://github.com/LCOGT/alipy.git#egg=alipy
 astropy
-astroscrappy
+#astroscrappy
 Cython
 ipython
 numpy
