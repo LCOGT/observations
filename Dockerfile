@@ -35,7 +35,7 @@ ENV PREFIX /observations
 
 # Install packages and update base system
 RUN yum -y install epel-release \
-        && yum -y install nginx python-pip mysql-devel python-devel supervisor \
+        && yum -y install cronie libjpeg-devel nginx python-pip mysql-devel python-devel supervisor \
         && yum -y groupinstall "Development Tools" \
         && yum -y install ImageMagick \
         && yum -y install 'http://www.astromatic.net/download/stiff/stiff-2.4.0-1.x86_64.rpm' \
@@ -47,6 +47,7 @@ RUN yum -y install epel-release \
 COPY app/requirements.pip /var/www/apps/observations/requirements.pip
 RUN pip install uwsgi==2.0.8 \
     && pip install -r /var/www/apps/observations/requirements.pip
+    && pip install astroscrappy
 
 # Copy configuration files
 COPY config/init /init
