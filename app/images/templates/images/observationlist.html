@@ -12,7 +12,7 @@
 										<div class='telescope'>Site: {{ o.site }}</div>
 										<div class='filter'>Filter: {{o.filter|safe}}</div>
 										<div class='exposure'>Exposure: {{ o.exposure }} s (total)</div>
-										<time datetime='{{ o.whentaken|isodatestamp }}'>Date: {{ o.whentaken|datestamp }}</time>
+										<time datetime='{{ o.dateobs|date:"c" }}'>Date: {{ o.dateobs }}</time>
 									</div>
 								</div>
 							</div>

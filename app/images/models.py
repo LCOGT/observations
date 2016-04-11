@@ -54,7 +54,6 @@ class Filter(models.Model):
 
 class Image(models.Model):
     imageid = models.IntegerField(primary_key=True, help_text="Block ID if from ODIN")
-    whentaken = models.CharField(max_length=42, blank=True,null=True)
     dateobs = models.DateTimeField(default=datetime.utcnow)
     objectname = models.CharField(max_length=100,blank=True,null=True)
     ra = models.FloatField(blank=True,null=True)

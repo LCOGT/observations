@@ -69,7 +69,7 @@
                 <tr>
                     <th scope="row">Date:</th>
                     <td>
-                        <time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time>
+                        <time property='UCD:time.creation'>{{ obs.dateobs|date:"c" }}</time>
                     </td>
                 </tr>
                 <tr>
@@ -94,7 +94,7 @@
                 <tr>
                     <th scope="row">Date:</th>
                     <td>
-                        <time property='UCD:time.creation'>{{ obs.whentaken|datestamp }}</time>
+                        <time property='UCD:time.creation'>{{ obs.dateobs|date:"c" }}</time>
                     </td>
                 </tr>
                 <tr>

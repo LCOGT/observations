@@ -15,7 +15,7 @@
             <title>{{skyobjectname}}</title>
             <description><![CDATA[<a href="{{o.link_user}}">{{schoolname}}</a> took an image of {{o.objectname}}({{o.ra|degreestohms}}, {{o.dec|degreestodms}} with <a href="{{o.link_tel}}">{{o.telescope.name}}</a>.]]></description>
             <link>{{o.link_obs}}</link>
-            <pubDate>{{o.whentaken}}</pubDate>
+            <pubDate>{{o.dateobs}}</pubDate>
         </item>
         {% endfor %}
     </channel>

@@ -21,7 +21,7 @@ class Proposal(models.Model):
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=64, blank=True,null=True)
     active = models.BooleanField(default=True)
-    last_update = models.DateTimeField(default=datetime.utcnow())
+    last_update = models.DateTimeField(default=datetime.utcnow)
 
     def __unicode__(self):
         return self.name

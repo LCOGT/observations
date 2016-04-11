@@ -374,10 +374,10 @@ def search_rtiarchive(form):
             form['startdate'].year, form['startdate'].month, form['startdate'].day)
         ed = "%s%02d%02d235959" % (
             form['enddate'].year, form['enddate'].month, form['enddate'].day)
-        obs = obs.filter(whentaken__gte=sd, whentaken__lte=ed)
+        obs = obs.filter(dateobs__gte=sd, dateobs__lte=ed)
     if form['enddate']:
         ed = "%s235959" % form['enddate'].strftime(wistime_format)
-        obs = obs.filter(whentaken__lte=ed)
+        obs = obs.filter(dateobs__lte=ed)
     if form['exposure']:
         try:
             form['exposure'] = float(form['exposure'])
@@ -390,7 +390,7 @@ def search_rtiarchive(form):
         except:
             form['exposure'] = 0
 
-    obs = obs.order_by('-whentaken')
+    obs = obs.order_by('-dateobs')
     return list(obs)
 
 
@@ -432,7 +432,7 @@ def search(request, format=None):
                 if n == 0:
                     page_data['form'] = form
                 else:
-                    page_data['firstobs'] = obs[0]['whentaken']
+                    page_data['firstobs'] = obs[0]['dateobs']
                 page_data['obs'] = obs
                 if page_data['slideshow']:
                     return render(request, 'images/slideshow.html', page_data)
@@ -459,7 +459,7 @@ def fetch_observations(data, lastobs):
         onlyrti = True
     obs = obs[0:18]
     if obs:
-        lastobs = obs[-1]['whentaken']
+        lastobs = obs[-1]['dateobs']
     else:
         lastobs = None
     return obs, lastobs, total_n, onlyrti
@@ -541,7 +541,7 @@ def old_view_site(request, code):
     n = 0
     if site.code == 'ogg' or site.code == 'coj':
         obs = Image.objects.filter(
-            telescope__in=telescopes.values_list('id', flat=True)).order_by('-whentaken')
+            telescope__in=telescopes.values_list('id', flat=True)).order_by('-obsdate')
         n = obs.count()
 
     input['observations'] = n
@@ -589,7 +589,7 @@ def view_telescope(request, code, tel):
     n = 0
     if site.code == 'ogg' or site.code == 'coj':
         obs = Image.objects.filter(
-            telescope=telescope.id).order_by('-whentaken')
+            telescope=telescope.id).order_by('-dateobs')
         n = obs.count()
 
     input['observations'] = n
@@ -711,18 +711,17 @@ def view_object(request, object):
 
     try:
         obser = Image.objects.all().filter(
-            objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-whentaken')
+            objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % object['name']).order_by('-dateobs')
         # If we have an AVM code we can use it to limit to objects of the
         # correct type
         if object['avm']['code'] != "":
             obser = obser.filter(
                 observationstats__avmcode__regex=r'(^|;)%s' % object['avm']['code'])
-        a = obser.values('schoolid','rti_username').annotate(
-            count=Count('schoolid')).order_by('-count')
+        a = obser.values('username')
         if a:
-            u = user_look_up(a[0]['rti_username'])
+            u = user_look_up(a[0]['username'])
             input['mostobservedby'] = {
-                'name': u, 'id': a[0]['schoolid'], 'count': a[0]['count']}
+                'name': u, 'id': a[0]['username'], 'count': a[0]['count']}
         else:
             u = ""
 
@@ -774,7 +773,7 @@ def view_object(request, object):
     mostrecent = ""
 
     if len(obs) > 0:
-        mostrecent = relativetime(obs[0]['whentaken'])
+        mostrecent = relativetime(obs[0]['dateobs'])
 
     if input['doctype'] == "json":
         return view_json(request, build_observations_json(obs), input)
@@ -797,7 +796,7 @@ def view_username(request, username):
     u = user_look_up(username)
     org_name = u.get(username, 'Unknown')
 
-    obs = Image.objects.filter(username=username).order_by('-whentaken')
+    obs = Image.objects.filter(username=username).order_by('-dateobs')
     if obs:
         org_name = obs[0].observer
     n = obs.count()
@@ -823,7 +822,7 @@ def view_username(request, username):
     mostrecent = ""
 
     if len(obs) > 0:
-        mostrecent = relativetime(obs[0]['whentaken'])
+        mostrecent = relativetime(obs[0]['dateobs'])
 
     if input['doctype'] == "json":
         return view_json(request, build_observations_json(obs), input)
@@ -872,7 +871,7 @@ def view_category(request, category):
     n = 0
     try:
         obstats = ObservationStats.objects.filter(avmcode__startswith='%s' % avm).order_by(
-            '-image__whentaken')  # .order_by('-views')
+            '-image__dateobs')  # .order_by('-views')
         n = obstats.count()
     except ObjectDoesNotExist:
         return unknown(request)
@@ -921,7 +920,7 @@ def view_avm(request, avm):
 
     n = 0
     obstats = ObservationStats.objects.filter(avmcode__regex=r'(^|;)%s' % avmtemp).order_by(
-        '-image__whentaken')  # .order_by('-views')
+        '-image__dateobs')  # .order_by('-views')
     n = obstats.count()
 
     if avm in categorylookup:
@@ -974,7 +973,7 @@ def view_map(request):
     telescopes = Telescope.objects.all()
 
     obs = Image.objects.filter(
-        whentaken__gte=dt.strftime("%Y%m%d%H%M%S")).order_by('-whentaken')
+        dateobs__gte=dt).order_by('-dateobs')
     # print dt.strftime("%Y%m%d%H%M%S")
     n = obs.count()
 
@@ -1110,7 +1109,7 @@ def view_observation(request, code, tel, obs):
         params = {'tag': tag,
                   'username': obs[0]['username'],
                   'requestids': obs[0]['requestids'],
-                  'whentaken': obs[0]['whentaken'],
+                  'dateobs': obs[0]['dateobs'],
                   'telescope': obs[0]['telescope'],
                   'filter': obs[0]['filter']}
         filters = get_sci_fits(params)
@@ -1133,7 +1132,7 @@ def get_sci_fits(params):
     telids = {'ogg': 1, 'coj': 2}
     telid = telids.get(params['telescope'].site.code, '')
     url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
-        params['username'], params['whentaken'][0:8], telid)
+        params['username'], params['dateobs'], telid)
     rids = params['requestids'].split(',')
     filters = []
     if rids:
@@ -1219,7 +1218,7 @@ def get_ipac_fits(origname, date, propid, tracknum, reqnum):
 
 def get_observation_stream(obs):
 
-    ob = Image.objects.filter(schoolid=obs['schoolid'])
+    ob = Image.objects.filter(username=obs['username'])
     o = ob.values()
     num = len(o)
 
@@ -1244,7 +1243,7 @@ def get_observation_stream(obs):
     i = 0
     for item in reversed(o):
         tmp = {'url': item['link_obs'], 'thumb': item['thumbnail'], 'title': item[
-            'objectname'], 'date': datestamp(item['whentaken']), 'class': ''}
+            'objectname'], 'date': item['dateobs'], 'class': ''}
         if(i == 0):
             tmp['class'] = 'left'
         if(i == num - 1):
@@ -1577,7 +1576,7 @@ def build_framedb_observations(observations, org_names=None):
                   'object': obj,
                   'thumbnail': thumbnail,
                   'hasthumbnail': True,
-                  'whentaken': datetime.strptime(o['date_obs'], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%d%H%M%S"),
+                  'dateobs': datetime.strptime(o['date_obs'], "%Y-%m-%d %H:%M:%S"),
                   'telescope': o['telid'],
                   'license': "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US",
                   'credit': "Image taken with %s telescope at Las Cumbres Observatory Global Telescope Network, %s node" % (o['telid'], site.name if hasattr(site, 'name') else 'unknown'),
@@ -1688,8 +1687,7 @@ def build_observations(obs):
             o['avmcode'] = ""
 
         o['imageid'] = ob.imageid
-        o['whentaken'] = ob.whentaken
-        o['schoolid'] = ob.schoolid
+        o['dateobs'] = ob.dateobs
         o['objectname'] = ob.objectname
         o['ra'] = ob.ra * 15
         o['dec'] = ob.dec
@@ -1708,16 +1706,15 @@ def build_observations(obs):
             o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
         else:
             o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s.jpg" % (
-                o['whentaken'][0:4], o['whentaken'][4:6], o['whentaken'][6:8], o['filename'][0:-4])
+                o['dateobs'].year, o['dateobs'].month, o['dateobs'].day, o['filename'][0:-4])
             o['thumbnail'] = o['fullimage_url'][0:-4] + "_120.jpg"
         o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
         o['licenseimage'] = 'cc-by-nc.png'
         o['credit'] = "Image taken with " + o['telescope'].name + \
             " operated by Las Cumbres Observatory Global Telescope Network"
         # Change the credit if prior to 11 Oct 2005
-        if int(o['whentaken']) < int("20051011000000"):
+        if o['dateobs'] < datetime(2005,10,11):
             o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust"
-        o['userid'] = o['schoolid']
         o['link_obs'] = reverse('show_rtiobservation', kwargs={'code': o[
                                 'telescope'].site.code, 'tel': o['telescope'].code, 'obs': o['imageid']})
         o['link_site'] = o['telescope'].site.code + '/'
@@ -1729,9 +1726,6 @@ def build_observations(obs):
         o['object'] = re.sub(r"/\s\s+/", ' ', o['object'])
         # Remove non-useful characters
         o['object'] = re.sub(r"[^\w\-\+0-9 ]/i", '', o['object'])
-
-        if len(obs) > 0 and o['schoolid']:
-            observations.append(o)
 
     return observations
 
@@ -1846,7 +1840,7 @@ def build_observations_json(obs):
             # },
             #"views" : o['views'],
             "time": {
-                "creation": datestamp(o['whentaken'])
+                "creation": o['whentaken'].isoformat()
             },
             "exposure": o['exposure'],
             "credit": {
@@ -1936,7 +1930,7 @@ def view_kml(request, obs, config):
         output += ' <Placemark>\n'
         output += '     <name>' + o['objectname'] + '</name>\n'
         output += '     <description><![CDATA[\n'
-        output += '         <p>Observed by ' + schoolname + ' on ' + datestamp(o['whentaken']) + ' with <a href="' + base_url + o.get('link_tel','') + '.kml">' + telname + '</a>.<br /><a href="' + o.get('link_obs','') + '"><img src="' + o.get('thumbnail','') + '" /></a></p>\n'
+        output += '         <p>Observed by ' + schoolname + ' on ' + o['dateobs'].isoformat() + ' with <a href="' + base_url + o.get('link_tel','') + '.kml">' + telname + '</a>.<br /><a href="' + o.get('link_obs','') + '"><img src="' + o.get('thumbnail','') + '" /></a></p>\n'
         output += '         <p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
         output += '     ]]></description>\n'
         output += '     <LookAt>\n'
@@ -2137,9 +2131,9 @@ def binMonths(obs, input, bins):
     e = 0
     for o in obs:
         try:
-            date = parsetime(o['whentaken'])
+            date = o['dateobs']
         except:
-            date = parsetime(o.whentaken)
+            date = o.dateobs
             e += o.exposure
         month = date.month - 12 * (now.year - date.year)
         m = now.month - month
