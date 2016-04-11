@@ -1666,9 +1666,9 @@ def build_observations(obs):
         except:
             o['schoolname'] = "Unknown"
         try:
-            filter_obj = Filter.objects.get(code=ob.filter)
+            filter_obj = Filter.objects.get(code=ob.filters)
         except:
-            filter_obj = ob.filter
+            filter_obj = ob.filters
 
         try:
             obstats = ObservationStats.objects.filter(image=ob)
