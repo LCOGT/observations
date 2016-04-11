@@ -797,7 +797,7 @@ def view_username(request, username):
     u = user_look_up(username)
     org_name = u.get(username, 'Unknown')
 
-    obs = Image.objects.filter(rti_username=username).order_by('-whentaken')
+    obs = Image.objects.filter(username=username).order_by('-whentaken')
     if obs:
         org_name = obs[0].observer
     n = obs.count()
@@ -1108,7 +1108,7 @@ def view_observation(request, code, tel, obs):
         filters = []
     else:
         params = {'tag': tag,
-                  'rti_username': obs[0]['rti_username'],
+                  'username': obs[0]['username'],
                   'requestids': obs[0]['requestids'],
                   'whentaken': obs[0]['whentaken'],
                   'telescope': obs[0]['telescope'],
@@ -1133,7 +1133,7 @@ def get_sci_fits(params):
     telids = {'ogg': 1, 'coj': 2}
     telid = telids.get(params['telescope'].site.code, '')
     url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
-        params['rti_username'], params['whentaken'][0:8], telid)
+        params['username'], params['whentaken'][0:8], telid)
     rids = params['requestids'].split(',')
     filters = []
     if rids:
@@ -1699,7 +1699,7 @@ def build_observations(obs):
         o['telescope'] = ob.telescope
         o['site'] = ob.telescope.site
         o['filename'] = ob.filename
-        o['rti_username'] = ob.rti_username
+        o['username'] = ob.username
         o['processingtype'] = ob.processingtype
         o['instrumentname'] = ob.instrumentname
         o['fitsfiles'] = ""
@@ -1722,7 +1722,7 @@ def build_observations(obs):
                                 'telescope'].site.code, 'tel': o['telescope'].code, 'obs': o['imageid']})
         o['link_site'] = o['telescope'].site.code + '/'
         o['link_tel'] = o['link_site'] + "/" + o['telescope'].code + '/'
-        o['link_user'] = "user/" + str(o['rti_username']) + '/'
+        o['link_user'] = "user/" + str(o['username']) + '/'
         # Remove brackets
         o['object'] = re.sub(r" ?\([^\)]*\)", '', o['objectname'])
         # Remove redundant whitespace
