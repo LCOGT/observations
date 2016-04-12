@@ -32,7 +32,7 @@ from email.utils import parsedate_tz
 from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, datestamp, \
-    filter_list, filter_props, filter_link, filter_name, hexangletodec, l
+    filter_list, filter_props, filter_link, filter_name, hexangletodec, l, binMonths
 from string import replace
 import json
 import math
@@ -419,7 +419,7 @@ def search(request, format=None):
             page_data['perpage'] = n_per_page
             page_data['searchstring'] = request.GET.get('query', None)
             if lastobs:
-                page_data['lastobs'] = lastobs
+                page_data['lastobs'] = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S").date()
 
             if page_data['doctype'] == "json" or format == 'json':
                 return view_json(request, build_observations_json(obs), page_data)
@@ -773,7 +773,7 @@ def view_object(request, object):
     mostrecent = ""
 
     if len(obs) > 0:
-        mostrecent = relativetime(obs[0]['dateobs'])
+        mostrecent = obs[0]['dateobs']
 
     if input['doctype'] == "json":
         return view_json(request, build_observations_json(obs), input)
@@ -822,7 +822,7 @@ def view_username(request, username):
     mostrecent = ""
 
     if len(obs) > 0:
-        mostrecent = relativetime(obs[0]['dateobs'])
+        mostrecent = obs[0]['dateobs']
 
     if input['doctype'] == "json":
         return view_json(request, build_observations_json(obs), input)
@@ -1114,8 +1114,6 @@ def view_observation(request, code, tel, obs):
                   'filter': obs[0]['filter']}
         filters = get_sci_fits(params)
 
-    obs[0]['filter'] = filter_link(obs[0]['filter'])
-
     if input['doctype'] == "json":
         # print obs
         return view_json(request, build_observations_json(obs), input)
@@ -1359,6 +1357,7 @@ def framedb_lookup(query):
         data_url = 'https://data.lcogt.net%s' % query
         resp = client.post(data_url, data=login_data, timeout=20)
         data = resp.json()
+        logger.debug(data)
     except:
         return False
     return data
@@ -1491,6 +1490,20 @@ def build_recent_observations(num):
         recent_obs = []
     return recent_obs
 
+def identity_archive(request):
+    '''
+    Main function for looking up the origname, tracking number or organization's observations.
+    Then passes all the meta data that observations need to be displayed either as a group or on a single page
+    '''
+    origname = request.GET.get('origname', '')
+    origname = origname[0:31]
+    url =settings.ARCHIVE_API + 'frames/?basename={}&RLEVEL=90'.format(origname)
+    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
+    response = requests.get(url,headers=headers).json()
+    if len(response['results']) > 0:
+        return response['results']
+    else:
+        return []
 
 def identity(request):
     '''
@@ -1513,13 +1526,13 @@ def identity(request):
         return render(request,'404.html')
     if len(observation) == 1:
         obs = build_framedb_observations(observation, org_names)
-        filters = get_fits(observation[0])
+        filters = get_fits(origname)
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
         except Exception, e:
             print e, observation[0]['site']
             site = None
-        return render(request,'images/observation.html', {'n': 1,
+        return render(request,'images/identity_detail.html', {'n': 1,
                                                               'site': site,
                                                               'obs': obs[0],
                                                               'filters': filters,
@@ -1543,6 +1556,20 @@ def identity(request):
             }
         data = {'input': info, 'link': info['link'], 'obs': obs, 'n': len(obs)}
         return render(request, 'images/group.html', data)
+
+def get_fits(origname):
+    filters = []
+    origname = origname[0:31]
+    url =settings.ARCHIVE_API + 'frames/?basename={}'.format(origname)
+    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
+    response = requests.get(url,headers=headers).json()
+    for datum in response['results']:
+        filter_params = {
+                'fits': datum['url'],
+                'fullname' : filter_name
+                }
+        filters.append(filter_params)
+    return filters
 
 
 def build_framedb_observations(observations, org_names=None):
@@ -1965,32 +1992,6 @@ def view_rss(request, obs, config):
     return render(request, 'images/rss.xml', {'config': config, 'obs': obs}, content_type=config['mimetype'])
 
 
-def relativetime(value):
-    delta = datetime.utcnow() - parsetime(value)
-
-    if(delta.days > 1.2 * 365):
-        h = int(round(delta.days / 365.25))
-        if h == 1:
-            return 'more than a year ago'
-        else:
-            return 'about %s years ago' % h
-    elif delta.days > 60:
-        return 'about %s months ago' % int(delta.days / 30)
-    elif delta.days >= 2:
-        return "%s days ago" % int(round(delta.days + delta.seconds / 86400.0))
-    elif delta.seconds + (delta.days * 86400) > (86400):
-        return '1 day ago'
-    elif delta.seconds > (5400):
-        h = round(delta.seconds / 3600)
-        return 'about %s hours ago' % h
-    elif delta.seconds > (2700):
-        return 'about an hour ago'
-    elif delta.seconds > (120):
-        return 'about %s minutes ago' % round(delta.seconds / 60)
-    elif delta.seconds > (60):
-        return 'about a minute ago'
-    else:
-        return 'less than a minute ago'
 
 
 def datestamp_basic(value):
@@ -2005,40 +2006,6 @@ def datestamp_basic(value):
 def observation_URL(tel, obs):
     telescope = telescope_details(tel)
     return telescope.site + '/' + telescope.code + "/" + obs
-
-# Bin the observations by month for the specified number of bins
-
-
-def binMonths(obs, input, bins):
-    now = datetime.utcnow()
-    binned = [0 for num in range(bins)]
-    values = [{'count': 0, 'year': 0, 'm': 0, 'month': ''}
-              for num in range(bins)]
-    for num in range(bins):
-        m = now.month - num
-        values[num]['year'] = now.year + ((m - 1) / 12)
-        while m < 1:
-            m += 12
-        values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
-        values[num]['m'] = m
-    e = 0
-    for o in obs:
-        try:
-            date = o['dateobs']
-        except:
-            date = o.dateobs
-            e += o.exposure
-        month = date.month - 12 * (now.year - date.year)
-        m = now.month - month
-        if (m < bins):
-            binned[m] = binned[m] + 1
-            values[m]['count'] = binned[m]
-    input['bins'] = values
-    input['exposuretime'] = e
-    input['binmax'] = max(binned)
-    if input['binmax'] == 0:
-        input['binmax'] = 1
-    return input
 
 
 def unknown(request):

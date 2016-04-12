@@ -147,6 +147,7 @@ def filter_props(code):
 
 
 def filter_link(code):
+    print(code)
     try:
         props = filter_props(code)
     except:
@@ -172,3 +173,37 @@ def hexangletodec(value):
     else:
         sign = -1
     return (int(value[0]) + (sign * (float(value[1]) / 60) + (float(value[2]) / 3600)))
+
+# Bin the observations by month for the specified number of bins
+
+
+def binMonths(obs, input, bins):
+    now = datetime.utcnow()
+    binned = [0 for num in range(bins)]
+    values = [{'count': 0, 'year': 0, 'm': 0, 'month': ''}
+              for num in range(bins)]
+    for num in range(bins):
+        m = now.month - num
+        values[num]['year'] = now.year + ((m - 1) / 12)
+        while m < 1:
+            m += 12
+        values[num]['month'] = datetime(now.year, m, 1).strftime("%b")
+        values[num]['m'] = m
+    e = 0
+    for o in obs:
+        try:
+            date = o['dateobs']
+        except:
+            date = o.dateobs
+            e += o.exposure
+        month = date.month - 12 * (now.year - date.year)
+        m = now.month - month
+        if (m < bins):
+            binned[m] = binned[m] + 1
+            values[m]['count'] = binned[m]
+    input['bins'] = values
+    input['exposuretime'] = e
+    input['binmax'] = max(binned)
+    if input['binmax'] == 0:
+        input['binmax'] = 1
+    return input

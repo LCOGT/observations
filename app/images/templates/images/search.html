@@ -47,7 +47,7 @@
 {% if n > 0 %}
 <div class="container">
     <div class="row">
-							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}Showing {{n}} observations taken between {{firstobs|relativetime}} and {{lastobs|relativetime}}. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
+							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}Showing {{n}} observations taken between {{firstobs|timesince}} and {{lastobs|timesince}}. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
 						</div>
 
 						<div class="row">

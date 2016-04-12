@@ -19,6 +19,10 @@ from django.conf import settings
 
 register = template.Library()
 
+def orig_to_jpeg(value):
+    url = settings.IMAGE_API + "/%s/?height=1000&width=1000&label=0" % value[0:31]
+    return url
+
 def niceduration(value):
     if not(value):
         return ""
@@ -63,9 +67,10 @@ def niceduration(value):
         if y == 1:
             return '1 year '+str(d)+' days'
         else:
-            return str(y)+' years '+str(d)+' days'    
+            return str(y)+' years '+str(d)+' days'
 
 def relativetime(value):
+    print(type(value))
     if not(value):
         return ""
     delta = datetime.utcnow()-parsetime(value)
@@ -93,7 +98,6 @@ def relativetime(value):
         return 'a minute ago'
     else:
         return 'less than a minute ago'
-
 
 def lowercase(value):
     return value.lower()
@@ -129,3 +133,4 @@ register.filter('parsetime', parsetime)
 register.filter('hmstohours', hmstohours)
 register.filter('hmstodegrees',hmstodegrees)
 register.filter('dmstodegrees',dmstodegrees)
+register.filter('orig_to_jpeg', orig_to_jpeg)

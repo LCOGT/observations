@@ -2,7 +2,7 @@
 
 {% block css-content %}
 <style type="text/css">
-ol { 
+ol {
 	counter-reset: section;
 	list-style-type: none!important;
 }
@@ -11,7 +11,7 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 </style>
 {% endblock %}
 
-{% block script-content %}
+{% block header_script %}
 	<script>
 	<!--
 
@@ -21,7 +21,7 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 		catkeys.push(i)
 	}
 	catkeys.sort()
-	
+
 	$(document).ready(function(){
 		start = 0;
 		$('li.category').each(function(e){
@@ -75,4 +75,3 @@ ol li:before { content: counters(section, ".") " "; counter-increment: section; 
 							</ol>
 						</div>
 {% endblock %}
-

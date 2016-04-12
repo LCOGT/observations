@@ -27,8 +27,8 @@
 {% endblock %}
 
 {% block main-content %}
-        <a href='{{ obs.fullimage_url }}' title='Click for full size version'>
-            <img src='{{ obs.fullimage_url }}' class='observation-image' alt='{{ obs.title }}' />
+        <a href='{{ obs.origname|orig_to_jpeg }}' title='Click for full size version'>
+            <img src='{{ obs.origname|orig_to_jpeg }}' class='observation-image' alt='{{ obs.title }}' />
         </a>
         {% if otherobs%}
         <p class='moreobservations'>More observations by {{ obs.user }}:</p>
@@ -130,7 +130,7 @@
                         {% if filters %}
                         <ul class='filters'>
                             {% for filter in filters %} {% if filter.fits %}
-                            <li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{% if forloop.first  and forloop.last %}{% else %}{{ filter.fullname }} {%endif%}FITS</a> or <a href='{{ filter.img }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'>jpeg</a>
+                            <li class='filter-{{ filter.id }}'><a href='{{ filter.fits }}' property='UCD:obs.image'>{% if forloop.first  and forloop.last %}{% else %}{{ filter.fullname }} {%endif%}FITS</a> or <a href='{{ obs.origname|orig_to_jpeg }}' title='{{ filter.name }} jpeg' class='filter-{{ filter.name }}'> jpeg</a>
                             </li>
                             {% endif %} {% endfor %}
                         </ul>
