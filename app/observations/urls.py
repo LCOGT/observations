@@ -60,7 +60,7 @@ urlpatterns = [
     url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$',v.view_observation,name='show_rtiobservation'),
     url(r'^(?P<code>\w\w\w)/show/$',v.view_site_slideshow, name='slideshow_site'),
     url(r'^(?P<code>\w\w\w)/$',v.view_site, name='show_site'),
-    url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/$',v.view_telescope,name='show_telescope'),
+    url(r'^telescope/(?P<code>\w\w\w)/(?P<encid>\w+)/(?P<tel>\w+)/$',v.view_telescope,name='show_telescope'),
     url(r'^(?P<code>\w\w\w)\.(?P<format>\w+)/$',v.view_site,name='site_api'),
   ]
 

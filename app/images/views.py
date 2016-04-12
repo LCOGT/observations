@@ -31,6 +31,8 @@ from django.utils.encoding import smart_unicode
 from email.utils import parsedate_tz
 from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
+from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, datestamp, \
+    filter_list, filter_props, filter_link, filter_name, hexangletodec, l
 from string import replace
 import json
 import math
@@ -404,7 +406,7 @@ def search(request, format=None):
             lastobs = request.GET.get('lastobs', None)
             if lastobs:
                 form.cleaned_data['enddate'] = datetime.strptime(
-                    lastobs, wistime_format).date()
+                    lastobs, "%Y-%m-%dT%H:%M:%S").date()
             elif not form.cleaned_data['enddate']:
                 form.cleaned_data['enddate'] = date.today()
             obs, lastobs, n, onlyrti = fetch_observations(
@@ -457,7 +459,7 @@ def fetch_observations(data, lastobs):
         onlyrti = True
     obs = obs[0:18]
     if obs:
-        lastobs = obs[-1]['dateobs']
+        lastobs = obs[-1]['dateobs'].isoformat("T")
     else:
         lastobs = None
     return obs, lastobs, total_n, onlyrti
@@ -571,13 +573,13 @@ def old_view_site(request, code):
             return render_to_response('images/site.html', data, context_instance=RequestContext(request))
 
 
-def view_telescope(request, code, tel):
+def view_telescope(request, code, tel, encid):
     input = input_params(request)
 
     sites = Site.objects.exclude(code=code)
     site = Site.objects.get(code=code)
     try:
-        telescope = Telescope.objects.get(site=site, code=tel)
+        telescope = Telescope.objects.get(site=site, code=tel, enclosure=encid)
     except ObjectDoesNotExist:
         return unknown(request)
 
@@ -1167,14 +1169,13 @@ def get_sci_fits(params):
                 filters.append({'img': '', 'fits': ''})
     return filters
 
-
-def get_fits(obs):
+def get_framedb_fits(obs):
     '''
     return a download link to the observation along with the filter name
-    First it checks if the data is in IPAC and if not returns a framedb link
+    First it checks if the data is in Archive and if not returns a framedb link
     '''
     date = obs["date_obs"][0:10]
-    url = get_ipac_fits(
+    url = get_archive_fits(
         obs['origname'], date, obs['propid'], obs['tracknum'], obs['reqnum'])
     img = "http://data.lcogt.net/thumbnail/%s/?height=1000&width=1000&label=0" % obs[
         'origname'][:-5]
@@ -1191,6 +1192,24 @@ def get_fits(obs):
     filters = [filter_info]
     return filters
 
+def get_archive_fits(origname, date, propid, tracknum, reqnum):
+    qstring = "&propid=%s&selcols=filehand,tracknum,reqnum&mission=lcogt&constraints=(date_obs+between+to_date('%s 00:01','YYYY-MM-DD HH24:MI')+and+to_date('%s 23:59','YYYY-MM-DD HH24:MI')+and+tracknum+in+('%s'))" % (
+        propid, date, date, tracknum)
+    lookup_url = ARCHIVE_API + qstring.replace(" ", "%20")
+    try:
+        resp = requests.get(lookup_url, timeout=10)
+    except:
+        return False
+    text = resp.content
+    vals = [x.strip() for x in text.split(
+        "\n") if x[:1] != '\\' and x[:1] != '' and x[:1] != '|']
+    files = [v.split()[0] for v in vals]
+    filename = origname[:-9]
+    datafile = [f for f in files if filename in f]
+    if datafile:
+        return dl_url + datafile[0]
+    else:
+        return False
 
 def get_ipac_fits(origname, date, propid, tracknum, reqnum):
     ipac_dl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/LCODownload/nph-lcoDownload?file="
@@ -1974,43 +1993,6 @@ def relativetime(value):
         return 'less than a minute ago'
 
 
-def parsetime(value):
-    return datetime(int(value[0:4]), int(value[4:6]), int(value[6:8]), int(value[8:10]), int(value[10:12]), int(value[12:14]))
-
-
-def degreestodms(value):
-    "Converts decimal degrees to decimal degrees minutes and seconds"
-    if not(value):
-        return ""
-    if(value < 0):
-        sign = "-"
-    else:
-        sign = ""
-    value = abs(value)
-    d = int(value)
-    m = int((value - d) * 60)
-    s = ((value - d) * 3600 - m * 60)
-    return "%s%02d:%02d:%05.2f" % (sign, d, m, s)
-
-
-def degreestohms(value):
-    "Converts decimal degrees to decimal degrees minutes and seconds"
-    value = float(value) / 15
-    d = int(value)
-    m = int((value - d) * 60)
-    s = ((value - d) * 3600 - m * 60)
-    return str(d) + ':' + str(m) + ':' + "{0:05.2f}".format(s)
-
-
-def datestamp(value):
-    if value:
-        dt = datetime(int(value[0:4]), int(value[4:6]), int(value[6:8]), int(
-            value[8:10]), int(value[10:12]), int(value[12:14]))
-    else:
-        dt = datetime.today()
-    return dt.strftime(settings.DATETIME_FORMAT)
-
-
 def datestamp_basic(value):
     if value:
         dt = datetime(int(value[0:4]), int(value[4:6]), int(value[6:8]), int(
@@ -2018,78 +2000,6 @@ def datestamp_basic(value):
     else:
         dt = datetime.today()
     return dt.strftime("%a, %d %b %Y")
-
-
-def l(txt, lnk):
-    return "<a href=\"http://lcogt.net/" + lnk + "\">" + txt + "</a>"
-
-
-def filter_list():
-    return [{'code': 'CC', 'name': 'Air', 'node': 'node/31'},
-            {'code': 'RGB', 'name': 'Color', 'node': ""},
-            {'code': 'RGB+ND', 'name': "Color + Neutral Density", 'node': ""},
-            {'code': 'RGB_ND', 'name': "BVr' +Neutral Dens", 'node': ""},
-            {'code': 'Red', 'name': "Red", 'node': ""},
-            {'code': 'Green', 'name': "Green", 'node': ""},
-            {'code': 'Blue', 'name': "Blue", 'node': ""},
-            {'code': 'CA', 'name': 'Hydrogen Alpha', 'node': 'node/51'},
-            {'code': 'HB', 'name': "Hydrogen Beta", 'node': "node/53"},
-            {'code': 'CO', 'name': 'Oxygen III', 'node': 'node/34'},
-            {'code': 'CB', 'name': 'Bessell B', 'node': 'node/36'},
-            {'code': 'CV', 'name': "Bessell V", 'node': "node/37"},
-            {'code': 'CR', 'name': 'Bessell R', 'node': "node/43"},
-            {'code': 'BI', 'name': "Bessell I", 'node': ""},
-            {'code': 'CU', 'name': "SDSS u'", 'node': "node/42"},
-            {'code': 'SR', 'name': "SDSS r'", 'node': ""},
-            {'code': 'CI', 'name': "SDSS i'", 'node': "node/35"},
-            {'code': 'NB', 'name': "B +Neutral Dens", 'node': ""},
-            {'code': 'NV', 'name': "V +Neutral Dens", 'node': ""},
-            {'code': 'SG', 'name': "Sloan g'", 'node': "node/45"},
-            {'code': 'SY', 'name': "Pan-STARRS Y", 'node': "node/49"},
-            {'code': 'SZ', 'name': "Pan-STARRS Z", 'node': "node/48"},
-            {'code': 'SO', 'name': "Solar", 'node': "node/40"},
-            {'code': 'SM', 'name': "SkyMap - CaV", 'node': "node/41"},
-            {'code': 'OP', 'name': "Opal", 'node': "node/50"},
-            {'code': 'D5', 'name': "D51 filter", 'node': ""}]
-
-
-def filter_props(code):
-    f = filter_list()
-    try:
-        for fs in f:
-            if(fs['code'] == code):
-                return [fs['name'], fs['node']]
-        return ["Unknown", ""]
-    except:
-        return ["Unknown", ""]
-
-
-def filter_link(code):
-    try:
-        props = filter_props(code)
-    except:
-        return "Unknown"
-    if len(props) == 2:
-        return l(props[0], props[1])
-    else:
-        return props[0]
-
-
-def filter_name(code):
-    try:
-        props = filter_props(code)
-    except:
-        return "Unknown"
-    return props[0]
-
-
-def hexangletodec(value):
-    value = value.split(":")
-    if (int(value[0]) >= 0):
-        sign = 1
-    else:
-        sign = -1
-    return (int(value[0]) + (sign * (float(value[1]) / 60) + (float(value[2]) / 3600)))
 
 
 def observation_URL(tel, obs):

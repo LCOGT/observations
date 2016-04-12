@@ -1,7 +1,7 @@
 {% load images_extras %}
 {% for o in obs %}
 
-						<div class="col-xs-6 col-md-2">
+						<div class="col-xs-6 col-md-2 col-lg-2">
 								<div class='thumb' about='{{ o.link_obs }}'>
 									<span class='thumb-img'><a href="{%if o.origname %}{% url 'identity' %}?origname={{o.origname}}{%else%}{{ o.link_obs }}{%endif%}"><img src="{{ o.thumbnail }}" alt='{{ o.objectname }}' class="img-rounded"/></a></span>
 									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.objectname }}'>{{ o.objectname }}</div><div class="ellipsis">By {%if o.link_user%}<a href="{% url 'home' %}{{ o.link_user }}" class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</a>{%else%}<span class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</span>{%endif%}</div></div>
@@ -17,6 +17,6 @@
 								</div>
 							</div>
 {% empty %}
-<h3>Oops!<h3>
+<h3>No Images<h3>
 <p>The image database is currently having problems. We're working on fixing this. Sorry for the delay.</p>
 {% endfor %}

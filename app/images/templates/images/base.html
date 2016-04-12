@@ -143,12 +143,12 @@
     <div class="container">
     <div class="row">
       {% block footer-option %}
-      <div class="col-md-4">
+      <div class="col-md-3">
 
         {% if sites %}
 
         										<h2>{% block sites-list-title %}By site:{% endblock %}</h2>
-        										<ul>
+        										<ul class="footer-links">
         {% for site in sites %}										<li><a href="{% url 'show_site' site.code %}">{{ site.name }}</a></li>{% endfor %}
         										</ul>
 
@@ -156,49 +156,56 @@
 
       </div>
       {% block specialfooter %}
-      <div class="col-md-4">
+      <div class="col-md-3">
 
         {% if telescopes %}
         										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
-        										<ul>
-        {% for telescope in telescopes %}										<li><a href="{% url 'show_telescope' telescope.site.code telescope.code %}">{{ telescope.name }}</a></li>{% endfor %}
+        										<ul class="footer-links">
+        {% for telescope in telescopes %}										<li><a href="{% url 'show_telescope' telescope.site.code telescope.enclosure  telescope.code  %}">{{ telescope.name }}, {{telescope.site.name}}</a></li>{% endfor %}
         										</ul>
         {% endif %}
 
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
 
         {% if categories %}
 
         										<h2>{% block categories-list-title %}<a href="{% url 'category_list' %}">By category</a>:{% endblock %}</h2>
-        										<ul>
+        										<ul class="footer-links">
         {% for c in categories %}										<li><a href="{% url 'category_show' c.link %}">{{ c.name }}</a></li>{% endfor %}
         										</ul>
         {% endif %}
 
       </div>
       {% endblock %}
-    </div>
     {% endblock %}
-    <div class="row">
-        <ul class="list-inline social-buttons">
-            <li></li>
-            <li><a href="http://twitter.com/lcogt"><i class="fa fa-twitter"></i></a>
-            </li>
-            <li><a href="http://facebook.com/lcogt"><i class="fa fa-facebook"></i></a>
-            </li>
-            <li><a href="/blog/feeds/rss/"><i class="fa fa-rss"></i></a>
-            </li>
-        </ul>
+    <div class="col-md-3">
+        <div class="row">
+            <ul class="list-inline social-buttons">
+                <li></li>
+                <li><a href="http://twitter.com/lcogt"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li><a href="http://facebook.com/lcogt"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li><a href="/blog/feeds/rss/"><i class="fa fa-rss"></i></a>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
+
+        </div>
     </div>
-      <div class="row">
-        <span class="copyright">Copyright &copy; {% now "Y" %} Las Cumbres Observatory Global Telescope Network. All rights reserved.
-              </span>
-      </div>
-      <div class="row">
-        <img src="{% static 'img/logo.png' %}" />
-      </div>
-    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+    <p class="copyright">Copyright &copy; {% now "Y" %} Las Cumbres Observatory Global Telescope Network. All rights reserved.
+    </p>
+  </div>
+  <div class="col-md-4">
+    <img src="{% static 'img/logo.png' %}" />
+  </div>
+
+  </div>
 </footer>
 
 

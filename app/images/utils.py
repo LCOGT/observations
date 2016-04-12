@@ -13,6 +13,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 '''
 from datetime import datetime
+from django.conf import settings
+
+def l(txt, lnk):
+    return "<a href=\"http://lcogt.net/" + lnk + "\">" + txt + "</a>"
 
 def hourstodegrees(value,arg):
     "Converts decimal hours to decimal degrees"
@@ -93,11 +97,78 @@ def datestamp(value):
             dt = datetime()
     else:
         dt = datetime()
-    return dt.strftime("%a %d %B %Y, %H:%M UT")
+    return dt.strftime(settings.DATETIME_FORMAT)
 
 def isodatestamp(value):
     if value:
         dt = parsetime(value)
     else:
         dt = datetime()
-    return dt.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    return dt.isoformat("T")
+
+def filter_list():
+    return [{'code': 'CC', 'name': 'Air', 'node': 'node/31'},
+            {'code': 'RGB', 'name': 'Color', 'node': ""},
+            {'code': 'RGB+ND', 'name': "Color + Neutral Density", 'node': ""},
+            {'code': 'RGB_ND', 'name': "BVr' +Neutral Dens", 'node': ""},
+            {'code': 'Red', 'name': "Red", 'node': ""},
+            {'code': 'Green', 'name': "Green", 'node': ""},
+            {'code': 'Blue', 'name': "Blue", 'node': ""},
+            {'code': 'CA', 'name': 'Hydrogen Alpha', 'node': 'node/51'},
+            {'code': 'HB', 'name': "Hydrogen Beta", 'node': "node/53"},
+            {'code': 'CO', 'name': 'Oxygen III', 'node': 'node/34'},
+            {'code': 'CB', 'name': 'Bessell B', 'node': 'node/36'},
+            {'code': 'CV', 'name': "Bessell V", 'node': "node/37"},
+            {'code': 'CR', 'name': 'Bessell R', 'node': "node/43"},
+            {'code': 'BI', 'name': "Bessell I", 'node': ""},
+            {'code': 'CU', 'name': "SDSS u'", 'node': "node/42"},
+            {'code': 'SR', 'name': "SDSS r'", 'node': ""},
+            {'code': 'CI', 'name': "SDSS i'", 'node': "node/35"},
+            {'code': 'NB', 'name': "B +Neutral Dens", 'node': ""},
+            {'code': 'NV', 'name': "V +Neutral Dens", 'node': ""},
+            {'code': 'SG', 'name': "Sloan g'", 'node': "node/45"},
+            {'code': 'SY', 'name': "Pan-STARRS Y", 'node': "node/49"},
+            {'code': 'SZ', 'name': "Pan-STARRS Z", 'node': "node/48"},
+            {'code': 'SO', 'name': "Solar", 'node': "node/40"},
+            {'code': 'SM', 'name': "SkyMap - CaV", 'node': "node/41"},
+            {'code': 'OP', 'name': "Opal", 'node': "node/50"},
+            {'code': 'D5', 'name': "D51 filter", 'node': ""}]
+
+
+def filter_props(code):
+    f = filter_list()
+    try:
+        for fs in f:
+            if(fs['code'] == code):
+                return [fs['name'], fs['node']]
+        return ["Unknown", ""]
+    except:
+        return ["Unknown", ""]
+
+
+def filter_link(code):
+    try:
+        props = filter_props(code)
+    except:
+        return "Unknown"
+    if len(props) == 2:
+        return l(props[0], props[1])
+    else:
+        return props[0]
+
+
+def filter_name(code):
+    try:
+        props = filter_props(code)
+    except:
+        return "Unknown"
+    return props[0]
+
+
+def hexangletodec(value):
+    value = value.split(":")
+    if (int(value[0]) >= 0):
+        sign = 1
+    else:
+        sign = -1
+    return (int(value[0]) + (sign * (float(value[1]) / 60) + (float(value[2]) / 3600)))

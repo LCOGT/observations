@@ -687,14 +687,15 @@ aside.clients img {
     margin: 50px auto;
 }
 
-footer .news-links {
+footer .news-links, footer .footer-links {
     text-align: left;
 }
 
 footer {
     padding: 25px 0;
-    text-align: center;
+    text-align: left;
     border-top: 1px #ddd solid;
+    background-color: #eee;
 }
 
 footer span.copyright {
@@ -709,6 +710,7 @@ footer ul.quicklinks {
 }
 
 ul.social-buttons {
+    text-align: center;
     margin-bottom: 0;
 }
 ul.features {
