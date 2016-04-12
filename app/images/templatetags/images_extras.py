@@ -70,7 +70,6 @@ def niceduration(value):
             return str(y)+' years '+str(d)+' days'
 
 def relativetime(value):
-    print(type(value))
     if not(value):
         return ""
     delta = datetime.utcnow()-parsetime(value)

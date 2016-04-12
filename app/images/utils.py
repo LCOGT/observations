@@ -147,7 +147,6 @@ def filter_props(code):
 
 
 def filter_link(code):
-    print(code)
     try:
         props = filter_props(code)
     except:

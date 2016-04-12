@@ -60,13 +60,13 @@
 							{% if n > 18 and onlyrti %}
 							<div class="pagination">
 							    <span class="step-links">
-							        <a href="{% url_add_query lastobs=lastobs %}">Next 18 of {{n}} &rarr;</a>
+							        <a href="{% url_add_query lastobs=lastobs|date:"YmdHis" %}">Next 18 of {{n}} &rarr;</a>
 							    </span>
 							</div>
 							{% elif not onlyrti %}
 							<div class="pagination">
 							    <span class="step-links">
-							        <a href="{% url_add_query lastobs=lastobs %}"> Older observations &rarr;</a>
+							        <a href="{% url_add_query lastobs=lastobs|date:"YmdHis" %}"> Older observations &rarr;</a>
 							    </span>
 							</div>
 							{% endif %}

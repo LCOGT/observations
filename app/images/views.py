@@ -408,8 +408,12 @@ def search(request, format=None):
                 if "T" in lastobs:
                     lastobs_date = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S")
                 else:
-                    lastobs_date = datetime.strptime(lastobs, "%Y%m%d%H%M%S")
-                form.cleaned_data['enddate'] = lastobs_date.date()
+                    try:
+                        lastobs_date = datetime.strptime(lastobs, "%Y%m%d%H%M%S")
+                    except:
+                        lastobs_date = datetime.utcnow()
+                form.cleaned_data['enddate'] = lastobs_date
+                page_data['lastobs'] = lastobs_date
             elif not form.cleaned_data['enddate']:
                 form.cleaned_data['enddate'] = date.today()
             obs, lastobs, n, onlyrti = fetch_observations(
@@ -421,8 +425,6 @@ def search(request, format=None):
             page_data['description'] = 'Search results (LCOGT)'
             page_data['perpage'] = n_per_page
             page_data['searchstring'] = request.GET.get('query', None)
-            if lastobs:
-                page_data['lastobs'] = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S").date()
 
             if page_data['doctype'] == "json" or format == 'json':
                 return view_json(request, build_observations_json(obs), page_data)
@@ -450,7 +452,7 @@ def fetch_observations(data, lastobs):
     onlyrti = False
     rti_n = 0
     # earliest_obs = search_include_framedb(data['query'])
-    if not data['enddate'] or data['enddate'] > date(2014, 4, 1):
+    if not data['enddate'] or data['enddate'] > datetime(2014, 4, 1):
         obs = search_framedb(data)
     if len(obs) < n_per_page:
         # Fetch RTI images
@@ -1533,7 +1535,7 @@ def identity(request):
         try:
             site = Site.objects.get(code=observation[0]['siteid'])
         except Exception, e:
-            print e, observation[0]['site']
+            logger.error(e, observation[0]['site'])
             site = None
         return render(request,'images/identity_detail.html', {'n': 1,
                                                               'site': site,
