@@ -405,8 +405,11 @@ def search(request, format=None):
         if form.is_valid():
             lastobs = request.GET.get('lastobs', None)
             if lastobs:
-                form.cleaned_data['enddate'] = datetime.strptime(
-                    lastobs, "%Y-%m-%dT%H:%M:%S").date()
+                if "T" in lastobs:
+                    lastobs_date = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S")
+                else:
+                    lastobs_date = datetime.strptime(lastobs, "%Y%m%d%H%M%S")
+                form.cleaned_data['enddate'] = lastobs_date.date()
             elif not form.cleaned_data['enddate']:
                 form.cleaned_data['enddate'] = date.today()
             obs, lastobs, n, onlyrti = fetch_observations(
