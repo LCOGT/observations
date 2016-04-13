@@ -406,24 +406,19 @@ def search(request, format=None):
             lastobs = request.GET.get('lastobs', None)
             if lastobs:
                 if "T" in lastobs:
-                    lastobs_date = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S")
+                    lastobs = datetime.strptime(lastobs, "%Y-%m-%dT%H:%M:%S")
                 else:
                     try:
-                        lastobs_date = datetime.strptime(lastobs, "%Y%m%d%H%M%S")
+                        lastobs = datetime.strptime(lastobs, "%Y%m%d%H%M%S")
                     except:
-                        lastobs_date = datetime.utcnow()
-                form.cleaned_data['enddate'] = lastobs_date
-                page_data['lastobs'] = lastobs_date
+                        lastobs = datetime.utcnow()
+                form.cleaned_data['enddate'] = lastobs
             elif not form.cleaned_data['enddate']:
-                form.cleaned_data['enddate'] = date.today()
-            obs, lastobs, n, onlyrti = fetch_observations(
-                form.cleaned_data, lastobs)
-
+                form.cleaned_data['enddate'] = datetime.utcnow()
+            obs, lastobs, n, onlyrti = fetch_observations(form.cleaned_data, lastobs)
             page_data['onlyrti'] = onlyrti
-            page_data['title'] = "Search Results"
-            page_data['link'] = 'search'
+            page_data['lastobs'] = lastobs
             page_data['description'] = 'Search results (LCOGT)'
-            page_data['perpage'] = n_per_page
             page_data['searchstring'] = request.GET.get('query', None)
 
             if page_data['doctype'] == "json" or format == 'json':
@@ -464,7 +459,7 @@ def fetch_observations(data, lastobs):
         onlyrti = True
     obs = obs[0:18]
     if obs:
-        lastobs = obs[-1]['dateobs'].isoformat("T")
+        lastobs = obs[-1]['dateobs']
     else:
         lastobs = None
     return obs, lastobs, total_n, onlyrti

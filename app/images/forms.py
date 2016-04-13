@@ -25,8 +25,8 @@ class SearchForm(forms.Form):
 
     query = forms.CharField(
         label='Name of astronomical object:', required=False)
-    startdate = forms.DateField(required=False)
-    enddate = forms.DateField(required=False)
+    startdate = forms.DateTimeField(required=False)
+    enddate = forms.DateTimeField(required=False)
     alldates = forms.BooleanField(required=False)
     sites = forms.ChoiceField(choices=sites, required=False)
     filters = forms.ChoiceField(choices=filters, required=False)
@@ -47,7 +47,7 @@ class SearchForm(forms.Form):
     def clean_startdate(self):
         if self.cleaned_data['startdate']:
             data = self.cleaned_data['startdate']
-            if data < date(2004, 9, 1):
+            if data < datetime(2004, 9, 1):
                 raise forms.ValidationError(
                     "Our records only go back to 1 Sept 2004")
             return data
