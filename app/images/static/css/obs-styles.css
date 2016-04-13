@@ -371,7 +371,6 @@ div.observation-metadata li.filter-g { color: green; }
 div.observation-metadata li.filter-r { color: red; }
 p.moreobservations { margin-bottom: 2px; }
 ul.stream {
-	margin: 0px;
 	padding: 0px;
 	list-style: none;
 	max-height: 86px;
