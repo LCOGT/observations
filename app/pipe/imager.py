@@ -189,22 +189,22 @@ def move_image_to_day_dir(hdr, filename):
 
 def save_image_object(hdr, filename):
     image = Image(
-                    imageid = hdr['BLKUID']
-                    dateobs = hdr['DATE-OBS']
-                    objectname = hdr['OBJECT']
-                    ra = hmstodegrees(hdr['RA'])
-                    dec = dmstodegrees(hdr['DEC'])
-                    filters = 'COLOUR'
-                    exposure =
-                    requestids = hdr['TRACKNUM']
-                    filename = filename
-                    username =
-                    observer =
-                    processingtype = 'STIFF'
-                    instrumentname = hdr['INSTRUME']
+                    imageid = hdr['BLKUID'],
+                    dateobs = hdr['DATE-OBS'],
+                    objectname = hdr['OBJECT'],
+                    ra = hmstodegrees(hdr['RA']),
+                    dec = dmstodegrees(hdr['DEC']),
+                    filters = 'COLOUR',
+                    exposure = hdr['EXPTIME'],
+                    requestids = hdr['TRACKNUM'],
+                    filename = filename,
+                    username = 'temp',
+                    observer = 'temp',
+                    processingtype = 'STIFF',
+                    instrumentname = hdr['INSTRUME'],
                     )
     telescope = Telescope.objects.filter(site__code=hdr['SITEID'], enclosure=hdr['ENCID'], code=hdr['TELID'])
-    if telescope.count() > 0
+    if telescope.count() > 0:
         image.telescope = telescope[0]
     image.save()
 
