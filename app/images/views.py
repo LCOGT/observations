@@ -1562,7 +1562,10 @@ def get_fits(origname):
     origname = origname[0:31]
     url =settings.ARCHIVE_API + 'frames/?basename={}'.format(origname)
     headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
-    response = requests.get(url,headers=headers).json()
+    try:
+        response = requests.get(url,headers=headers).json()
+    except ValidError:
+        return []
     for datum in response['results']:
         filter_params = {
                 'fits': datum['url'],
@@ -1865,7 +1868,7 @@ def build_observations_json(obs):
             "label": o['objectname'],
             "observer": {
                 "about": '',  # base_url+o['link_user'],
-                "label": re.sub(r"\"", '', o['user'])
+                "label": o['user']
             },
             "image": {
                 "about": o['fullimage_url'],
