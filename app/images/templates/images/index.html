@@ -1,6 +1,35 @@
 {% extends 'images/base.html' %}
 {% load images_extras %}
 
+{% block script-content %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+var frame_ids = {{images|safe}};
+
+for (i=0;i<frame_ids.length;i++){
+  var frame = frame_ids[i];
+  $.ajax({
+     url: 'https://thumbnails.lcogt.net/'+ frame+'/?label=javascript',
+     data: {
+        format: 'json',
+     },
+     error: function() {
+        $('#observations').html('<p>An error has occurred</p>');
+     },
+     dataType: 'jsonp',
+     success: function(data) {
+        var $item = $('<li class="thumb">').html('<img src="'+ data.url +'"/>');
+        $('#observations').append($item)
+     },
+     type: 'GET'
+  });
+}
+});
+
+</script>
+{% endblock %}
+
 {%block header %}Observations{%endblock%}
 
 {% block main_span_size %}col-md-12{% endblock %}
@@ -14,7 +43,7 @@
 							<h2><a href="{% url 'show_recent' %}">Most recent observations</a></h2>
 							<div class="time"></div>
 							<ul class="observation-results" data-json="{% url 'home' %}search.json" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=latest %}
+{% include "images/archive_obs_list.html" with obs=latest %}
 							</ul>
 						</div>
 						<div class="row">

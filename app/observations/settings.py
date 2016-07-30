@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
 
-VERSION = '0.2'
+VERSION = '0.3'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
 DOMAIN = 'lcogt.net'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
@@ -42,14 +42,6 @@ DATABASES = {
         "USER": os.environ.get('OBS_DB_USER', ''),
         "PASSWORD": os.environ.get('OBS_DB_PASSWD', ''),
         "HOST": os.environ.get('OBS_DB_HOST', ''),
-        "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
-        "ENGINE": "django.db.backends.mysql",
-    },
-    'rbauth': {
-        'NAME': os.environ.get('RBAUTH_DB_NAME', ''),
-        "USER": os.environ.get('RBAUTH_DB_USER', ''),
-        "PASSWORD": os.environ.get('RBAUTH_DB_PASSWD', ''),
-        "HOST": os.environ.get('RBAUTH_DB_HOST', ''),
         "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
         "ENGINE": "django.db.backends.mysql",
     }
@@ -90,9 +82,12 @@ chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 SECRET_KEY = get_random_string(50, chars)
 
 ARCHIVE_API_TOKEN = os.environ.get('OBS_ARCHIVE_TOKEN', '')
-ARCHIVE_API = 'https://archive-api.lcogt.net/'
+ARCHIVE_API = 'https://archive-api.lcogt.net/frames/'
+ARCHIVE_TOKEN_URL = 'https://archive-api.lcogt.net/api-token-auth/'
 SESSION_COOKIE_NAME = "observations.sessionid"
 IMAGE_PATH = '/var/www/html/observations/'
+ARCHIVE_USER = os.environ.get('OBS_API_USER', '')
+ARCHIVE_PASSWORD = os.environ.get('OBS_API_PASSWD', '')
 
 # List of callables that know how to import templates from various sources.
 STATICFILES_FINDERS = (
