@@ -35,6 +35,7 @@ from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, date
     filter_list, filter_props, filter_link, filter_name, hexangletodec, l, binMonths
 from images.archive import recent_observations
 from images.lookups import categories, categorylookup
+from images.users import user_look_up, look_up_org_names
 from string import replace
 import json
 import math
@@ -1024,27 +1025,6 @@ def get_archive_fits(origname, date, propid, tracknum, reqnum):
     else:
         return False
 
-def get_ipac_fits(origname, date, propid, tracknum, reqnum):
-    ipac_dl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/LCODownload/nph-lcoDownload?file="
-    baseurl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/Gator/nph-query?spatial=NONE&outfmt=1&catalog=lco_img"
-    qstring = "&propid=%s&selcols=filehand,tracknum,reqnum&mission=lcogt&constraints=(date_obs+between+to_date('%s 00:01','YYYY-MM-DD HH24:MI')+and+to_date('%s 23:59','YYYY-MM-DD HH24:MI')+and+tracknum+in+('%s'))" % (
-        propid, date, date, tracknum)
-    lookup_url = baseurl + qstring.replace(" ", "%20")
-    try:
-        resp = requests.get(lookup_url, timeout=10)
-    except:
-        return False
-    text = resp.content
-    vals = [x.strip() for x in text.split(
-        "\n") if x[:1] != '\\' and x[:1] != '' and x[:1] != '|']
-    files = [v.split()[0] for v in vals]
-    filename = origname[:-9]
-    datafile = [f for f in files if filename in f]
-    if datafile:
-        return ipac_dl + datafile[0]
-    else:
-        return False
-
 
 def get_observation_stream(obs):
 
@@ -1162,21 +1142,6 @@ def getCategoryLevel(avm, input):
 
     return input
 
-def framedb_lookup(query):
-    try:
-        client = requests.session()
-
-        # First have to authenticate
-        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
-        # Because we are sending log in details it has to go over SSL
-        data_url = 'https://data.lcogt.net%s' % query
-        resp = client.post(data_url, data=login_data, timeout=20)
-        data = resp.json()
-        logger.debug(data)
-    except:
-        return False
-    return data
-
 def recent_frames(proposal_id, datestamp=None, num_frames=10):
     '''
     Use Archive API to get most recent data images
@@ -1213,7 +1178,6 @@ def frame_by_basename(basename):
         }
     return frame
 
-
 def tracknum_lookup(tracknum):
     if not tracknum.startswith('0') and len(tracknum) != 10:
         # Avoid sending junk to the API
@@ -1229,68 +1193,6 @@ def tracknum_lookup(tracknum):
         return False
     return data
 
-
-def find_user_ids(tracknums):
-    user_list = []
-    for n in tracknums:
-        data = tracknum_lookup(n)
-        if data:
-            user_list.append((n, data['proposal']['user_id']))
-    return user_list
-
-
-def rbauth_lookup(userlist):
-    cursor = connections['rbauth'].cursor()
-    sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" % "','".join(
-        userlist)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    cursor.close()
-    return result
-
-
-def user_look_up(userlist):
-    rows = rbauth_lookup(userlist)
-    org_names = dict((x[0], x[1]) for x in rows)
-    user_dict = {}
-    if org_names:
-        for u in user_list:
-            user_dict[k] = org_names.get(u, 'Unknown')
-    return user_dict
-
-
-def look_up_org_names(usernames):
-    ''' Parse a list of tuples mapping tracking num to username
-        return a dict of tracking numbers to organization names
-    '''
-    if usernames:
-        tracknums, userlist = zip(*usernames)
-        rows = rbauth_lookup(userlist)
-        org_names = dict((x[0], x[1]) for x in rows)
-        user_dict = dict(usernames)
-        if org_names:
-            for k, v in user_dict.items():
-                user_dict[k] = org_names.get(v, 'Unknown')
-        return user_dict
-    else:
-        return {"Unknown": "Unknown"}
-
-
-def collate_org_names(observations):
-    ''' Small function to find the organizations of observers from a list of observations
-    '''
-    if observations:
-        tracknums = [o['tracknum'] for o in observations]
-    else:
-        tracknums = []
-    if tracknums:
-        usernames = find_user_ids(tracknums)
-        org_names = look_up_org_names(usernames)
-    else:
-        org_names = {"Unknown": "Unknown"}
-    return org_names
-
-
 def build_recent_observations(num):
     observations = []
     recent_obs = []
@@ -1305,20 +1207,6 @@ def build_recent_observations(num):
         recent_obs = []
     return recent_obs
 
-def identity_archive(request):
-    '''
-    Main function for looking up the origname, tracking number or organization's observations.
-    Then passes all the meta data that observations need to be displayed either as a group or on a single page
-    '''
-    origname = request.GET.get('origname', '')
-    origname = origname[0:31]
-    url =settings.ARCHIVE_API + 'frames/?basename={}&RLEVEL=90'.format(origname)
-    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
-    response = requests.get(url,headers=headers).json()
-    if len(response['results']) > 0:
-        return response['results']
-    else:
-        return []
 
 def identity(request):
     '''

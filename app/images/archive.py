@@ -17,9 +17,11 @@ import requests
 from datetime import datetime
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.shortcuts import render
 
 from images.models import Site, Telescope
+from images.users import user_look_up
 
 import logging
 
@@ -45,8 +47,11 @@ def get_header_data(auth_header='', frameid=None):
     base_url = settings.ARCHIVE_API
     archive_url = '%s%s/headers/' % (base_url, frameid)
 
-    response = requests.get(archive_url, headers=auth_header).json()
-    return response
+    response = requests.get(archive_url, headers=auth_header)
+    if response.status_code != 200:
+        raise Http404(response.json()['detail'])
+    else:
+        return response.json()
 
 def recent_observations():
     headers = get_headers(settings.ARCHIVE_TOKEN_URL)
@@ -60,6 +65,8 @@ def get_frame_header(frameid):
 
 def frame_lookup(request, frameid):
     frame = get_frame_header(frameid)
-    user = frame.get('USER_ID','') #user_look_up([frame.get('USER_ID','')])
+    user_id = frame.get('USERID','')
+    user = user_look_up([user_id])
+    print(user[user_id])
     site = Site.objects.get(code=frame.get('SITEID',''))
-    return render(request, 'images/archive_image.html', {'obs': frame, 'user':user, 'site':site})
+    return render(request, 'images/archive_image.html', {'obs': frame, 'observer':user[user_id], 'site':site,'frameid':frameid})

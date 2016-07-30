@@ -44,6 +44,14 @@ DATABASES = {
         "HOST": os.environ.get('OBS_DB_HOST', ''),
         "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
         "ENGINE": "django.db.backends.mysql",
+    },
+    'rbauth': {
+        'NAME': os.environ.get('RBAUTH_DB_NAME', ''),
+        "USER": os.environ.get('RBAUTH_DB_USER', ''),
+        "PASSWORD": os.environ.get('RBAUTH_DB_PASSWD', ''),
+        "HOST": os.environ.get('RBAUTH_DB_HOST', ''),
+        "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
+        "ENGINE": "django.db.backends.mysql",
     }
 }
 
