@@ -3,17 +3,17 @@
 
 						<div class="col-xs-6 col-md-2 col-lg-2">
 								<div class='thumb'>
-									<span class='archive-thumb-img' ><a href="{% url 'frame' o.id %}"><img src="http://lcogt.net/files/no-image_120.png" alt='{{ o.OBJECT }}' class="img-rounded" data-frameid="{{o.id}}"/></a></span>
-									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.OBJECT }}'>{{ o.OBJECT }}</div><div class="ellipsis">By <span class="observer" title="{{ o.user }}" property="UCD:obs.observer">{{ o.user }}</span></div></div>
+									<span class='archive-thumb-img thumb-img' ><a href="{% url 'frame' o.id %}"><img src="http://lcogt.net/files/no-image_120.png" alt='{{ o.OBJECT }}' class="img-rounded" data-frameid="{{o.id}}"/></a></span>
+									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.OBJECT }}'>{{ o.OBJECT }}</div></div>
 
 									<div class='more-info'>
 										<div class='name'>Title: <a href="{% url 'search' %}?query={{ o.OBJECT }}" property='dc:title'>{{ o.OBJECT }}</a></div>
 										<div class='position'>RA: {{ o.area.coordinates.0.0.0|degreestohms}}, Dec: {{ o.area.coordinates.0.0.1|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.ra }}&amp;de={{ o.dec}}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.ra }}&amp;dec={{ o.dec }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
 										<div class='telescope'>Site: {{o.TELID}} at {{ o.SITEID }}</div>
-										<div class='filter'>Filter: {{o.FILTER|safe}}</div>
-										<div class=""><a href="{{o.url}}">download</a></div>
+										<div class='filter'>Filter: {{o.FILTER}}</div>
+										<div class="">Download: <a href="{{o.url}}">FITS data</a></div>
 										<div class='exposure'>Exposure: {{ o.EXPTIME }} s (total)</div>
-										<time datetime='{{ o.DATEOBS|date:"c" }}'>Taken: {{ o.DATEOBS|timesince }} ago</time>
+										<div class="date_obs">Taken: <time datetime='{{ o.DATE_OBS }}'>{{ o.DATE_OBS }}</time></div>
 									</div>
 								</div>
 							</div>

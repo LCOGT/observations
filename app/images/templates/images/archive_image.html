@@ -13,12 +13,13 @@ var img_url;
     img_url = data.url;
     $('img.observation-image').attr('src',img_url);
     $('a.observation-image-link').attr('href', img_url)
+    // Fix the download links after we have the IMG url
+    $.get("https://archive-api.lcogt.net/frames/"+ frame_id+"/", function(data){
+      var download_content = "<a href='"+ data.url+"' property='UCD:obs.image'>FITS</a> or <a href='"+ img_url+"' property='UCD:obs.image'>JPEG</a>";
+      $('#download-link').html(download_content);
+    });
   });
 
-  $.get("https://archive-api.lcogt.net/frames/"+ frame_id+"/", function(data){
-    var download_content = "<a href='"+ data.url+"' property='UCD:obs.image'>FITS</a> or <a href='"+ img_url+"' property='UCD:obs.image'>JPEG</a>";
-    $('#download-link').html(download_content);
-  });
 
 });
 

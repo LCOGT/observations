@@ -33,7 +33,8 @@ from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, datestamp, \
     filter_list, filter_props, filter_link, filter_name, hexangletodec, l, binMonths
-from images.archive import recent_observations, search_archive
+from images.archive import recent_observations, search_archive, get_auth_headers, \
+    search_archive_data
 from images.lookups import categories, categorylookup
 from images.users import user_look_up, look_up_org_names
 from string import replace
@@ -278,19 +279,14 @@ def search_include_framedb(objectname):
 
 
 def get_site_data(code):
-    observations = []
-    recent_obs = []
     # Store the TAG IDs in a config not here
-    qstring = "/find?siteid=%s&limit=%s&order_by=-date_obs&full_header=1" % (
-        code, 18)
-    observations = framedb_lookup(qstring)
-    org_names = collate_org_names(observations)
-    obs = build_framedb_observations(observations, org_names)
-    n = n_per_page
-    if len(obs) < n_per_page:
-        n = len(obs)
-    data = {'n': n,
-            'obs': obs}
+    qstring = "SITEID=%s&limit=30&OBSTYPE=EXPOSE&RLEVEL=91" % (code)
+    print(qstring)
+    headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
+    obs = search_archive_data(qstring, headers)
+
+    data = {'n': obs['count'],
+            'obs': obs['results']}
     return data
 
 
@@ -317,7 +313,7 @@ def view_site(request, code, format=None):
     else:
         data['sites'] = Site.objects.all()
         data['site'] = site
-        data['telescopes'] = Telescope.objects.all()
+        data['telescopes'] = Telescope.objects.filter(site=site)
         return render(request, 'images/site.html', data)
 
 
