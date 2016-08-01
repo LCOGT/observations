@@ -281,7 +281,6 @@ def search_include_framedb(objectname):
 def get_site_data(code):
     # Store the TAG IDs in a config not here
     qstring = "SITEID=%s&limit=30&OBSTYPE=EXPOSE&RLEVEL=91" % (code)
-    print(qstring)
     headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
     obs = search_archive_data(qstring, headers)
 
@@ -773,7 +772,6 @@ def view_map(request):
 
     obs = Image.objects.filter(
         dateobs__gte=dt).order_by('-dateobs')
-    # print dt.strftime("%Y%m%d%H%M%S")
     n = obs.count()
 
     input['observations'] = 0
@@ -844,11 +842,9 @@ def view_observation(request, code, tel, obs):
         delta = datetime.utcnow() - obstats[0].lastviewed
         # 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
         # 0.5 = 2*(0.5^2) <- where 0.5 days is the sigma for the Gaussian function
-        # print
         # obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
         obstats[0].weight = addition + obstats[0].weight * \
             math.exp(-math.pow((delta.seconds) / 86400., 2) / 0.5)
-        # print obstats[0].weight
         obstats[0].lastviewed = datetime.utcnow()
     else:
         obstats = [ObservationStats(
@@ -914,7 +910,6 @@ def view_observation(request, code, tel, obs):
         filters = get_sci_fits(params)
 
     if input['doctype'] == "json":
-        # print obs
         return view_json(request, build_observations_json(obs), input)
     return render(request,'images/observation.html', {'n': 1,
                                                           'telescope': telescope,
