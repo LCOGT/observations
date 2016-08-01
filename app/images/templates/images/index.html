@@ -1,6 +1,25 @@
 {% extends 'images/base.html' %}
 {% load images_extras %}
 
+{% block header_script %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+
+$('.archive-thumb-img img').each(function(i, el){
+  var frameid= $(el).data('frameid');
+  if (typeof(frameid) != 'undefined'){
+    $.get("https://thumbnails.lcogt.net/"+ frameid+"/?height=200&width=200", function(data){
+      img_url = data.url;
+      $(el).attr('src',img_url);
+    });
+  }
+ });
+});
+
+</script>
+{% endblock %}
+
 {%block header %}Observations{%endblock%}
 
 {% block main_span_size %}col-md-12{% endblock %}
@@ -14,7 +33,7 @@
 							<h2><a href="{% url 'show_recent' %}">Most recent observations</a></h2>
 							<div class="time"></div>
 							<ul class="observation-results" data-json="{% url 'home' %}search.json" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=latest %}
+{% include "images/archive_obs_list.html" with obs=latest %}
 							</ul>
 						</div>
 						<div class="row">

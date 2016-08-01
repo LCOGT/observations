@@ -1,0 +1,148 @@
+{% extends 'images/base.html' %}
+{% load images_extras %}
+{% load staticfiles %}
+{% block header_script %}
+<script type="text/javascript" src="{% static "js/rti_archive_observation.js" %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+var frame_id = {{frameid}}
+var img_url;
+
+  $.get("https://thumbnails.lcogt.net/"+ frame_id+"/?height=1000&width=1000", function(data){
+    img_url = data.url;
+    $('img.observation-image').attr('src',img_url);
+    $('a.observation-image-link').attr('href', img_url)
+    // Fix the download links after we have the IMG url
+    $.get("https://archive-api.lcogt.net/frames/"+ frame_id+"/", function(data){
+      var download_content = "<a href='"+ data.url+"' property='UCD:obs.image'>FITS</a> or <a href='"+ img_url+"' property='UCD:obs.image'>JPEG</a>";
+      $('#download-link').html(download_content);
+    });
+  });
+
+
+});
+
+</script>
+{% endblock %}
+
+{%block header %}{{ obs.OBJECT }}{%endblock%}
+
+{%block title %}Observation of {{ obs.OBJECT }}{%endblock%}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'home' %}">Observations</a></li>
+  <li><a href="{% url 'show_site' obs.SITEID %}">{{ site }}</a></li>
+  <li class="active">{{ obs.TELID }} : {{ obs.OBJECT }}</li>
+</ol>
+
+{% endblock %}
+
+{% block main-content %}
+        <a href='{{ obs.fullimage_url }}' title='Click for full size version' class="observation-image-link">
+            <img src='http://lcogt.net/files/missing_large.png' class='observation-image img-responsive' alt='{{ obs.title }}' />
+        </a>
+        {% if otherobs%}
+        <p class='moreobservations'>More observations by {{ obs.user }}:</p>
+        <ul class='stream'>
+            {% for ob in otherobs %}
+            <li class='{{ ob.class }}'>
+                <a href='{{ ob.url }}'>
+                    <img src='{{ ob.thumb }}' alt='{{ ob.title }}' title='{{ ob.title }} taken on {{ ob.date }}'/>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+{% endblock %}
+
+{% block right_panel %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">Observation Information</div>
+            <table class='table table-condensed'>
+                <tr style='display:none;'>
+                    <td class='first'>Title:</td>
+                    <td property='dc:title'>{{ obs.title }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Observer:</th>
+                    <td>
+                        <span property="UCD:obs.observer">{{ observer }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Date:</th>
+                    <td>
+                        <time property='UCD:time.creation'>{{ obs.DATE_OBS }}</time>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Coordinates:</th>
+                    <td>
+                        <span class='Spatial-ReferenceValue' title='{{ obs.RA }};{{ obs.DEC }}'>
+                            <span property='UCD:pos.eq.RA' content='{{ obs.RA|hmstodegrees }}'>{{ obs.RA }}</span>,
+                            <span property='UCD:pos.eq.DEC' content='{{ obs.DEC|dmstodegrees }}'>{{ obs.DEC }}</span>
+                        </span>
+                        <span class='Spatial-CoordinateFrame'>FK5</span>
+                        <span class='Spatial-Equinox'>J2000</span>
+                        <br />View this position in <a href='http://server1.wikisky.org/v2?ra={{ obs.RA|hmstohours }}&amp;de={{ obs.DEC|dmstodegrees }}&amp;zoom=10&amp;img_source=astrophoto' title="View these coordinates in Wikisky">Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ obs.RA|hmstohours }}&amp;dec={{ obs.DEC|dmstodegrees }}&amp;zoom=3' title="View these coordinates in Microsoft's World Wide Telescope">WorldWideTelescope</a>.
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Site:</th>
+                    <td property='UCD:instr.tel'><a href="{% url 'show_site' obs.SITEID %}">{{site}}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Filter:</th>
+                    <td>{{ obs.FILTER }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Exposure:</th>
+                    <td>
+                        <span property='UCD:obs.exposure'>{{ obs.EXPTIME }}</span>s</td>
+                </tr>
+                <tr>
+                    <th scope="row">Data:</th>
+                    <td>
+
+                        <div id="download-link">FITS data not currently available</div>
+                        <p><a href="http://lcogt.net/education/observing/fpack/">Having trouble opening FITS files?</a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Credit:</th>
+                    <td>Image taken with a {{obs.TELID}} telescope at the {{site}} node of Las Cumbres Observatory Global Telescope Network</td>
+                </tr>
+                <tr>
+                    <th scope="row">License:</th>
+                    <td>
+                        <a href="{{ obs.license }}" rel="license cc:license">
+                            <img src="{% static "img/cc-by-nc.png" %}" style="height:1.5em;" title="Some rights reserved" />
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Share:</th>
+                    <td>
+                        <a href="http://twitter.com/home/?status={{ obs.OBJECT|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+          </div>
+{% endblock %}
+
+{% block alternate %}
+        <div class="row">
+          <div class="col-md-12">
+            {{obs.other}}
+          </div>
+        </div>
+{% endblock %}

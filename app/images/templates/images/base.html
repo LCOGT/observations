@@ -31,7 +31,24 @@
       <![endif]-->
       <!-- jQuery - Rest of JS is at the end. This is here so we can use Jquery in pages-->
       <script src="{% static 'js/jquery.js' %}"></script>
-      {% block header_script %}{% endblock%}
+      {% block header_script %}
+      <script type="text/javascript">
+      $(document).ready(function(){
+
+
+      $('.archive-thumb-img img').each(function(i, el){
+        var frameid= $(el).data('frameid');
+        if (typeof(frameid) != 'undefined'){
+          $.get("https://thumbnails.lcogt.net/"+ frameid+"/?height=200&width=200", function(data){
+            img_url = data.url;
+            $(el).attr('src',img_url);
+          });
+        }
+       });
+      });
+
+      </script>
+      {% endblock %}
 
   </head>
 

@@ -33,6 +33,10 @@ from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, datestamp, \
     filter_list, filter_props, filter_link, filter_name, hexangletodec, l, binMonths
+from images.archive import recent_observations, search_archive, get_auth_headers, \
+    search_archive_data
+from images.lookups import categories, categorylookup
+from images.users import user_look_up, look_up_org_names
 from string import replace
 import json
 import math
@@ -45,193 +49,6 @@ logger = logging.getLogger('images')
 n_per_line = 6
 n_per_page = 18
 base_url = "http://lcogt.net/observations/"
-categorylookup = {'1': 'Planets',
-                  '1.1': 'Planets (Type)',
-                  '1.1.1': 'Terrestrial Planets',
-                  '1.1.2': 'Gas Giant Planets',
-                  '1.2': 'Planets (Feature)',
-                  '1.2.1': 'Planet Surfaces',
-                  '1.2.1.1': 'Mountains',
-                  '1.2.1.2': 'Canyons',
-                  '1.2.1.3': 'Volcanic Surfaces',
-                  '1.2.1.4': 'Surface Impacts',
-                  '1.2.1.5': 'Surface Erosion',
-                  '1.2.1.6': 'Surface Liquid',
-                  '1.2.1.7': 'Surface Ice',
-                  '1.2.2': 'Planetary Atmospheres',
-                  '1.2.2.1': 'Atmospheric Clouds',
-                  '1.2.2.2': 'Storms',
-                  '1.2.2.3': 'Atmospheric Belts',
-                  '1.2.2.4': 'Aurorae',
-                  '1.3': 'Planets (Special Cases)',
-                  '1.3.1': 'Transiting Planets',
-                  '1.3.2': 'Hot Jupiters',
-                  '1.3.3': 'Pulsar Planets',
-                  '1.4': 'Satellites',
-                  '1.4.1': 'Satellites (Feature)',
-                  '1.4.1.1': 'Satellite Surfaces',
-                  '1.4.1.1.1': 'Mountain',
-                  '1.4.1.1.2': 'Canyon',
-                  '1.4.1.1.3': 'Volcanic',
-                  '1.4.1.1.4': 'Impact',
-                  '1.4.1.1.5': 'Erosion',
-                  '1.4.1.1.6': 'Liquid',
-                  '1.4.1.1.7': 'Ice',
-                  '1.4.1.2': 'Satellite Atmospheres',
-                  '2': 'Interplanetary Bodies',
-                  '2.1': 'Dwarf Planets',
-                  '2.2': 'Comets',
-                  '2.2.1': 'Comet Nuclei',
-                  '2.2.2': 'Comet Coma',
-                  '2.2.3': 'Comet Tails',
-                  '2.2.3.1': 'Comets (Dust)',
-                  '2.2.3.2': 'Comets (Gas)',
-                  '2.3': 'Asteroids',
-                  '2.4': 'Meteoroids',
-                  '3': 'Stars',
-                  '3.1': 'Stars (Evolutionary Stage)',
-                  '3.1.1': 'Protostar',
-                  '3.1.2': 'Young Stellar Object',
-                  '3.1.3': 'Main Sequence Star',
-                  '3.1.4': 'Red Giants',
-                  '3.1.5': 'Red Supergiants',
-                  '3.1.6': 'Blue Supergiants',
-                  '3.1.7': 'White Dwarf Stars',
-                  '3.1.8': 'Supernovae',
-                  '3.1.9': 'Neutron Stars',
-                  '3.1.9.1': 'Pulsars',
-                  '3.1.9.2': 'Magnetars',
-                  '3.1.10': 'Black Holes',
-                  '3.2': 'Stars (Type)',
-                  '3.2.1': 'Variable Stars',
-                  '3.2.1.1': 'Pulsating Stars',
-                  '3.2.1.2': 'Irregular Stars',
-                  '3.2.1.3': 'Eclipsing Stars',
-                  '3.2.1.4': 'Flare Stars',
-                  '3.2.1.5': 'Novae',
-                  '3.2.1.6': 'X-Ray Binaries (Star)',
-                  '3.3': 'Stars with Spectral Types',
-                  '3.3.1': 'O Stars',
-                  '3.3.2': 'B Stars',
-                  '3.3.3': 'A Stars',
-                  '3.3.4': 'F Stars',
-                  '3.3.5': 'G Stars',
-                  '3.3.6': 'K Stars',
-                  '3.3.7': 'M Stars',
-                  '3.3.8': 'L Stars',
-                  '3.3.9': 'T Stars',
-                  '3.4': 'Stellar Populations',
-                  '3.4.1': 'Population I Stars',
-                  '3.4.2': 'Population II Stars',
-                  '3.4.3': 'Population III Stars',
-                  '3.5': 'Stellar feature',
-                  '3.5.1': 'Photosphere',
-                  '3.5.1.1': 'Granulation',
-                  '3.5.1.2': 'Sunspot',
-                  '3.5.2': 'Chromosphere',
-                  '3.5.2.1': 'Flare',
-                  '3.5.2.2': 'Facula',
-                  '3.5.3': 'Corona',
-                  '3.5.3.1': 'Prominence',
-                  '3.6': 'Group of Stars',
-                  '3.6.1': 'Binary Stars',
-                  '3.6.2': 'Triple Stars',
-                  '3.6.3': 'Multiple Stars',
-                  '3.6.4': 'Clusters of Stars',
-                  '3.6.4.1': 'Open Clusters',
-                  '3.6.4.2': 'Globular Clusters',
-                  '3.7': 'Circumstellar Material',
-                  '3.7.1': 'Planetary Systems',
-                  '3.7.2': 'Disks',
-                  '3.7.2.1': 'Protoplanetary Disks',
-                  '3.7.2.2': 'Accretion Disks',
-                  '3.7.2.3': 'Debris Disks',
-                  '3.7.3': 'Outflows',
-                  '3.7.3.1': 'Solar Winds',
-                  '3.7.3.2': 'Coronal Mass Ejection',
-                  '4': 'Nebulae',
-                  '4.1': 'Nebulae (Type)',
-                  '4.1.1': 'Interstellar Medium',
-                  '4.1.2': 'Star Formation',
-                  '4.1.3': 'Planetary Nebulae',
-                  '4.1.4': 'Supernova Remnants',
-                  '4.1.5': 'Jets',
-                  '4.2': 'Nebulae (Appearance)',
-                  '4.2.1': 'Emission Nebulae',
-                  '4.2.1.1': 'H II Regions',
-                  '4.2.2': 'Reflection Nebulae',
-                  '4.2.2.1': 'Light Echo',
-                  '4.2.3': 'Dark Nebulae',
-                  '4.2.3.1': 'Molecular Clouds',
-                  '4.2.3.2': 'Bok Globules',
-                  '4.2.3.3': 'Proplyds',
-                  '5': 'Galaxies',
-                  '5.1': 'Galaxies (Type)',
-                  '5.1.1': 'Spiral Galaxies',
-                  '5.1.2': 'Barred Galaxies',
-                  '5.1.3': 'Lenticular Galaxies',
-                  '5.1.4': 'Elliptical Galaxies',
-                  '5.1.5': 'Ring Galaxies',
-                  '5.1.6': 'Irregular Galaxies',
-                  '5.1.7': 'Interacting Galaxies',
-                  '5.2': 'Galaxies (Size)',
-                  '5.2.1': 'Giant Galaxies',
-                  '5.2.2': 'Dwarf Galaxies',
-                  '5.3': 'Galaxies (Activity)',
-                  '5.3.1': 'Galaxies with normal activity',
-                  '5.3.2': 'AGN',
-                  '5.3.2.1': 'Quasars',
-                  '5.3.2.2': 'Seyfert Galaxies',
-                  '5.3.2.3': 'Blazars',
-                  '5.3.2.4': 'Liner Galaxies',
-                  '5.3.3': 'Starburst Galaxies',
-                  '5.3.4': 'Ultraluminous Galaxies',
-                  '5.4': 'Galaxies (Component)',
-                  '5.4.1': 'Bulges',
-                  '5.4.2': 'Bars',
-                  '5.4.3': 'Disks',
-                  '5.4.4': 'Halos',
-                  '5.4.5': 'Rings',
-                  '5.4.6': 'Central Black Holes',
-                  '5.4.7': 'Spiral Arms',
-                  '5.4.8': 'Dust Lanes',
-                  '5.4.9': 'Center Cores',
-                  '5.5': 'Galaxies (Grouping)',
-                  '5.5.1': 'Pair of Galaxies',
-                  '5.5.2': 'Multiple Galaxies',
-                  '5.5.3': 'Galaxy Clusters',
-                  '5.5.4': 'Galaxy Superclusters',
-                  '6': 'Cosmology',
-                  '6.1': 'Cosmology (Morphology)',
-                  '6.1.1': 'Deep Field',
-                  '6.1.2': 'Large-scale Structure',
-                  '6.1.3': 'Cosmic Background',
-                  '6.2': 'Cosmology (Phenomenon)',
-                  '6.2.2': 'Gamma Ray Burst',
-                  '6.2.3': 'Dark Matter',
-                  '7': 'Sky Phenomenon',
-                  '7.1': 'Night Sky',
-                  '7.1.1': 'Constellations',
-                  '7.1.2': 'Asterisms',
-                  '7.1.3': 'Milky Way',
-                  '7.1.4': 'Trails',
-                  '7.1.4.1': 'Meteor Trails',
-                  '7.1.4.2': 'Star Trails',
-                  '7.1.4.3': 'Satellite Trails',
-                  '7.1.5': 'Zodiacal Light',
-                  '7.1.5.1': 'Gegenschein',
-                  '7.1.5.2': 'Night glow',
-                  }
-categories = [
-    {'link': "planets", 'name': 'Planets', 'avm': 1},
-    {'link': "interplanetarybodies",
-        'name': 'Interplanetary Bodies', 'avm': 2},
-    {'link': "stars", 'name': 'Stars', 'avm': 3},
-    {'link': "nebulae", 'name': 'Nebulae', 'avm': 4},
-    {'link': "galaxies", 'name': 'Galaxies', 'avm': 5},
-    {'link': "cosmology", 'name': 'Cosmology', 'avm': 6},
-    {'link': "sky", 'name': 'Sky Phenomenon', 'avm': 7}]
-
 
 def server_error(request):
     # one of the things 'render' does is add 'STATIC_URL' to
@@ -246,7 +63,7 @@ def index(request):
     sites = Site.objects.all()
     telescopes = Telescope.objects.all()
 
-    latest = build_recent_observations(n_per_line)
+    latest = recent_observations()
 
     obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_line]
     obs = []
@@ -260,12 +77,12 @@ def index(request):
         obs.append(o.image)
     popular = build_observations(obs)
 
-    return render_to_response('images/index.html', {'latest': latest,
+    return render(request, 'images/index.html', {'latest': latest,
                                                     'trending': trending,
                                                     'popular': popular,
                                                     'sites': sites,
                                                     'telescopes': telescopes,
-                                                    'categories': categories}, context_instance=RequestContext(request))
+                                                    'categories': categories})
 
 
 def view_group(request, mode, format=None):
@@ -334,34 +151,6 @@ def since(request):
     return sd
 
 
-def search_framedb(form):
-    qstring = "/find?limit=%s&order_by=-date_obs&full_header=1" % (n_per_page)
-    if form['query']:
-        # remove exterior whitespace and join interior with '+'
-        name = "+".join(form['query'].strip().split())
-        qstring += "&object_name=%s" % name
-    if form['startdate'] and form['enddate']:
-        start = form['startdate'].strftime("%Y-%m-%d")
-        end = form['enddate'].strftime("%Y-%m-%d")
-        qstring += "&date_obs__gt=%s&date_obs__lt=%s" % (start, end)
-    elif not form['startdate'] and form['enddate']:
-        end = form['enddate'].strftime("%Y-%m-%d")
-        qstring += "&date_obs__lt=%s" % (end)
-    else:
-        qstring += "&date_obs__gt=2014-04-01"
-    if form['sites']:
-        qstring += form['sites']
-    if form['filters']:
-        qstring += form['filters']
-    observations = framedb_lookup(qstring)
-    if observations:
-        org_names = collate_org_names(observations)
-        obs = build_framedb_observations(observations, org_names)
-    else:
-        obs = []
-    return obs
-
-
 def search_rtiarchive(form):
     obs = []
     n = -1
@@ -391,7 +180,7 @@ def search_rtiarchive(form):
             form['exposure'] = 0
 
     obs = obs.order_by('-dateobs')
-    return list(obs)
+    return obs
 
 
 def search(request, format=None):
@@ -415,7 +204,8 @@ def search(request, format=None):
                 form.cleaned_data['enddate'] = lastobs
             elif not form.cleaned_data['enddate']:
                 form.cleaned_data['enddate'] = datetime.utcnow()
-            obs, lastobs, n, onlyrti = fetch_observations(form.cleaned_data, lastobs)
+            obs, n, onlyrti, offset = fetch_observations(form.cleaned_data, lastobs)
+            page_data['offset'] = offset
             page_data['onlyrti'] = onlyrti
             page_data['lastobs'] = lastobs
             page_data['description'] = 'Search results (LCOGT)'
@@ -431,8 +221,11 @@ def search(request, format=None):
                 page_data['n'] = n
                 if n == 0:
                     page_data['form'] = form
-                else:
-                    page_data['firstobs'] = obs[0]['dateobs']
+                elif obs['archive']:
+                    page_data['firstobs'] = obs['archive'][0]['DATE_OBS']
+                elif obs['rti'] and not obs['archive']:
+                    page_data['firstobs'] = obs['rti'][0]['dateobs']
+
                 page_data['obs'] = obs
                 if page_data['slideshow']:
                     return render(request, 'images/slideshow.html', page_data)
@@ -443,26 +236,37 @@ def search(request, format=None):
 
 
 def fetch_observations(data, lastobs):
-    obs = []
+    obs = {'archive' : [], 'rti' : []}
     onlyrti = False
     rti_n = 0
     # earliest_obs = search_include_framedb(data['query'])
+    offset = data.get('offset', 0)
+    if not offset:
+        offset = 0
+    new_offset = offset+30
     if not data['enddate'] or data['enddate'] > datetime(2014, 4, 1):
-        obs = search_framedb(data)
-    if len(obs) < n_per_page:
+        obs_archive  = search_archive(data, offset)
+        if obs_archive:
+            obs['archive'] = obs_archive['results']
+            total_n = obs_archive['count']
+
+    if len(obs['archive']) < n_per_page:
         # Fetch RTI images
         rti_obs = search_rtiarchive(data)
-        rti_n = len(rti_obs)
-        obs += build_observations(rti_obs)
-    total_n = len(obs)
+        rti_n = rti_obs.count()
+        rti_obs = rti_obs[offset:new_offset]
+
+        obs['rti'] = build_observations(rti_obs)
+        total_n = len(obs['archive']) + rti_n
     if total_n == rti_n:
         onlyrti = True
-    obs = obs[0:18]
-    if obs:
-        lastobs = obs[-1]['dateobs']
+    if obs['archive']:
+        lastobs = obs['archive'][-1]['DATE_OBS']
+    elif obs['rti'] and not obs['archive']:
+        lastobs = obs['rti'][-1]['dateobs']
     else:
         lastobs = None
-    return obs, lastobs, total_n, onlyrti
+    return obs, total_n, onlyrti, new_offset
 
 
 def search_include_framedb(objectname):
@@ -475,19 +279,13 @@ def search_include_framedb(objectname):
 
 
 def get_site_data(code):
-    observations = []
-    recent_obs = []
     # Store the TAG IDs in a config not here
-    qstring = "/find?siteid=%s&limit=%s&order_by=-date_obs&full_header=1" % (
-        code, 18)
-    observations = framedb_lookup(qstring)
-    org_names = collate_org_names(observations)
-    obs = build_framedb_observations(observations, org_names)
-    n = n_per_page
-    if len(obs) < n_per_page:
-        n = len(obs)
-    data = {'n': n,
-            'obs': obs}
+    qstring = "SITEID=%s&limit=30&OBSTYPE=EXPOSE&RLEVEL=91" % (code)
+    headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
+    obs = search_archive_data(qstring, headers)
+
+    data = {'n': obs['count'],
+            'obs': obs['results']}
     return data
 
 
@@ -514,7 +312,7 @@ def view_site(request, code, format=None):
     else:
         data['sites'] = Site.objects.all()
         data['site'] = site
-        data['telescopes'] = Telescope.objects.all()
+        data['telescopes'] = Telescope.objects.filter(site=site)
         return render(request, 'images/site.html', data)
 
 
@@ -974,7 +772,6 @@ def view_map(request):
 
     obs = Image.objects.filter(
         dateobs__gte=dt).order_by('-dateobs')
-    # print dt.strftime("%Y%m%d%H%M%S")
     n = obs.count()
 
     input['observations'] = 0
@@ -1045,11 +842,9 @@ def view_observation(request, code, tel, obs):
         delta = datetime.utcnow() - obstats[0].lastviewed
         # 98 = 2*(7^2) <- where 7 days is the sigma for the Gaussian function exp(-datediff^2/(2*sigma^2))
         # 0.5 = 2*(0.5^2) <- where 0.5 days is the sigma for the Gaussian function
-        # print
         # obstats[0].weight*math.exp(-math.pow((delta.seconds)/86400.,2)/98.)
         obstats[0].weight = addition + obstats[0].weight * \
             math.exp(-math.pow((delta.seconds) / 86400., 2) / 0.5)
-        # print obstats[0].weight
         obstats[0].lastviewed = datetime.utcnow()
     else:
         obstats = [ObservationStats(
@@ -1115,7 +910,6 @@ def view_observation(request, code, tel, obs):
         filters = get_sci_fits(params)
 
     if input['doctype'] == "json":
-        # print obs
         return view_json(request, build_observations_json(obs), input)
     return render(request,'images/observation.html', {'n': 1,
                                                           'telescope': telescope,
@@ -1206,27 +1000,6 @@ def get_archive_fits(origname, date, propid, tracknum, reqnum):
     datafile = [f for f in files if filename in f]
     if datafile:
         return dl_url + datafile[0]
-    else:
-        return False
-
-def get_ipac_fits(origname, date, propid, tracknum, reqnum):
-    ipac_dl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/LCODownload/nph-lcoDownload?file="
-    baseurl = "http://lcogtarchive.ipac.caltech.edu/cgi-bin/Gator/nph-query?spatial=NONE&outfmt=1&catalog=lco_img"
-    qstring = "&propid=%s&selcols=filehand,tracknum,reqnum&mission=lcogt&constraints=(date_obs+between+to_date('%s 00:01','YYYY-MM-DD HH24:MI')+and+to_date('%s 23:59','YYYY-MM-DD HH24:MI')+and+tracknum+in+('%s'))" % (
-        propid, date, date, tracknum)
-    lookup_url = baseurl + qstring.replace(" ", "%20")
-    try:
-        resp = requests.get(lookup_url, timeout=10)
-    except:
-        return False
-    text = resp.content
-    vals = [x.strip() for x in text.split(
-        "\n") if x[:1] != '\\' and x[:1] != '' and x[:1] != '|']
-    files = [v.split()[0] for v in vals]
-    filename = origname[:-9]
-    datafile = [f for f in files if filename in f]
-    if datafile:
-        return ipac_dl + datafile[0]
     else:
         return False
 
@@ -1347,21 +1120,6 @@ def getCategoryLevel(avm, input):
 
     return input
 
-def framedb_lookup(query):
-    try:
-        client = requests.session()
-
-        # First have to authenticate
-        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
-        # Because we are sending log in details it has to go over SSL
-        data_url = 'https://data.lcogt.net%s' % query
-        resp = client.post(data_url, data=login_data, timeout=20)
-        data = resp.json()
-        logger.debug(data)
-    except:
-        return False
-    return data
-
 def recent_frames(proposal_id, datestamp=None, num_frames=10):
     '''
     Use Archive API to get most recent data images
@@ -1398,7 +1156,6 @@ def frame_by_basename(basename):
         }
     return frame
 
-
 def tracknum_lookup(tracknum):
     if not tracknum.startswith('0') and len(tracknum) != 10:
         # Avoid sending junk to the API
@@ -1414,68 +1171,6 @@ def tracknum_lookup(tracknum):
         return False
     return data
 
-
-def find_user_ids(tracknums):
-    user_list = []
-    for n in tracknums:
-        data = tracknum_lookup(n)
-        if data:
-            user_list.append((n, data['proposal']['user_id']))
-    return user_list
-
-
-def rbauth_lookup(userlist):
-    cursor = connections['rbauth'].cursor()
-    sql = "select auth_user.username,userprofile.institution_name from auth_user, userprofile where auth_user.id = userprofile.user_id and auth_user.username in ('%s')" % "','".join(
-        userlist)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    cursor.close()
-    return result
-
-
-def user_look_up(userlist):
-    rows = rbauth_lookup(userlist)
-    org_names = dict((x[0], x[1]) for x in rows)
-    user_dict = {}
-    if org_names:
-        for u in user_list:
-            user_dict[k] = org_names.get(u, 'Unknown')
-    return user_dict
-
-
-def look_up_org_names(usernames):
-    ''' Parse a list of tuples mapping tracking num to username
-        return a dict of tracking numbers to organization names
-    '''
-    if usernames:
-        tracknums, userlist = zip(*usernames)
-        rows = rbauth_lookup(userlist)
-        org_names = dict((x[0], x[1]) for x in rows)
-        user_dict = dict(usernames)
-        if org_names:
-            for k, v in user_dict.items():
-                user_dict[k] = org_names.get(v, 'Unknown')
-        return user_dict
-    else:
-        return {"Unknown": "Unknown"}
-
-
-def collate_org_names(observations):
-    ''' Small function to find the organizations of observers from a list of observations
-    '''
-    if observations:
-        tracknums = [o['tracknum'] for o in observations]
-    else:
-        tracknums = []
-    if tracknums:
-        usernames = find_user_ids(tracknums)
-        org_names = look_up_org_names(usernames)
-    else:
-        org_names = {"Unknown": "Unknown"}
-    return org_names
-
-
 def build_recent_observations(num):
     observations = []
     recent_obs = []
@@ -1490,20 +1185,6 @@ def build_recent_observations(num):
         recent_obs = []
     return recent_obs
 
-def identity_archive(request):
-    '''
-    Main function for looking up the origname, tracking number or organization's observations.
-    Then passes all the meta data that observations need to be displayed either as a group or on a single page
-    '''
-    origname = request.GET.get('origname', '')
-    origname = origname[0:31]
-    url =settings.ARCHIVE_API + 'frames/?basename={}&RLEVEL=90'.format(origname)
-    headers = {'Authorization': 'Token {}'.format(settings.ARCHIVE_API_TOKEN)}
-    response = requests.get(url,headers=headers).json()
-    if len(response['results']) > 0:
-        return response['results']
-    else:
-        return []
 
 def identity(request):
     '''

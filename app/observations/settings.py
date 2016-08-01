@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
 
-VERSION = '0.2'
+VERSION = '0.3'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
 DOMAIN = 'lcogt.net'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
@@ -90,9 +90,12 @@ chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 SECRET_KEY = get_random_string(50, chars)
 
 ARCHIVE_API_TOKEN = os.environ.get('OBS_ARCHIVE_TOKEN', '')
-ARCHIVE_API = 'https://archive-api.lcogt.net/'
+ARCHIVE_API = 'https://archive-api.lcogt.net/frames/'
+ARCHIVE_TOKEN_URL = 'https://archive-api.lcogt.net/api-token-auth/'
 SESSION_COOKIE_NAME = "observations.sessionid"
 IMAGE_PATH = '/var/www/html/observations/'
+ARCHIVE_USER = os.environ.get('OBS_API_USER', '')
+ARCHIVE_PASSWORD = os.environ.get('OBS_API_PASSWD', '')
 
 # List of callables that know how to import templates from various sources.
 STATICFILES_FINDERS = (
@@ -221,8 +224,7 @@ LOGGING = {
 DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
-FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
-IMAGE_API = 'http://data.lcogt.net/thumbnail'
+IMAGE_API = 'http://thumbnails.lcogt.net/'
 
 if 'test' in sys.argv:
     OPBEAT['APP_ID'] = None

@@ -10,6 +10,22 @@
 	var lat{% if site.latitude %} = {{ site.latitude }}{% endif %};
 	var lon{% if site.longitude %} = {{ site.longitude }}{% endif %};
 	var json = "{% url 'site_api' site.code 'json' %}";
+	$(document).ready(function(){
+		$('.dates input').datepicker({
+				format: "yyyy-mm-dd"
+		});
+
+		$('.archive-thumb-img img').each(function(i, el){
+			var frameid= $(el).data('frameid');
+			if (typeof(frameid) != 'undefined'){
+				$.get("https://thumbnails.lcogt.net/"+ frameid+"/?height=200&width=200", function(data){
+					img_url = data.url;
+					$(el).attr('src',img_url);
+				});
+			}
+		 });
+
+	});
 	</script>
 	<script type="text/javascript" src='{% static "js/rti_archive_virtualsky.js" %}'></script>
 {% endblock %}
@@ -40,7 +56,7 @@
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
 							<ul class='observation-results' data-json="{% url 'site_api' site.code 'json' %}{% if input.pager.page > 1 %}?page={{input.pager.page}}{% endif %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=obs %}
+{% include "images/archive_obs_list.html" with obs=obs %}
 							</ul>
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>

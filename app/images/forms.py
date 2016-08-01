@@ -23,17 +23,16 @@ class SearchForm(forms.Form):
     sites.append(('', 'Select a site...'))
     filters.append(('', 'Select a filter...'))
 
-    query = forms.CharField(
-        label='Name of astronomical object:', required=False)
+    query = forms.CharField(label='Name of astronomical object:', required=False)
     startdate = forms.DateTimeField(required=False)
     enddate = forms.DateTimeField(required=False)
     alldates = forms.BooleanField(required=False)
     sites = forms.ChoiceField(choices=sites, required=False)
     filters = forms.ChoiceField(choices=filters, required=False)
-    exposure = forms.FloatField(
-        widget=forms.TextInput(attrs={'size': '5'}), required=False)
+    exposure = forms.FloatField(widget=forms.TextInput(attrs={'size': '5'}), required=False)
     exposurecondition = forms.ChoiceField(choices=(
         ('gt', 'greater than'), ('lt', 'less than'), ('eq', 'equals')), required=False)
+    offset = forms.IntegerField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
