@@ -224,8 +224,7 @@ LOGGING = {
 DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
-FITS_VIEWER_URL = 'http://data.lcogt.net/view/'
-IMAGE_API = 'http://data.lcogt.net/thumbnail'
+IMAGE_API = 'http://thumbnails.lcogt.net/'
 
 if 'test' in sys.argv:
     OPBEAT['APP_ID'] = None

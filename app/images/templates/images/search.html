@@ -14,6 +14,17 @@
     $('.dates input').datepicker({
         format: "yyyy-mm-dd"
     });
+
+    $('.archive-thumb-img img').each(function(i, el){
+      var frameid= $(el).data('frameid');
+      if (typeof(frameid) != 'undefined'){
+        $.get("https://thumbnails.lcogt.net/"+ frameid+"/?height=200&width=200", function(data){
+          img_url = data.url;
+          $(el).attr('src',img_url);
+        });
+      }
+     });
+
 	});
 	// -->
 	</script>
@@ -47,29 +58,28 @@
 {% if n > 0 %}
 <div class="container">
     <div class="row">
-							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}Showing {{n}} observations taken between {{firstobs|timesince}} and {{lastobs|timesince}}. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
+							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}We found {{n}} observations. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
 						</div>
 
 						<div class="row">
 							{% if pager %}
 							<div class="pager">{{ pager|safe }}</div>
 							{% endif %}
+              {% if obs.archive %}
 							<div class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=obs %}
+{% include "images/archive_obs_list.html" with obs=obs.archive %}
+              {% endif %}
+              {% if obs.rti %}
+							<div class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+{% include "images/observationlist.html" with obs=obs.rti %}
+              {% endif %}
 							</div>
-							{% if n > 18 and onlyrti %}
+
 							<div class="pagination">
 							    <span class="step-links">
-							        <a href="{% url_add_query lastobs=lastobs|date:"YmdHis" %}">Next 18 of {{n}} &rarr;</a>
+							        <a href="{% url_add_query offset=offset %}"> Older observations &rarr;</a>
 							    </span>
 							</div>
-							{% elif not onlyrti %}
-							<div class="pagination">
-							    <span class="step-links">
-							        <a href="{% url_add_query lastobs=lastobs|date:"YmdHis" %}"> Older observations &rarr;</a>
-							    </span>
-							</div>
-							{% endif %}
 						</div>
           </div>
 {% else %}

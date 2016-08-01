@@ -1,30 +1,20 @@
 {% extends 'images/base.html' %}
 {% load images_extras %}
 
-{% block script-content %}
+{% block header_script %}
 <script type="text/javascript">
 $(document).ready(function(){
 
-var frame_ids = {{images|safe}};
 
-for (i=0;i<frame_ids.length;i++){
-  var frame = frame_ids[i];
-  $.ajax({
-     url: 'https://thumbnails.lcogt.net/'+ frame+'/?label=javascript',
-     data: {
-        format: 'json',
-     },
-     error: function() {
-        $('#observations').html('<p>An error has occurred</p>');
-     },
-     dataType: 'jsonp',
-     success: function(data) {
-        var $item = $('<li class="thumb">').html('<img src="'+ data.url +'"/>');
-        $('#observations').append($item)
-     },
-     type: 'GET'
-  });
-}
+$('.archive-thumb-img img').each(function(i, el){
+  var frameid= $(el).data('frameid');
+  if (typeof(frameid) != 'undefined'){
+    $.get("https://thumbnails.lcogt.net/"+ frameid+"/?height=200&width=200", function(data){
+      img_url = data.url;
+      $(el).attr('src',img_url);
+    });
+  }
+ });
 });
 
 </script>

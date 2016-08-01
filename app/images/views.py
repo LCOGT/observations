@@ -33,7 +33,7 @@ from images.forms import SearchForm
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, datestamp, \
     filter_list, filter_props, filter_link, filter_name, hexangletodec, l, binMonths
-from images.archive import recent_observations
+from images.archive import recent_observations, search_archive
 from images.lookups import categories, categorylookup
 from images.users import user_look_up, look_up_org_names
 from string import replace
@@ -150,34 +150,6 @@ def since(request):
     return sd
 
 
-def search_framedb(form):
-    qstring = "/find?limit=%s&order_by=-date_obs&full_header=1" % (n_per_page)
-    if form['query']:
-        # remove exterior whitespace and join interior with '+'
-        name = "+".join(form['query'].strip().split())
-        qstring += "&object_name=%s" % name
-    if form['startdate'] and form['enddate']:
-        start = form['startdate'].strftime("%Y-%m-%d")
-        end = form['enddate'].strftime("%Y-%m-%d")
-        qstring += "&date_obs__gt=%s&date_obs__lt=%s" % (start, end)
-    elif not form['startdate'] and form['enddate']:
-        end = form['enddate'].strftime("%Y-%m-%d")
-        qstring += "&date_obs__lt=%s" % (end)
-    else:
-        qstring += "&date_obs__gt=2014-04-01"
-    if form['sites']:
-        qstring += form['sites']
-    if form['filters']:
-        qstring += form['filters']
-    observations = framedb_lookup(qstring)
-    if observations:
-        org_names = collate_org_names(observations)
-        obs = build_framedb_observations(observations, org_names)
-    else:
-        obs = []
-    return obs
-
-
 def search_rtiarchive(form):
     obs = []
     n = -1
@@ -207,7 +179,7 @@ def search_rtiarchive(form):
             form['exposure'] = 0
 
     obs = obs.order_by('-dateobs')
-    return list(obs)
+    return obs
 
 
 def search(request, format=None):
@@ -231,7 +203,8 @@ def search(request, format=None):
                 form.cleaned_data['enddate'] = lastobs
             elif not form.cleaned_data['enddate']:
                 form.cleaned_data['enddate'] = datetime.utcnow()
-            obs, lastobs, n, onlyrti = fetch_observations(form.cleaned_data, lastobs)
+            obs, n, onlyrti, offset = fetch_observations(form.cleaned_data, lastobs)
+            page_data['offset'] = offset
             page_data['onlyrti'] = onlyrti
             page_data['lastobs'] = lastobs
             page_data['description'] = 'Search results (LCOGT)'
@@ -247,8 +220,11 @@ def search(request, format=None):
                 page_data['n'] = n
                 if n == 0:
                     page_data['form'] = form
-                else:
-                    page_data['firstobs'] = obs[0]['dateobs']
+                elif obs['archive']:
+                    page_data['firstobs'] = obs['archive'][0]['DATE_OBS']
+                elif obs['rti'] and not obs['archive']:
+                    page_data['firstobs'] = obs['rti'][0]['dateobs']
+
                 page_data['obs'] = obs
                 if page_data['slideshow']:
                     return render(request, 'images/slideshow.html', page_data)
@@ -259,26 +235,37 @@ def search(request, format=None):
 
 
 def fetch_observations(data, lastobs):
-    obs = []
+    obs = {'archive' : [], 'rti' : []}
     onlyrti = False
     rti_n = 0
     # earliest_obs = search_include_framedb(data['query'])
+    offset = data.get('offset', 0)
+    if not offset:
+        offset = 0
+    new_offset = offset+30
     if not data['enddate'] or data['enddate'] > datetime(2014, 4, 1):
-        obs = search_framedb(data)
-    if len(obs) < n_per_page:
+        obs_archive  = search_archive(data, offset)
+        if obs_archive:
+            obs['archive'] = obs_archive['results']
+            total_n = obs_archive['count']
+
+    if len(obs['archive']) < n_per_page:
         # Fetch RTI images
         rti_obs = search_rtiarchive(data)
-        rti_n = len(rti_obs)
-        obs += build_observations(rti_obs)
-    total_n = len(obs)
+        rti_n = rti_obs.count()
+        rti_obs = rti_obs[offset:new_offset]
+
+        obs['rti'] = build_observations(rti_obs)
+        total_n = len(obs['archive']) + rti_n
     if total_n == rti_n:
         onlyrti = True
-    obs = obs[0:18]
-    if obs:
-        lastobs = obs[-1]['dateobs']
+    if obs['archive']:
+        lastobs = obs['archive'][-1]['DATE_OBS']
+    elif obs['rti'] and not obs['archive']:
+        lastobs = obs['rti'][-1]['dateobs']
     else:
         lastobs = None
-    return obs, lastobs, total_n, onlyrti
+    return obs, total_n, onlyrti, new_offset
 
 
 def search_include_framedb(objectname):

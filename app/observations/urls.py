@@ -20,7 +20,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from images.views import search, view_group, view_username, index, view_object, \
     view_avm, view_category, view_category_list, view_site, view_telescope, identity, \
     view_observation, view_site_slideshow, view_map
-from images.archive import frame_lookup
+from images.archive import frame_lookup, recent_observations_page
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^search/$',  search,name="search"),
     url(r'^search\.(?P<format>\w+)$',  search,name="search_api"),
 
-    url(r'^recent/$', view_group,{'mode' : 'recent'},name='show_recent'),
+    url(r'^recent/$', recent_observations_page, name='show_recent'),
     url(r'^recent\.(?P<format>\w+)$', view_group,{'mode' : 'recent'},name='show_recent_json'),
     url(r'^popular/$', view_group,{'mode' : 'popular'},name='show_popular'),
     url(r'^popular\.(?P<format>\w+)$', view_group,{'mode' : 'popular'},name='show_popular'),
@@ -63,7 +63,7 @@ urlpatterns = [
 
     url(r'^(?P<code>\w\w\w)/(?P<tel>\w+)/(?P<obs>\d+)/$', view_observation,name='show_rtiobservation'),
     url(r'^(?P<code>\w\w\w)/show/$', view_site_slideshow, name='slideshow_site'),
-    url(r'^(?P<code>\w\w\w)/$', view_site, name='show_site'),
+    url(r'^site/(?P<code>\w\w\w)/$', view_site, name='show_site'),
     url(r'^telescope/(?P<code>\w\w\w)/(?P<encid>\w+)/(?P<tel>\w+)/$', view_telescope,name='show_telescope'),
     url(r'^(?P<code>\w\w\w)\.(?P<format>\w+)/$', view_site,name='site_api'),
   ]

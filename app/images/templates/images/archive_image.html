@@ -40,7 +40,7 @@ var img_url;
 
 {% block main-content %}
         <a href='{{ obs.fullimage_url }}' title='Click for full size version' class="observation-image-link">
-            <img src='{{ obs.fullimage_url }}' class='observation-image img-responsive' alt='{{ obs.title }}' />
+            <img src='http://lcogt.net/files/missing_large.png' class='observation-image img-responsive' alt='{{ obs.title }}' />
         </a>
         {% if otherobs%}
         <p class='moreobservations'>More observations by {{ obs.user }}:</p>
@@ -107,7 +107,7 @@ var img_url;
                     <th scope="row">Data:</th>
                     <td>
 
-                        <div id="download-link">No FITS data found</div>
+                        <div id="download-link">FITS data not currently available</div>
                         <p><a href="http://lcogt.net/education/observing/fpack/">Having trouble opening FITS files?</a></p>
                     </td>
                 </tr>
