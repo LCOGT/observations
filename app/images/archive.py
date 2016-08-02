@@ -28,10 +28,17 @@ import logging
 logger = logging.getLogger('observations')
 
 
-def get_auth_headers(url):
+def authenticate(url):
     auth_data = {'username':settings.ARCHIVE_USER, 'password':settings.ARCHIVE_PASSWORD}
     response = requests.post(url, data = auth_data).json()
     token = response.get('token')
+
+    return token
+
+def get_auth_headers(url):
+    token = settings.ARCHIVE_API_TOKEN
+    if not token:
+        token = authenticate(url)
     # Store the Authorization header
     headers = {'Authorization': 'Token {}'.format(token)}
     return headers

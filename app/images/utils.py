@@ -14,6 +14,22 @@ GNU General Public License for more details.
 '''
 from datetime import datetime
 from django.conf import settings
+import requests
+
+def tracknum_lookup(tracknum):
+    if not tracknum.startswith('0') and len(tracknum) != 10:
+        # Avoid sending junk to the API
+        return False
+    try:
+        client = requests.session()
+        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
+        # Because we are sending log in details it has to go over SSL
+        data_url = 'https://lcogt.net/observe/service/request/get/userrequest/%s' % tracknum
+        resp = client.post(data_url, data=login_data, timeout=20)
+        data = resp.json()
+    except:
+        return False
+    return data
 
 def l(txt, lnk):
     return "<a href=\"http://lcogt.net/" + lnk + "\">" + txt + "</a>"

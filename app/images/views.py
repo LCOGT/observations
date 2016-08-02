@@ -36,7 +36,7 @@ from images.utils import parsetime, dmstodegrees, hmstodegrees, hmstohours, date
 from images.archive import recent_observations, search_archive, get_auth_headers, \
     search_archive_data
 from images.lookups import categories, categorylookup
-from images.users import user_look_up, look_up_org_names
+from images.users import user_look_up, look_up_org_names, collate_org_names
 from string import replace
 import json
 import math
@@ -1120,6 +1120,20 @@ def getCategoryLevel(avm, input):
 
     return input
 
+def framedb_lookup(query):
+    try:
+        client = requests.session()
+
+        # First have to authenticate
+        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
+        # Because we are sending log in details it has to go over SSL
+        data_url = 'https://data.lcogt.net%s' % query
+        resp = client.post(data_url, data=login_data, timeout=20)
+        data = resp.json()
+    except:
+        return False
+    return data
+
 def recent_frames(proposal_id, datestamp=None, num_frames=10):
     '''
     Use Archive API to get most recent data images
@@ -1155,21 +1169,6 @@ def frame_by_basename(basename):
             'filename': result['filename']
         }
     return frame
-
-def tracknum_lookup(tracknum):
-    if not tracknum.startswith('0') and len(tracknum) != 10:
-        # Avoid sending junk to the API
-        return False
-    try:
-        client = requests.session()
-        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
-        # Because we are sending log in details it has to go over SSL
-        data_url = 'https://lcogt.net/observe/service/request/get/userrequest/%s' % tracknum
-        resp = client.post(data_url, data=login_data, timeout=20)
-        data = resp.json()
-    except:
-        return False
-    return data
 
 def build_recent_observations(num):
     observations = []
@@ -1247,7 +1246,10 @@ def get_fits(origname):
         response = requests.get(url,headers=headers).json()
     except ValidError:
         return []
-    for datum in response['results']:
+    results = response.get('results','')
+    if not results:
+        return []
+    for datum in results:
         filter_params = {
                 'fits': datum['url'],
                 'fullname' : filter_name
@@ -1317,7 +1319,6 @@ def build_framedb_observations(observations, org_names=None):
                   'ra': hmstodegrees(o['ra']),
                   'dec': dmstodegrees(o['dec']),
                   'fullimage_url': large_img,
-                  'fits_view_url': "%s#%s/%s/%s" % (settings.FITS_VIEWER_URL, o['propid'], o['day_obs'], o['origname']),
                   'origname': o['origname']
                   }
         if org_names:
