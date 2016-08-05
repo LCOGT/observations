@@ -97,14 +97,14 @@ def search_archive(form, offset=0):
         name = "+".join(form['query'].strip().split())
         qstring += "&OBJECT=%s" % name
     if form['startdate'] and form['enddate']:
-        start = form['startdate'].strftime("%Y-%m-%d")
-        end = form['enddate'].strftime("%Y-%m-%d")
+        start = "{}%2000:00:00".format(form['startdate'].strftime("%Y-%m-%d"))
+        end = "{}%2023:59:59".format(form['enddate'].strftime("%Y-%m-%d"))
         qstring += "&start=%s&end=%s" % (start, end)
     elif not form['startdate'] and form['enddate']:
         end = form['enddate'].strftime("%Y-%m-%d")
-        qstring += "&end=%s" % (end)
+        qstring += "{}%2023:59:59".format(form['enddate'].strftime("%Y-%m-%d"))
     else:
-        qstring += "&start=2014-04-01"
+        qstring += "&start=2014-04-01%2000:00:00"
 
     headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
     frames = search_archive_data(qstring, headers, num_results=30)
