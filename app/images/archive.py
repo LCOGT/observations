@@ -91,7 +91,7 @@ def recent_observations_page(request):
     return render(request, 'images/group_obs.html', data)
 
 def search_archive(form, offset=0):
-    qstring = "?OBSTYPE=EXPOSE&RLEVEL=91&offset=%s" % (offset)
+    qstring = "OBSTYPE=EXPOSE&RLEVEL=91&offset=%s" % (offset)
     if form['query']:
         # remove exterior whitespace and join interior with '+'
         name = "+".join(form['query'].strip().split())
@@ -108,6 +108,7 @@ def search_archive(form, offset=0):
 
     headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
     frames = search_archive_data(qstring, headers, num_results=30)
+
     if frames.get('results',''):
         return frames
     else:
