@@ -11,12 +11,21 @@
  <generator>RedDragon (cwl)</generator>
  <copyright>Las Cumbres Observatory Global Telescope Network</copyright>
 
-{% for o in obs %}
+ {% for o in obs.rti %}
+      <item>
+          <title>{{o.OBJECT}}</title>
+          <description><![CDATA[{{ o.user_id }} took an image of {{o.objectname}} ({{o.ra|degreestohms}}, {{o.dec|degreestodms}}) from {{ o.site }} node of LCOGT.]]></description>
+          <link>{% url 'show_rtiobservation' o.site o.telescope o.imageid %}</link>
+          <pubDate>{{o.dateobs}}</pubDate>
+      </item>
+ {% endfor %}
+
+{% for o in obs.archive %}
      <item>
-         <title>{{o.objectname}}</title>
-         <description><![CDATA[{%if o.link_user%}<a href="http://{{config.site_path}}{{o.link_user }}">{{ o.user }}</a>{%else%}{{ o.user }}{%endif%} took an image of {{o.objectname}} ({{o.ra|degreestohms}}, {{o.dec|degreestodms}}) from {{ o.site }} node of LCOGT.]]></description>
-         <link>http://{{config.site_path}}{{o.link_obs}}</link>
-         <pubDate>{{o.dateobs|datestamp}}</pubDate>
+         <title>{{o.OBJECT}}</title>
+         <description><![CDATA[{{ o.USERID }} took an image of {{o.OBJECT}} ({{o.RA|degreestohms}}, {{o.DEC|degreestodms}}) from {{ o.SITEID }} node of LCOGT.]]></description>
+         <link>{% url 'frame' o.id %}</link>
+         <pubDate>{{o.DATE_OBS}}</pubDate>
      </item>
 {% endfor %}
 </channel>

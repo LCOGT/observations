@@ -1670,7 +1670,6 @@ def view_kml(request, obs, config):
 
 
 def view_rss(request, obs, config):
-
     if not('title' in config):
         config['title'] = 'LCOGT'
 

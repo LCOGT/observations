@@ -1,28 +1,26 @@
 <!DOCTYPE html>
-  <html lang="en">
-  {% load future staticfiles %}
+<html lang="en">
+{% load staticfiles %}
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Las Cumbres Observatory | {% block title_head %}Many Eyes - One Vision{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+  <meta name="description" content="{% block meta_description %}{% endblock %}">
+  <link rel="shortcut icon" href="http://lcogt.net/files/favicon.ico" type="image/x-icon" />
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
-    <meta name="description" content="{% block meta_description %}{% endblock %}">
-    <link rel="shortcut icon" href="http://lcogt.net/files/favicon.ico" type="image/x-icon" />
 
-      <title>{% block header %}Las Cumbres Observatory Global Telescope Network{% endblock %}</title>
+    <!-- Bootstrap Core CSS -->
+    <link href='{% static "css/bootstrap.min.css" %}' rel="stylesheet">
 
-      <!-- Bootstrap Core CSS -->
-      <link href='{% static "css/bootstrap.min.css" %}' rel="stylesheet">
-      <link href='{% static "css/bootstrap-datepicker.css" %}' rel="stylesheet">
-
-      <!-- Custom CSS -->
-      <link href='{% static "css/ws-styles.css" %}' rel="stylesheet">
-      <link href='{% static "css/obs-styles.css" %}' rel="stylesheet">
-
+    <!-- Custom CSS -->
+    <link href='{% static "css/affogato.css" %}' rel="stylesheet">
+    <link href='{% static "css/lco.css" %}' rel="stylesheet">
+    <link href='{% static "css/obs-styles.css" %}' rel="stylesheet">
       <!-- Custom Fonts -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+      {% block extra_css %}{% endblock%}
       <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
       <!--[if lt IE 9]>
@@ -54,99 +52,120 @@
 
   <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-inverse {% block navbarstyle %}navbar-static-top{% endblock%}">
+    {% block nav-bar %}
+      <nav class="navbar navbar-inverse head downPage">
+        <div class="container-fluid">
+          <div class="innerHead">
+    				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+    					<span class="sr-only">Toggle navigation</span>
+    					<span class="icon-bar"></span>
+    					<span class="icon-bar"></span>
+    					<span class="icon-bar"></span>
+    				</button>
+    				<div class="navbar-header branding branding-logo">
+    					<a href="/" title="LCO homepage" rel="home" class="navbar-brand"><img src="{% static 'img/LCO-logo-web.jpg' %}" alt="Las Cumbres Observatory" /></a>
+    				</div>
+    				<div class="navbar-header branding">
+    					<div id="lco-name">Las Cumbres Observatory</div>
+    				</div>
+  	        <div id="navbar" class="collapse navbar-collapse headNav">
+
+  	          <ul class="nav nav-right navbar-nav">
+  	              <li class="hidden">
+  	                  <a href="#page-top"></a>
+  	              </li>
+  	              <li>
+  	                  <a href="/about/">ABOUT</a>
+  	              </li>
+  	              <li>
+  	                  <a href="/everyone/">FOR EVERYONE</a>
+  	              </li>
+  	              <li>
+  	                  <a href="/astronomers/">FOR ASTRONOMERS</a>
+  	              </li>
+  	              <li>
+  	                  <a href="https://lco.global/observe/">OBSERVING PORTAL</a>
+  	              </li>
+  	          </ul>
+
+  				<div class="clearfix"></div>
+  	        </div><!--/.nav-collapse -->
+  				<div class="clearfix"></div>
+  	    </div>
+        </div>
+      </nav>
+      {% endblock %}
+
+      <section>
+    		<div class="intro downPage blue">
+    			<div class="container wide">
+    				<div class="row no-gutter">
+    					<div class="col-md-8 title">
+    						<h1>Observations</h1>
+    					</div>
+    					<div class="col-md-4 col-sm-12 imgRotate">
+    						<!-- RANDOM PAIR OF IMAGES GO HERE -->
+                <img class="img-responsive" src="">
+
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</section>
+
+  	<section>
       <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/"><img src="{% static 'img/logogray_lg.png'%}" /></a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          {% block navbar %}
-          <ul class="nav navbar-nav navbar-right">
-              <li class="hidden">
-                  <a href="#page-top"></a>
-              </li>
-              <li>
-                  <a href="http://lcogt.net/about/">About</a>
-              </li>
-              <li>
-                  <a href="http://lcogt.net/public/">Public</a>
-              </li>
-              <li>
-                  <a href="http://lcogt.net/astronomers/">Astronomers</a>
-              </li>
-              <li>
-                  <a href="http://lcogt.net/observe/">Observing Portal</a>
-              </li>
-          </ul>
-          {% endblock %}
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-
-
-    {% block title_banner %}
-    <div class="jumbotron general-header">
-      <div class="container">
-        <h1>Observations</h1>
-      </div>
-    </div>
-    {% endblock %}
-
-    <div class="container">
-      <div class="row"><h2>{% block title %}{% endblock %}</h2></div>
-      <div class="row">
-        {% block breadcrumb %}{% endblock %}
-      </div>
-      {% block search %}
-      <div class="row">
-
-          <div class="col-lg-12">
-            <form action="{% url 'search' %}" method='GET'>
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="e.g. NGC 2020" name='query' />
-              <span class="input-group-btn">
-                <input type='submit' value='Search observations' class='btn btn-default' />
-              </span>
-            </div><!-- /input-group -->
-          </form>
-            <div style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
-          </div><!-- /.col-lg-6 -->
-        </div>
-          {% endblock %}
-
-      <div class="row">
-        {% if messages %}
-        <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-dismissable alert-{{ message.tags }}" data-alert="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            {{ message }}
-        </div>
-        {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-{% block fullcontent %}
-    <div class="container">
         <div class="row">
-          <div class="{% block main_span_size %}col-md-8{% endblock %}">
-          {% block main-content %}{% endblock %}
-          </div>
-
-          <div class="col-md-4">
-          {% block right_panel %}{% endblock %}
-          </div>
+          <h1>{% block title %}{% endblock%}</h1>
         </div>
-    </div>
-{%endblock%}
+        <div class="row">
+          {% if messages %}
+          <div class="messages">
+          {% for message in messages %}
+          <div class="alert alert-dismissable alert-{{ message.tags }}" data-alert="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              {{ message }}
+          </div>
+          {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+  		<div class="container wide downPage">
+        <div class="row">
+          {% block breadcrumb %}{% endblock %}
+        </div>
+        {% block search %}
+        <div class="row">
+
+            <div class="col-lg-12">
+              <form action="{% url 'search' %}" method='GET'>
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="e.g. NGC 2020" name='query' />
+                <span class="input-group-btn">
+                  <input type='submit' value='Search observations' class='btn btn-default' />
+                </span>
+              </div><!-- /input-group -->
+            </form>
+              <div style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
+            </div><!-- /.col-lg-6 -->
+          </div>
+        {% endblock %}
+
+        {% block fullcontent %}
+            <div class="row">
+              <div class="{% block main_span_size %}col-md-8{% endblock %}">
+              {% block main-content %}{% endblock %}
+              </div>
+
+              <div class="col-md-4">
+              {% block right_panel %}{% endblock %}
+              </div>
+            </div>
+  		</div>
+  	</section>
+    {% endblock%}
+
 
 {% block alternate %}
         <div class="row">
@@ -157,69 +176,49 @@
 
 
 <footer>
-    <div class="container">
+  <div class="container wide downPage footer">
+    <div class="row social">
+        <ul class="list-inline social-buttons">
+          <li>
+          <a href="http://twitter.com/LCO_Global" alt="Las Cumbres Observatory on Twitter">
+          <span class="fa-stack fa-2x">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+          </li>
+          <li>
+          <a href="http://facebook.com/lascumbresobservatory" alt="Las Cumbres Observatory on Facebook">
+          <span class="fa-stack fa-2x">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+          </li>
+          <li>
+          <a href="http://lco.global/news/feeds/rss/" alt="Latest news from Las Cumbres Observatory via RSS">
+          <span class="fa-stack fa-2x">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+          </li>
+          <li>
+          <a href="http://lco.global/news/" alt="Latest news from Las Cumbres Observatory">
+          <span class="fa-stack fa-2x">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-newspaper-o fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+          </li>
+
+        </ul>
+      </div>
       <div class="row">
-          <ul class="list-inline social-buttons">
-              <li></li>
-              <li><a href="http://twitter.com/lcogt"><i class="fa fa-twitter"></i></a>
-              </li>
-              <li><a href="http://facebook.com/lcogt"><i class="fa fa-facebook"></i></a>
-              </li>
-              <li><a href="/blog/feeds/rss/"><i class="fa fa-rss"></i></a>
-              </li>
-          </ul>
+        <div class="copyright">Copyright &copy; {% now "Y" %} Las Cumbres Observatory. All rights reserved.</div>
       </div>
-    <div class="row">
-      {% block footer-option %}
-      <div class="col-md-3">
-
-        {% if sites %}
-
-        										<h2>{% block sites-list-title %}By site:{% endblock %}</h2>
-        										<ul class="footer-links">
-        {% for site in sites %}										<li><a href="{% url 'show_site' site.code %}">{{ site.name }}</a></li>{% endfor %}
-        										</ul>
-
-        {% endif %}
-
-      </div>
-      {% block specialfooter %}
-      <div class="col-md-3">
-
-        {% if telescopes %}
-        										<h2>{% block telescopes-list-title %}By telescope:{% endblock %}</h2>
-        										<ul class="footer-links">
-        {% for telescope in telescopes %}										<li><a href="{% url 'show_telescope' telescope.site.code telescope.enclosure  telescope.code  %}">{{ telescope.name }}, {{telescope.site.name}}</a></li>{% endfor %}
-        										</ul>
-        {% endif %}
-
-      </div>
-      <div class="col-md-3">
-
-        {% if categories %}
-
-        										<h2>{% block categories-list-title %}<a href="{% url 'category_list' %}">By category</a>:{% endblock %}</h2>
-        										<ul class="footer-links">
-        {% for c in categories %}										<li><a href="{% url 'category_show' c.link %}">{{ c.name }}</a></li>{% endfor %}
-        										</ul>
-        {% endif %}
-
-      </div>
-      {% endblock %}
-    {% endblock %}
-  </div>
-  <div class="row">
-    <div class="col-md-8">
-    <p class="copyright">Copyright &copy; {% now "Y" %} Las Cumbres Observatory Global Telescope Network. All rights reserved.
-    </p>
-  </div>
-  <div class="col-md-4">
-    <img src="{% static 'img/logo.png' %}" />
-  </div>
-
-  </div>
-</footer>
-
+    </div>
+  </footer>
 
 
     <!-- Bootstrap core JavaScript

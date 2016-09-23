@@ -1,0 +1,86 @@
+/* ------------------------------------------------*/
+/*   			AFFOGATO FONT FILES   	   		   */
+/*        	BASIC @FONT-FACE STUFF HERE     	   */
+/* ------------------------------------------------*/
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Regular.woff') format('woff'),
+         url('../fonts/Montserrat-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat-Thin';
+    src: url('../fonts/Montserrat-Thin.woff') format('woff'),
+         url('../fonts/Montserrat-Thin.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Affogato-Black';
+    src: url('../fonts/Affogato-Black.eot');
+    src: url('../fonts/Affogato-Black.eot?#iefix') format('embedded-opentype'),
+    	 url('../fonts/Affogato-Black.woff') format('woff'),
+         url('../fonts/Affogato-Black.woff2') format('woff2'),
+         url('../fonts/Affogato-Black.ttf')  format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Affogato-Bold';
+    src: url('../fonts/Affogato-Bold.eot');
+    src: url('../fonts/Affogato-Bold.eot?#iefix') format('embedded-opentype'),
+    	 url('../fonts/Affogato-Bold.woff') format('woff'),
+         url('../fonts/Affogato-Bold.woff2') format('woff2'),
+         url('../fonts/Affogato-Bold.ttf')  format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Affogato-Medium';
+    src: url('../fonts/Affogato-Medium.eot');
+    src: url('../fonts/Affogato-Medium.eot?#iefix') format('embedded-opentype'),
+    	 url('../fonts/Affogato-Medium.woff') format('woff'),
+         url('../fonts/Affogato-Medium.woff2') format('woff2'),
+         url('../fonts/Affogato-Medium.ttf')  format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Affogato-Regular';
+    src: url('../fonts/Affogato-Regular.eot');
+    src: url('../fonts/Affogato-Regular.eot?#iefix') format('embedded-opentype'),
+    	 url('../fonts/Affogato-Regular.woff') format('woff'),
+         url('../fonts/Affogato-Regular.woff2') format('woff2'),
+         url('../fonts/Affogato-Regular.ttf')  format('truetype');
+}
+@font-face {
+    font-family: 'Affogato-Light';
+    src: url('../fonts/Affogato-Light.eot');
+    src: url('../fonts/Affogato-Light.eot?#iefix') format('embedded-opentype'),
+    	 url('../fonts/Affogato-Light.woff') format('woff'),
+         url('../fonts/Affogato-Light.woff2') format('woff2'),
+         url('../fonts/Affogato-Light.ttf')  format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Font Declarations */
+.black {
+	font-family: 'Affogato-Black';
+}
+.bold {
+	font-family: 'Affogato-Bold';
+}
+.medium {
+	font-family: 'Affogato-Medium';
+}
+.regular {
+	font-family: 'Affogato-Regular';
+}
+.light {
+	font-family: 'Affogato-Light';
+}
