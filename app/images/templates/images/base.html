@@ -8,18 +8,20 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
   <meta name="description" content="{% block meta_description %}{% endblock %}">
-  <link rel="shortcut icon" href="http://lcogt.net/files/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="https://cdn.lco.global/mainstyle/img/favicon.ico" type="image/x-icon" />
 
 
     <!-- Bootstrap Core CSS -->
-    <link href='{% static "css/bootstrap.min.css" %}' rel="stylesheet">
+		<link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel="stylesheet">
+		<link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css' rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href='{% static "css/affogato.css" %}' rel="stylesheet">
-    <link href='{% static "css/lco.css" %}' rel="stylesheet">
+		<!-- LCO offiial styles -->
+    <link href='https://cdn.lco.global/mainstyle/css/affogato-1.0.0.css' rel="stylesheet">
+    <link href='https://cdn.lco.global/mainstyle/css/lco-1.0.0.css' rel="stylesheet">
+
+		<!-- Custom CSS -->
     <link href='{% static "css/obs-styles.css" %}' rel="stylesheet">
       <!-- Custom Fonts -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
       {% block extra_css %}{% endblock%}
       <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -63,7 +65,7 @@
     					<span class="icon-bar"></span>
     				</button>
     				<div class="navbar-header branding branding-logo">
-    					<a href="/" title="LCO homepage" rel="home" class="navbar-brand"><img src="{% static 'img/LCO-logo-web.jpg' %}" alt="Las Cumbres Observatory" /></a>
+    					<a href="/" title="LCO homepage" rel="home" class="navbar-brand"><img src="https://cdn.lco.global/mainstyle/img/LCO-logo-web.jpg" alt="Las Cumbres Observatory" /></a>
     				</div>
     				<div class="navbar-header branding">
     					<div id="lco-name">Las Cumbres Observatory</div>
@@ -75,13 +77,13 @@
   	                  <a href="#page-top"></a>
   	              </li>
   	              <li>
-  	                  <a href="/about/">ABOUT</a>
+  	                  <a href="http://lco.global/about/">ABOUT</a>
   	              </li>
   	              <li>
-  	                  <a href="/everyone/">FOR EVERYONE</a>
+  	                  <a href="http://lco.global/everyone/">FOR EVERYONE</a>
   	              </li>
   	              <li>
-  	                  <a href="/astronomers/">FOR ASTRONOMERS</a>
+  	                  <a href="http://lco.global/astronomers/">FOR ASTRONOMERS</a>
   	              </li>
   	              <li>
   	                  <a href="https://lco.global/observe/">OBSERVING PORTAL</a>
@@ -137,18 +139,18 @@
         </div>
         {% block search %}
         <div class="row">
+						<div class="col-sm-6 col-xs-12 col-lg-6">
+            <form class="form-search" action="{% url 'search' %}" method='GET'>
+                <div class="input-group">
+                    <input class="form-control" placeholder="e.g. NGC 2020" name='query' type="text">
+							<span class="input-group-btn">
+                  <button type="submit" class="btn btn-search">Search</button>
+              </span>
 
-            <div class="col-lg-12">
-              <form action="{% url 'search' %}" method='GET'>
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="e.g. NGC 2020" name='query' />
-                <span class="input-group-btn">
-                  <input type='submit' value='Search observations' class='btn btn-default' />
-                </span>
-              </div><!-- /input-group -->
+                </div>
             </form>
-              <div style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
-            </div><!-- /.col-lg-6 -->
+		        </div>
+            <div class="col-sm-6 col-xs-12 col-lg-6" style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
           </div>
         {% endblock %}
 
@@ -225,7 +227,7 @@
     ================================================== -->
 
         <!-- Bootstrap Core JavaScript -->
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="{% static 'js/rti_archive.js' %}"></script>
         <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
 
