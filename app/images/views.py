@@ -48,7 +48,7 @@ logger = logging.getLogger('images')
 
 n_per_line = 6
 n_per_page = 18
-base_url = "http://lcogt.net/observations/"
+base_url = "http://lco.global/observations/"
 
 def server_error(request):
     # one of the things 'render' does is add 'STATIC_URL' to
@@ -440,7 +440,7 @@ def view_object(request, object):
         headers = {'Accept': 'application/xml',
                    'Content-Type': 'application/xml',
                    'User-Agent' : 'LCOGT/1.0'}
-        url='http://lcogt.net/lookUP/xml/?name=%s' % original
+        url='https://lco.global/lookUP/xml/?name=%s' % original
         # Allow 3 seconds for timeout
         try:
             f = requests.get(url, timeout=5, headers=headers)
@@ -860,7 +860,7 @@ def view_observation(request, code, tel, obs):
         headers = {'Accept': 'application/xml',
                    'Content-Type': 'application/xml',
                    'User-Agent' : 'LCOGT/1.0'}
-        url='http://lcogt.net/lookUP/xml/?name=%s' % obs
+        url='https://lco.global/lookUP/xml/?name=%s' % obs
         try:
             f = requests.get(url, timeout=5, headers=headers)
             xml = f.content
@@ -923,7 +923,7 @@ def view_observation(request, code, tel, obs):
 def get_sci_fits(params):
     telids = {'ogg': 1, 'coj': 2}
     telid = telids.get(params['telescope'].site.code, '')
-    url = 'http://sci-archive.lcogt.net/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
+    url = 'http://sci-archive.lco.global/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
         params['username'], params['dateobs'], telid)
     rids = params['requestids'].split(',')
     filters = []
@@ -959,29 +959,6 @@ def get_sci_fits(params):
                     filters.append(tmp)
             except:
                 filters.append({'img': '', 'fits': ''})
-    return filters
-
-def get_framedb_fits(obs):
-    '''
-    return a download link to the observation along with the filter name
-    First it checks if the data is in Archive and if not returns a framedb link
-    '''
-    date = obs["date_obs"][0:10]
-    url = get_archive_fits(
-        obs['origname'], date, obs['propid'], obs['tracknum'], obs['reqnum'])
-    img = "http://data.lcogt.net/thumbnail/%s/?height=1000&width=1000&label=0" % obs[
-        'origname'][:-5]
-    if not url:
-        url = 'http://data.lcogt.net/download/frame/%s' % obs['origname']
-    filter_info = {
-        'id': obs['reqnum'],
-        'name': obs['filter_name'],
-        'fullname': obs['filter_name'],
-        'img': img,
-        'fits': url
-    }
-    # Make an array to match the format returned by RTI/sci-archive
-    filters = [filter_info]
     return filters
 
 def get_archive_fits(origname, date, propid, tracknum, reqnum):
@@ -1120,20 +1097,6 @@ def getCategoryLevel(avm, input):
 
     return input
 
-def framedb_lookup(query):
-    try:
-        client = requests.session()
-
-        # First have to authenticate
-        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
-        # Because we are sending log in details it has to go over SSL
-        data_url = 'https://data.lcogt.net%s' % query
-        resp = client.post(data_url, data=login_data, timeout=20)
-        data = resp.json()
-    except:
-        return False
-    return data
-
 def recent_frames(proposal_id, datestamp=None, num_frames=10):
     '''
     Use Archive API to get most recent data images
@@ -1257,88 +1220,6 @@ def get_fits(origname):
         filters.append(filter_params)
     return filters
 
-
-def build_framedb_observations(observations, org_names=None):
-    '''
-    Translate response from framedb to the format Observations wants to display
-    '''
-    from images.utils import dmstodegrees, hmstodegrees
-    obs_list = []
-    encl = {'doma': 'Dome A', 'domb': 'Dome B', 'domc': 'Dome C',
-            'clma': '', 'aqwa': 'Aqawan A', 'aqwb': 'Aqawan B'}
-    telid = {'1m0a': '1-meter', '2m0a': '2-meter',
-             '0m4a': '0.4-meter', '0m4b': '0.4-meter'}
-    reduction = {'10.0': 'Quicklook image',
-                 '90.0': 'Final quality', '00.0': 'Uncalibrated image'}
-    if observations:
-      numobs = len(observations)
-    else:
-      numobs = 0
-    for o in observations:
-        id_name = o['origname'].split('.')[0]
-        thumbnail = "http://data.lcogt.net/thumbnail/%s/?height=150&width=150&label=0" % id_name
-        large_img = "http://data.lcogt.net/thumbnail/%s/?height=560&width=560&label=0" % id_name
-        try:
-            if o['telid'] != '2m0a':
-                telname = "%s in %s" % (telid[o['telid']], encl[o['encid']])
-            else:
-                telname = telid[o['telid']]
-            site = Site.objects.get(code=o['siteid'])
-        except:
-            telname = ''
-            site = ''
-        if o['object_name']:
-            # Remove brackets
-            obj = re.sub(r" ?\([^\)]*\)", '', o['object_name'])
-            # Remove redundant whitespace
-            obj = re.sub(r"/\s\s+/", ' ', obj)
-            # Remove non-useful characters
-            obj = re.sub(r"[^\w\-\+0-9 ]/i", '', obj)
-        else:
-            obj = "Unknown"
-        try:
-            filter_name = Filter.objects.get(code=o['filter_name'])
-        except:
-            filter_name = o['filter_name']
-        params = {
-                  'instrumentname': o['detector'],
-                  'objectname': o['object_name'],
-                  'object': obj,
-                  'thumbnail': thumbnail,
-                  'hasthumbnail': True,
-                  'dateobs': datetime.strptime(o['date_obs'], "%Y-%m-%d %H:%M:%S"),
-                  'telescope': o['telid'],
-                  'license': "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US",
-                  'credit': "Image taken with %s telescope at Las Cumbres Observatory Global Telescope Network, %s node" % (o['telid'], site.name if hasattr(site, 'name') else 'unknown'),
-                  'licenseimage': 'cc-by-nc.png',
-                  'filter': filter_name,
-                  'filterprops': filter_name,
-                  'telescope': telname,
-                  'site': site,
-                  'exposure': o['exptime'],
-                  'ra': hmstodegrees(o['ra']),
-                  'dec': dmstodegrees(o['dec']),
-                  'fullimage_url': large_img,
-                  'origname': o['origname']
-                  }
-        if org_names:
-            params['user'] = org_names.get(o['tracknum'], 'Unknown')
-        else:
-            params['user'] = "Unknown"
-        try:
-            params['reduction'] = reduction.get(
-                str(o['annotate_best_reduction']), '')
-        except:
-            params['reduction'] = 'Unknown'
-        if numobs == 1:
-            avm = avm_from_lookup(params['object'])
-            if avm:
-                params['avmname'] = avm['desc']
-                params['avmcode'] = avm['code']
-        obs_list.append(params)
-    return obs_list
-
-
 def find_username_tracknum(nums):
     '''On supplying a list of tracking numbers this will return a dictionary with tracking number keys and user id values'''
     #     o['user'] = Registrations.objects.get(schoolid=ob.schoolid)
@@ -1353,7 +1234,7 @@ def avm_from_lookup(objectname):
     '''
     objectname = objectname.strip()
     obj = "+".join(objectname.split(" "))
-    lookup_url = "http://lcogt.net/lookUP/json/?name=%s&callback=lk" % obj
+    lookup_url = "https://lco.global/lookUP/json/?name=%s&callback=lk" % obj
     try:
         resp = requests.get(lookup_url, timeout=10)
         if not resp:
@@ -1431,10 +1312,10 @@ def build_observations(obs):
         o['instrumentname'] = ob.instrumentname
         o['fitsfiles'] = ""
         if o['filename'].startswith('NoImage'):
-            o['fullimage_url'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing_large.png"
-            o['thumbnail'] = "http://lcogt.net/sites/default/themes/lcogt/images/missing.png"
+            o['fullimage_url'] = "http://lco.global/sites/default/themes/lcogt/images/missing_large.png"
+            o['thumbnail'] = "http://lco.global/sites/default/themes/lcogt/images/missing.png"
         else:
-            o['fullimage_url'] = "http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s.jpg" % (
+            o['fullimage_url'] = "http://lco.global/files/rtisba/faulkes-rti/imagearchive/%s/%s/%s/%s.jpg" % (
                 o['dateobs'].year, o['dateobs'].strftime('%m'), o['dateobs'].strftime('%d'), o['filename'][0:-4])
             o['thumbnail'] = o['fullimage_url'][0:-4] + "_120.jpg"
         o['license'] = "http://creativecommons.org/licenses/by-nc/2.0/deed.en_US"
@@ -1645,7 +1526,7 @@ def view_kml(request, obs, config):
         output += '     <name>' + o['objectname'] + '</name>\n'
         output += '     <description><![CDATA[\n'
         output += '         <p>Observed by ' + schoolname + ' on ' + o['dateobs'].isoformat() + ' with <a href="' + base_url + o.get('link_tel','') + '.kml">' + telname + '</a>.<br /><a href="' + o.get('link_obs','') + '"><img src="' + o.get('thumbnail','') + '" /></a></p>\n'
-        output += '         <p>Data from <a href="http://lcogt.net/">LCOGT</a></p>\n'
+        output += '         <p>Data from <a href="http://lco.global/">LCOGT</a></p>\n'
         output += '     ]]></description>\n'
         output += '     <LookAt>\n'
         output += '         <longitude>' + \

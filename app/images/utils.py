@@ -22,9 +22,9 @@ def tracknum_lookup(tracknum):
         return False
     try:
         client = requests.session()
-        login_data = dict(username='dthomas+guest@lcogt.net', password='guest')
+        login_data = dict(username='dthomas+guest@lco.global', password='guest')
         # Because we are sending log in details it has to go over SSL
-        data_url = 'https://lcogt.net/observe/service/request/get/userrequest/%s' % tracknum
+        data_url = 'https://lco.global/observe/service/request/get/userrequest/%s' % tracknum
         resp = client.post(data_url, data=login_data, timeout=20)
         data = resp.json()
     except:
@@ -32,7 +32,7 @@ def tracknum_lookup(tracknum):
     return data
 
 def l(txt, lnk):
-    return "<a href=\"http://lcogt.net/" + lnk + "\">" + txt + "</a>"
+    return "<a href=\"http://lco.global/" + lnk + "\">" + txt + "</a>"
 
 def hourstodegrees(value,arg):
     "Converts decimal hours to decimal degrees"

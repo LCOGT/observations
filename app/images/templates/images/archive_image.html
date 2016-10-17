@@ -9,12 +9,12 @@ $(document).ready(function(){
 var frame_id = {{frameid}}
 var img_url;
 
-  $.get("https://thumbnails.lcogt.net/"+ frame_id+"/?height=1000&width=1000", function(data){
+  $.get("https://thumbnails.lco.global/"+ frame_id+"/?height=1000&width=1000", function(data){
     img_url = data.url;
     $('img.observation-image').attr('src',img_url);
     $('a.observation-image-link').attr('href', img_url)
     // Fix the download links after we have the IMG url
-    $.get("https://archive-api.lcogt.net/frames/"+ frame_id+"/", function(data){
+    $.get("https://archive-api.lco.global/frames/"+ frame_id+"/", function(data){
       var download_content = "<a href='"+ data.url+"' property='UCD:obs.image'>FITS</a> or <a href='"+ img_url+"' property='UCD:obs.image'>JPEG</a>";
       $('#download-link').html(download_content);
     });
@@ -41,7 +41,7 @@ var img_url;
 
 {% block main-content %}
         <a href='{{ obs.fullimage_url }}' title='Click for full size version' class="observation-image-link">
-            <img src='http://lcogt.net/files/missing_large.png' class='observation-image img-responsive' alt='{{ obs.title }}' />
+            <img src='http://lco.global/files/missing_large.png' class='observation-image img-responsive' alt='{{ obs.title }}' />
         </a>
         {% if otherobs%}
         <p class='moreobservations'>More observations by {{ obs.user }}:</p>
@@ -109,7 +109,7 @@ var img_url;
                     <td>
 
                         <div id="download-link">FITS data not currently available</div>
-                        <p><a href="http://lcogt.net/education/observing/fpack/">Having trouble opening FITS files?</a></p>
+                        <p><a href="http://lco.global/education/observing/fpack/">Having trouble opening FITS files?</a></p>
                     </td>
                 </tr>
                 <tr>

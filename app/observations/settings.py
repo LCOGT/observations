@@ -29,9 +29,9 @@ BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
 
-VERSION = '0.3'
+VERSION = '0.4'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
-DOMAIN = 'lcogt.net'
+DOMAIN = 'lco.global'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
 HOME = os.environ.get('HOME', '/tmp')
 
@@ -65,7 +65,7 @@ if False:
 
 
 ADMINS = (
-    #('Edward Gomez', 'egomez@lcogt.net'),
+    #('Edward Gomez', 'egomez@lco.global'),
 )
 MANAGERS = ADMINS
 
@@ -90,8 +90,8 @@ chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 SECRET_KEY = get_random_string(50, chars)
 
 ARCHIVE_API_TOKEN = os.environ.get('OBS_ARCHIVE_TOKEN', '')
-ARCHIVE_API = 'https://archive-api.lcogt.net/frames/'
-ARCHIVE_TOKEN_URL = 'https://archive-api.lcogt.net/api-token-auth/'
+ARCHIVE_API = 'https://archive-api.lco.global/frames/'
+ARCHIVE_TOKEN_URL = 'https://archive-api.lco.global/api-token-auth/'
 SESSION_COOKIE_NAME = "observations.sessionid"
 IMAGE_PATH = '/var/www/html/observations/'
 ARCHIVE_USER = os.environ.get('OBS_API_USER', '')
@@ -223,7 +223,7 @@ LOGGING = {
 DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
-IMAGE_API = 'http://thumbnails.lcogt.net/'
+IMAGE_API = 'https://thumbnails.lco.global/'
 
 if 'test' in sys.argv:
     OPBEAT['APP_ID'] = None

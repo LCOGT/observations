@@ -4,7 +4,7 @@
 
 {% block header_script %}
 	<meta http-equiv="X-UA-Compatible" content="IE=9" />
-	<!--[if lt IE 9]><script src="http://lcogt.net/virtualsky/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
+	<!--[if lt IE 9]><script src="http://virtualsky.lco.global/embed/excanvas.min.js" type="text/javascript"></script><![endif]-->
 	<script type="text/javascript" src="{% static "js/virtualsky-0.6.2.js" %}"></script>
 	<script type="text/javascript">
 	var lat{% if telescope.site.latitude %} = {{ telescope.site.latitude }}{% endif %};
@@ -28,7 +28,7 @@
 {% block fullcontent %}
     <div class="container">
         <div class="row">
-							<p>Below are the most recent observations taken by {{ telescope.name }}, {%if telescope.site.drupalnode %}<a href="http://lcogt.net/{{ telescope.site.drupalnode }}">{{ telescope.site.name }}</a>{% else %}{{ telescope.site.name }}{% endif %}:</p>
+							<p>Below are the most recent observations taken by {{ telescope.name }}, {%if telescope.site.drupalnode %}<a href="http://lco.global/{{ telescope.site.drupalnode }}">{{ telescope.site.name }}</a>{% else %}{{ telescope.site.name }}{% endif %}:</p>
 							{% if input.pager.start < 1 %}<div id="starmap" style="height:300px;"></div>{% endif %}
 {% include "images/summary.html" with input=input user=user %}
 						</div>

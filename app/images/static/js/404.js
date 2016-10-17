@@ -1,7 +1,7 @@
 $(document).ready(function(){
-	fourOfour({'about':'http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1.jpg','thumb':'http://lcogt.net/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1_120.jpg'}, 'http://lcogt.net/observations/search?query=NGC+404', { 'about' : '', 'label': ''});
+	fourOfour({'about':'https://lco.global/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1.jpg','thumb':'https://lco.global/files/rtisba/faulkes-rti/imagearchive/2011/10/10/process-2174-1_120.jpg'}, 'https://lco.global/observations/search?query=NGC+404', { 'about' : '', 'label': ''});
 	$.ajax({
-		url: "http://lcogt.net/observations/search.json?query=NGC+404&filter=RGB",
+		url: "https://lco.global/observations/search.json?query=NGC+404&filter=RGB",
 		dataType: "jsonp",
 		success: function(data){
 			if(data == null) return;
@@ -24,7 +24,7 @@ function four0fourResize(){
 function fourOfour(img,url,observer){
 	$('#main').css({ "background":"url('"+($(window).width() > 400 ? img.about : img.thumb)+"')","background-color":"black","background-size": "100% auto" });
 	if($('.404msg').length == 0) $('#main .row p').append('<span class="404msg"></span>');
-	$('.404msg').html(' To make up for some of your disappointment, here\'s an observation of <a href="http://lcogt.net/observations/search?query=NGC+404" class="404link">NGC 404</a> taken by <a href="'+observer.about+'">'+observer.label+'</a> using our network.');
+	$('.404msg').html(' To make up for some of your disappointment, here\'s an observation of <a href="https://lco.global/observations/search?query=NGC+404" class="404link">NGC 404</a> taken by <a href="'+observer.about+'">'+observer.label+'</a> using our network.');
 	$('a.404link').attr('href',url);
 	$('#main, h1').css({'color':'white'});
 	$('.404msg a').css({'color':'#dee8ff'});
