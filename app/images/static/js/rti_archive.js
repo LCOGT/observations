@@ -175,7 +175,7 @@ function imageLoadError(el){
 			var tryagain = (!$(this).attr('data-src')) ? true : false;
 			// Store the original URL
 			$(this).attr('data-src',this.src);
-			this.src = "http://lcogt.net/files/no-image_120.png";
+			this.src = "https://lco.global/files/no-image_120.png";
 			this.alt = "Image unavailable";
 			this.onerror = "";
 			if(tryagain) var timeout = setTimeout(tryImageAgain,30000,this);
