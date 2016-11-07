@@ -1,5 +1,6 @@
 from images.models import Site, Telescope, Filter, Image, ObservationStats, wistime_format
 from images.lookups import categories, categorylookup
+from images.views import get_sci_fits
 
 from django.views.generic import ListView, DetailView
 
@@ -23,6 +24,7 @@ class ImageDetail(DetailView):
             filter_obj = self.object.filters
         context['filters'] = filter_obj
         context['views'] = obs_stats(self.object)
+        context['files'] = get_sci_fits(self.object)
         return context
 
 class ImageList(ListView):

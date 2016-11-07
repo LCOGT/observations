@@ -49,7 +49,6 @@ urlpatterns = [
     url(r'^map/$', view_map),
 
     url(r'^frame/(?P<frameid>[0-9]+)/$', frame_lookup, name='frame'),
-    url(r'^identity/$', identity,name='identity'),
     url(r'^image/(?P<pk>[0-9]+)/$', ImageDetail.as_view(), name='image-detail'),
     url(r'^admin/', include(admin.site.urls)),
 

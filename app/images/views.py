@@ -897,10 +897,11 @@ def view_observation(request, code, tel, obs):
 
 def get_sci_fits(params):
     telids = {'ogg': 1, 'coj': 2}
-    telid = telids.get(params['telescope'].site.code, '')
-    url = 'http://sci-archive.lco.global/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&date=%s&telescope=ft%s' % (
-        params['username'], params['dateobs'], telid)
-    rids = params['requestids'].split(',')
+    telid = telids.get(params.telescope.site.code, '')
+    url = 'http://sci-archive.lco.global/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&telescope=ft%s' % (
+        params.username, telid)
+    url = "{}&date={}".format(url,datetime.strftime(params.dateobs, "%Y%m%d"))
+    rids = params.requestids.split(',')
     filters = []
     if rids:
         if len(rids) == 3:
@@ -911,12 +912,11 @@ def get_sci_fits(params):
             #           { 'id':'r','name': 'Red','fits':'','img':'' }]
         if len(rids) == 1:
             ids = ['f']
-            names = [params['filter']]
+            names = [params.filters]
             #filters = [{ 'id':'f','name': obs[0]['filter'],'fits':'','img':'' }]
 
         for rid in range(0, len(rids)):
             sci_url = '%s&obs-id=%s' % (url, rids[rid])
-
             # Allow 6 seconds for timeout
             try:
                 f = requests.get(url=sci_url, timeout=6)
@@ -1511,10 +1511,6 @@ def build_observations_json(obs):
             filter = filter_props(o['filter'])
         except:
             filter = ["Unknown"]
-        if o.get('origname',''):
-            page_url = reverse('identity') + "?origname="+o['origname']
-        else:
-            page_url = o.get('link_obs','')
         ob = {
             "about": page_url,
             "label": o['objectname'],
