@@ -20,6 +20,12 @@ var img_url;
     });
   });
 
+  $.get("https://thumbnails.lco.global/"+ frame_id+"/?height=1000&width=1000&color=true", function(data){
+    img_url = data.url;
+    $('#colour-version a').attr('href', img_url);
+    $('#colour-version').show();
+  });
+
 
 });
 
@@ -33,7 +39,7 @@ var img_url;
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{% url 'home' %}">Observations</a></li>
-  <li><a href="{% url 'show_site' obs.SITEID %}">{{ site }}</a></li>
+  <li>{{ site }}</li>
   <li class="active">{{ obs.TELID }} : {{ obs.OBJECT }}</li>
 </ol>
 
@@ -92,29 +98,29 @@ var img_url;
                 </tr>
                 <tr>
                     <th scope="row">Site:</th>
-                    <td property='UCD:instr.tel'><a href="{% url 'show_site' obs.SITEID %}">{{site}}</a>
+                    <td property='UCD:instr.tel'>{{site}}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">Filter:</th>
-                    <td>{{ obs.FILTER }}</td>
+                    <td>{{ obs.FILTER|filters_lookup|safe }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Exposure:</th>
                     <td>
-                        <span property='UCD:obs.exposure'>{{ obs.EXPTIME }}</span>s</td>
+                        <span property='UCD:obs.exposure'>{{ obs.EXPTIME|floatformat }}</span>s</td>
                 </tr>
                 <tr>
                     <th scope="row">Data:</th>
                     <td>
-
                         <div id="download-link">FITS data not currently available</div>
                         <p><a href="http://lco.global/education/observing/fpack/">Having trouble opening FITS files?</a></p>
+                        <div id="colour-version" style="display:none;"><a href="">Color JPEG</a></div>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">Credit:</th>
-                    <td>Image taken with a {{obs.TELID}} telescope at the {{site}} node of Las Cumbres Observatory Global Telescope Network</td>
+                    <td>Image taken with a {{obs.TELID}} telescope at the {{site}} node of Las Cumbres Observatory</td>
                 </tr>
                 <tr>
                     <th scope="row">License:</th>

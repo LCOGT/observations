@@ -62,24 +62,9 @@ def index(request):
 
     sites = Site.objects.all()
     telescopes = Telescope.objects.all()
-
     latest = recent_observations()
 
-    obstats = ObservationStats.objects.all().order_by('-weight')[:n_per_line]
-    obs = []
-    for o in obstats:
-        obs.append(o.image)
-    trending = build_observations(obs)
-
-    obstats = ObservationStats.objects.all().order_by('-views')[:n_per_line]
-    obs = []
-    for o in obstats:
-        obs.append(o.image)
-    popular = build_observations(obs)
-
     return render(request, 'images/index.html', {'latest': latest,
-                                                    'trending': trending,
-                                                    'popular': popular,
                                                     'sites': sites,
                                                     'telescopes': telescopes,
                                                     'categories': categories})
@@ -94,8 +79,7 @@ def view_group(request, mode, format=None):
         input['title'] = "Recent Observations from LCOGT"
         input['link'] = 'recent'
         input['live'] = 300
-        input[
-            'description'] = 'Recent observations from the Las Cumbres Observatory Global Telescope'
+        input['description'] = 'Recent observations from the Las Cumbres Observatory Global Telescope'
     elif(mode == "popular"):
         obstats = ObservationStats.objects.all().order_by(
             '-views')[:n_per_page]
@@ -206,31 +190,23 @@ def search(request, format=None):
                 form.cleaned_data['enddate'] = datetime.utcnow()
             obs, n, onlyrti, offset = fetch_observations(form.cleaned_data, lastobs)
             page_data['offset'] = offset
-            page_data['onlyrti'] = onlyrti
             page_data['lastobs'] = lastobs
-            page_data['description'] = 'Search results (LCOGT)'
+            page_data['description'] = 'Search results (LCO)'
             page_data['searchstring'] = request.GET.get('query', None)
 
-            if page_data['doctype'] == "json" or format == 'json':
-                return view_json(request, build_observations_json(obs), page_data)
-            elif page_data['doctype'] == "kml":
-                return view_kml(request, obs, page_data)
-            elif page_data['doctype'] == "rss":
-                return view_rss(request, obs, page_data)
-            else:
-                page_data['n'] = n
-                if n == 0:
-                    page_data['form'] = form
-                elif obs['archive']:
-                    page_data['firstobs'] = obs['archive'][0]['DATE_OBS']
-                elif obs['rti'] and not obs['archive']:
-                    page_data['firstobs'] = obs['rti'][0]['dateobs']
+            page_data['n'] = n
+            if n == 0:
+                page_data['form'] = form
+            elif obs['archive']:
+                page_data['firstobs'] = obs['archive'][0]['DATE_OBS']
+            elif obs['rti'] and not obs['archive']:
+                page_data['firstobs'] = obs['rti'][0]['dateobs']
 
-                page_data['obs'] = obs
-                if page_data['slideshow']:
-                    return render(request, 'images/slideshow.html', page_data)
-                else:
-                    return render(request, 'images/search.html', page_data)
+            page_data['obs'] = obs
+            if page_data['slideshow']:
+                return render(request, 'images/slideshow.html', page_data)
+            else:
+                return render(request, 'images/search.html', page_data)
         else:
             return render(request, 'images/search.html', {'form': form})
 
@@ -249,7 +225,6 @@ def fetch_observations(data, lastobs):
         if obs_archive:
             obs['archive'] = obs_archive['results']
             total_n = obs_archive['count']
-
     if len(obs['archive']) < n_per_page:
         # Fetch RTI images
         rti_obs = search_rtiarchive(data)
@@ -1414,7 +1389,7 @@ def build_observations(obs):
             o['views'] = obstats[0].views
         except:
             o['avmcode'] = ""
-
+        o['id'] = ob.pk
         o['imageid'] = ob.imageid
         o['dateobs'] = ob.dateobs
         o['objectname'] = ob.objectname
@@ -1444,11 +1419,6 @@ def build_observations(obs):
         # Change the credit if prior to 11 Oct 2005
         if o['dateobs'] < datetime(2005,10,11):
             o['credit'] = "Provided to Las Cumbres Observatory under license from the Dill Faulkes Educational Trust"
-        o['link_obs'] = reverse('show_rtiobservation', kwargs={'code': o[
-                                'telescope'].site.code, 'tel': o['telescope'].code, 'obs': o['imageid']})
-        o['link_site'] = o['telescope'].site.code + '/'
-        o['link_tel'] = o['link_site'] + "/" + o['telescope'].code + '/'
-        o['link_user'] = "user/" + str(o['username']) + '/'
         # Remove brackets
         o['object'] = re.sub(r" ?\([^\)]*\)", '', o['objectname'])
         # Remove redundant whitespace

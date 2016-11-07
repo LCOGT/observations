@@ -6,28 +6,54 @@
 {% block main_span_size %}col-md-12{% endblock %}
 
 {% block fullcontent %}
-    <div class="container">
+    <section>
+      <div class="container">
         <div class="row">
 							<p>Welcome to the LCO Open Access archive. All data available here is non-proprietary.</p>
-						</div>
+				</div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+            <form class="form-search big-search" action="{% url 'search' %}" method='GET'>
+              <div class = "input-group">
+                 <input class = "form-control"  placeholder="e.g. NGC 2020" name='query' type="text">
+                 <span class = "input-group-btn">
+                    <button class = "btn btn-default" type = "submit">
+                       Search
+                    </button>
+                 </span>
+              </div>
+            </form>
+            [<a href="{% url 'search' %}">advanced search</a>]
+            </div>
+          </div>
         <div class="row">
 							<h2><a href="{% url 'show_recent' %}">Most recent observations</a></h2>
 							<div class="time"></div>
-							<ul class="observation-results" data-json="{% url 'home' %}search.json" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/archive_obs_list.html" with obs=latest %}
+							<ul class="observation-results" data-update="add" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+                {% for o in latest%}
+
+                						<div class="col-xs-6 col-md-2 col-lg-2">
+                								<div class='thumb'>
+                									<span class='archive-thumb-img thumb-img' ><a href="{% url 'frame' o.id %}"><img src="https://lco.global/files/no-image_120.png" alt='{{ o.OBJECT }}' class="img-rounded" data-frameid="{{o.id}}"/></a></span>
+                									<div class="thumb-caption"><div class="title ellipsis" property='UCD:obs' title='{{ o.OBJECT }}'>{{ o.OBJECT }}</div></div>
+
+                									<div class='more-info'>
+                										<div class='name'>Title: <a href="{% url 'search' %}?query={{ o.OBJECT }}" property='dc:title'>{{ o.OBJECT }}</a></div>
+                										<div class='position'>RA: {{ o.area.coordinates.0.0.0|degreestohms}}, Dec: {{ o.area.coordinates.0.0.1|degreestodms }}<br /><span style='font-size:0.7em;'>(View coordinates in <a href='http://server1.wikisky.org/v2?ra={{ o.ra }}&amp;de={{ o.dec}}&amp;zoom=6&amp;img_source=astrophoto'>Wikisky</a> or <a href='http://www.worldwidetelescope.org/wwtweb/goto.aspx?object=ViewShortcut&amp;ra={{ o.ra }}&amp;dec={{ o.dec }}&amp;zoom=3'>WorldWideTelescope</a>)</span></div>
+                										<div class='telescope'>Site: {{o.TELID}} at {{ o.SITEID }}</div>
+                										<div class='filter'>Filter: {{o.FILTER}}</div>
+                										<div class="">Download: <a href="{{o.url}}">FITS data</a></div>
+                										<div class='exposure'>Exposure: {{ o.EXPTIME }} s (total)</div>
+                										<div class="date_obs">Taken: <time datetime='{{ o.DATE_OBS }}'>{{ o.DATE_OBS }}</time></div>
+                									</div>
+                								</div>
+                							</div>
+                {% empty %}
+                <h3>No Images<h3>
+                <p>The image database is currently having problems. We're working on fixing this. Sorry for the delay.</p>
+                {% endfor %}
 							</ul>
 						</div>
-						<div class="row">
-							<h2><a href="{% url 'show_trending' %}">Currently trending observations</a></h2>
-							<ul class='observation-results' data-json="{% url 'home' %}trending.json" data-update="update" data-max="7" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=trending %}
-							</ul>
-						</div>
-						<div class="row">
-							<h2><a href="{% url 'show_popular' %}">All-time most popular observations</a></h2>
-							<ul class='observation-results' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
-{% include "images/observationlist.html" with obs=popular %}
-							</ul>
-						</div>
-				</div>
+        </div>
+      </section>
 {% endblock %}

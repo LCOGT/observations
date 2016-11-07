@@ -16,8 +16,8 @@
 		<link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css' rel="stylesheet">
 
 		<!-- LCO offiial styles -->
-    <link href='https://cdn.lco.global/mainstyle/css/affogato-1.0.0.css' rel="stylesheet">
-    <link href='https://cdn.lco.global/mainstyle/css/lco-1.0.0.css' rel="stylesheet">
+		<link href='https://cdn.lco.global/mainstyle/css/affogato-1.0.0.css' rel="stylesheet">
+		<link href='https://cdn.lco.global/mainstyle/css/lco-1.0.0.css' rel="stylesheet">
 
 		<!-- Custom CSS -->
     <link href='{% static "css/obs-styles.css" %}' rel="stylesheet">
@@ -100,20 +100,17 @@
 
       <section>
     		<div class="intro downPage blue">
-    			<div class="container wide">
+    			<div class="container">
     				<div class="row no-gutter">
-    					<div class="col-md-8 title">
+    					<div class="col-md-12 title">
     						<h1>Observations</h1>
-    					</div>
-    					<div class="col-md-4 col-sm-12 imgRotate">
-    						<!-- RANDOM PAIR OF IMAGES GO HERE -->
-                <img class="img-responsive" src="">
-
     					</div>
     				</div>
     			</div>
     		</div>
     	</section>
+
+		{% block fullcontent %}
 
   	<section>
       <div class="container">
@@ -133,28 +130,28 @@
           {% endif %}
         </div>
       </div>
-  		<div class="container wide downPage">
+  		<div class="container downPage">
         <div class="row">
           {% block breadcrumb %}{% endblock %}
         </div>
         {% block search %}
         <div class="row">
-						<div class="col-sm-6 col-xs-12 col-lg-6">
+						<div class="col-md-6 col-xs-12">
             <form class="form-search" action="{% url 'search' %}" method='GET'>
-                <div class="input-group">
-                    <input class="form-control" placeholder="e.g. NGC 2020" name='query' type="text">
-							<span class="input-group-btn">
-                  <button type="submit" class="btn btn-search">Search</button>
-              </span>
-
-                </div>
+							<div class = "input-group">
+		             <input class = "form-control"  placeholder="e.g. NGC 2020" name='query' type="text">
+	               <span class = "input-group-btn">
+	                  <button class = "btn btn-default" type = "submit">
+	                     Search
+	                  </button>
+	               </span>
+						  </div>
             </form>
 		        </div>
             <div class="col-sm-6 col-xs-12 col-lg-6" style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
           </div>
         {% endblock %}
 
-        {% block fullcontent %}
             <div class="row">
               <div class="{% block main_span_size %}col-md-8{% endblock %}">
               {% block main-content %}{% endblock %}
@@ -167,14 +164,6 @@
   		</div>
   	</section>
     {% endblock%}
-
-
-{% block alternate %}
-        <div class="row">
-          <div class="col-md-12">
-          </div>
-        </div>
-{% endblock %}
 
 
 <footer>

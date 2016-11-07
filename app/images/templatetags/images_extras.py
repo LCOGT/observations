@@ -16,8 +16,28 @@ from django import template
 from datetime import datetime
 from images.utils import *
 from django.conf import settings
+from images.models import Filter
 
 register = template.Library()
+
+def filters_lookup(code):
+    try:
+        f = Filter.objects.get(code=code)
+    except:
+        f = code
+    return f
+
+def fetch_image_url(filename,dateobs):
+    month = dateobs.strftime('%m')
+    day = dateobs.strftime('%d')
+    image_url = "{}{}/{}/{}/{}".format(settings.RTI_IMAGE_URL, dateobs.year, month, day, filename )
+    return image_url
+
+def fetch_thumb_url(filename,dateobs):
+    month = dateobs.strftime('%m')
+    day = dateobs.strftime('%d')
+    image_url = "{}{}/{}/{}/{}_120.jpg".format(settings.RTI_IMAGE_URL, dateobs.year, month, day, filename[0:-4] )
+    return image_url
 
 def orig_to_jpeg(value):
     url = settings.IMAGE_API + "/%s/?height=1000&width=1000&label=0" % value[0:31]
@@ -118,6 +138,9 @@ def url_add_query(context, **kwargs):
 
     return path[:-1]
 
+register.filter('filters_lookup',filters_lookup)
+register.filter('fetch_image_url',fetch_image_url)
+register.filter('fetch_thumb_url',fetch_thumb_url)
 register.filter('degreestohours', degreestohours)
 register.filter('hourstodegrees', hourstodegrees)
 register.filter('degreestodms', degreestodms)

@@ -42,38 +42,50 @@
             </ol>
 {% endblock %}
 
-{% block alternate-formats %}
-{% if n > 0 %}
-					<div class="row lastrow">
-							<p>Alternative outputs:
-								<a title="View RSS feed" rel="alternate" type="application/xml" href="{%url 'search_api' format='rss'%}?{{ request.GET.urlencode}}">RSS</a>,
-								<a title="View in Sky for Google Earth" rel="alternate" type="application/vnd.google-earth.kml+xml" href="{% url 'search_api' format='kml' %}">Sky for Google Earth</a>, and
-								<a title="View in JSON format" rel="alternate" type="application/json" href="{% url 'search_api' format='json' %}">JSON</a>
-							</p>
-					</div>
-{% endif %}
-{% endblock %}
 
 {% block fullcontent %}
 {% if n > 0 %}
 <div class="container">
     <div class="row">
-							<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}We found {{n}} observations. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
-						</div>
+        <div class="col-md-6 col-xs-12">
+        <form class="form-search" action="{% url 'search' %}" method='GET'>
+          <div class = "input-group">
+             <input class = "form-control"  placeholder="e.g. NGC 2020" name='query' type="text">
+             <span class = "input-group-btn">
+                <button class = "btn btn-default" type = "submit">
+                   Search
+                </button>
+             </span>
+          </div>
+        </form>
+        </div>
+        <div class="col-sm-6 col-xs-12 col-lg-6" style='font-size:0.8em;'>[<a href="{% url 'search' %}">advanced search</a>]</div>
+      </div>
+    <div class="row">
+			<p>{%if onlyrti %}There {% if n > 1 %}are{% else %}is{% endif %} {{ n }} observation{% if n > 1 %}s{% endif %}.{%else%}We found {{n}} observations. {% endif %}{% if n > 1 %} Newest observations are shown first.{% endif %}{% if avmcode %} You could also search for <a href="{% url 'show_avm' avm=avmcode %}">{{ avmname }}</a>.{% endif %}</p>
+		</div>
 
-						<div class="row">
-							{% if pager %}
-							<div class="pager">{{ pager|safe }}</div>
-							{% endif %}
-              {% if obs.archive %}
-							<div class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+		{% if pager %}
+    <div class="row">
+			<div class="pager">{{ pager|safe }}</div>
+    </div>
+				{% endif %}
+
+    {% if obs.archive %}
+    <div class="row">
+      <h2>Recent Data</h2>
+			<div class='observation-results' data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/archive_obs_list.html" with obs=obs.archive %}
-              {% endif %}
-              {% if obs.rti %}
-							<div class='observation-results' data-json="{% url 'search_api' format='json' %}{% url_add_query %}" data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
+    </div>
+    {% endif %}
+    {% if obs.rti %}
+    <div class="row">
+      <h2>Older Data</h2>
+			<div class='observation-results' data-update="update" xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:UCD='http://www.ivoa.net/rdf/Vocabularies/UCD#'>
 {% include "images/observationlist.html" with obs=obs.rti %}
-              {% endif %}
-							</div>
+      </div>
+    </div>
+    {% endif %}
 
 							<div class="pagination">
 							    <span class="step-links">

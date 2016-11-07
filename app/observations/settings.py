@@ -224,6 +224,7 @@ DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 SHORT_DATETIME_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
 IMAGE_API = 'https://thumbnails.lco.global/'
+RTI_IMAGE_URL = 'http://lco.global/files/rtisba/faulkes-rti/imagearchive/'
 
 if 'test' in sys.argv:
     OPBEAT['APP_ID'] = None

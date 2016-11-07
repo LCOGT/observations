@@ -43,14 +43,14 @@ def get_auth_headers(url):
     headers = {'Authorization': 'Token {}'.format(token)}
     return headers
 
-def search_archive_data(query, auth_header='', num_results=30):
+def search_archive_data(query, auth_header='', num_results=15):
     base_url = settings.ARCHIVE_API
     archive_url = '%s?limit=%d&%s' % (base_url, num_results, query)
 
     response = requests.get(archive_url, headers=auth_header).json()
     return response
 
-def get_latest_data(auth_header='', num_results=30):
+def get_latest_data(auth_header='', num_results=15):
     base_url = settings.ARCHIVE_API
     archive_url = '%s?limit=%d&OBSTYPE=EXPOSE&RLEVEL=91' % (base_url, num_results)
 
@@ -95,7 +95,7 @@ def search_archive(form, offset=0):
     if form['query']:
         # remove exterior whitespace and join interior with '+'
         name = "+".join(form['query'].strip().split())
-        qstring += "&OBJECT=%s" % name
+        qstring += "&OBJECT=%s&" % name
     if form['startdate'] and form['enddate']:
         start = "{}%2000:00:00".format(form['startdate'].strftime("%Y-%m-%d"))
         end = "{}%2023:59:59".format(form['enddate'].strftime("%Y-%m-%d"))
@@ -107,8 +107,7 @@ def search_archive(form, offset=0):
         qstring += "&start=2014-04-01%2000:00:00"
 
     headers = get_auth_headers(settings.ARCHIVE_TOKEN_URL)
-    frames = search_archive_data(qstring, headers, num_results=30)
-
+    frames = search_archive_data(qstring, headers, num_results=15)
     if frames.get('results',''):
         return frames
     else:
