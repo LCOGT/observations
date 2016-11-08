@@ -141,8 +141,7 @@ def search_rtiarchive(form):
     obs = Image.objects.all()
     if form['query']:
         query_string = form['query'].replace('(','').replace(')','')
-        obs = obs.filter(
-            objectname__iregex=r'(^| )%s([^\w0-9]+|$)' % query_string)
+        obs = obs.filter(objectname__icontains=(query_string))
     if form['sites'] in ('ogg', 'coj'):
         obs = obs.filter(telescope__site__code=form['sites'])
     if form['filters']:
