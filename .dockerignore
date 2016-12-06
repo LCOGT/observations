@@ -2,3 +2,4 @@
 .svn
 *.pyc
 *.pyo
+app/observations/fixtures

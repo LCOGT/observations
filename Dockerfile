@@ -1,28 +1,6 @@
-################################################################################
-#
-# Runs the LCOGT Python Django Observations webapp using nginx + uwsgi
-#
-# The decision to run both nginx and uwsgi in the same container was made because
-# it avoids duplicating all of the Python code and static files in two containers.
-# It is convenient to have the whole webapp logically grouped into the same container.
-#
-# You can choose to expose the nginx and uwsgi ports separately, or you can
-# just default to using the nginx port only (recommended). There is no
-# requirement to map all exposed container ports onto host ports.
-#
-# Build with
-# docker build -t docker.lcogt.net/observations:latest .
-#
-# Push to Docker registry with
-# docker push docker.lcogt.net/observations:latest
-#
-################################################################################
-
-FROM centos:centos7
+FROM centos:7
 MAINTAINER LCOGT <webmaster@lcogt.net>
 
-# The entry point is our init script, which runs startup tasks, then
-# execs the supervisord daemon
 EXPOSE 80
 ENTRYPOINT [ "/init" ]
 
@@ -35,14 +13,14 @@ ENV PREFIX /observations
 
 # Install packages and update base system
 RUN yum -y install epel-release \
-        && yum -y install cronie libjpeg-devel nginx python-pip mysql-devel python-devel supervisor \
-        && yum -y groupinstall "Development Tools" \
+        && yum -y install MySQL-python nginx python-pip supervisor uwsgi-plugin-python \
         && yum -y update \
         && yum -y clean all
 
 # Install the Python required packages
 COPY app/requirements.pip /var/www/apps/observations/requirements.pip
-RUN pip install uwsgi==2.0.8 && pip install -r /var/www/apps/observations/requirements.pip 
+RUN pip install -r /var/www/apps/observations/requirements.pip \
+        && rm -rf ~/.cache/pip
 
 # Copy configuration files
 COPY config/init /init

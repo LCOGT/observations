@@ -69,7 +69,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-TIME_ZONE = 'Europe/London'
+TIME_ZONE = 'Etc/UTC'
 
 LANGUAGE_CODE = 'en-us'
 
@@ -183,8 +183,7 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'neox.log',
+            'class': 'logging.StreamHandler',
             'formatter': 'verbose',
             'filters': ['require_debug_false']
         },
