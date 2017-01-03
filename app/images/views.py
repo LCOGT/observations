@@ -493,7 +493,7 @@ def view_object(request, object):
         if a:
             u = user_look_up(a[0]['username'])
             input['mostobservedby'] = {
-                'name': u, 'id': a[0]['username'], 'count': a[0]['count']}
+                'name': u, 'id': a[0]['username']}
         else:
             u = ""
 
