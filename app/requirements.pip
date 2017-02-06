@@ -2,3 +2,5 @@ Django>=1.8,<1.10
 MySQL-python
 requests
 opbeat
+lxml
+bs4

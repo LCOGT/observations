@@ -41,6 +41,7 @@ from string import replace
 import json
 import math
 import re
+from bs4 import BeautifulSoup
 import requests
 import logging
 
@@ -48,7 +49,7 @@ logger = logging.getLogger('images')
 
 n_per_line = 6
 n_per_page = 18
-base_url = "http://lco.global/observations/"
+base_url = "https://lco.global/observations/"
 
 def server_error(request):
     # one of the things 'render' does is add 'STATIC_URL' to
@@ -895,11 +896,14 @@ def view_observation(request, code, tel, obs):
 
 
 def get_sci_fits(params):
+    # http://ftarchive.lco.global/ft1/2014/20140317/d_e_20140316_48_1_1_1
+    data_url = "http://ftarchive.lco.global/ft{}/{}/{}/{}.fits.fz"
     telids = {'ogg': 1, 'coj': 2}
+    date_stamp = datetime.strftime(params.dateobs, "%Y%m%d")
     telid = telids.get(params.telescope.site.code, '')
     url = 'http://sci-archive.lco.global/cgi-bin/oc_search?op-centre=UKRTOC&user-id=%s&telescope=ft%s' % (
         params.username, telid)
-    url = "{}&date={}".format(url,datetime.strftime(params.dateobs, "%Y%m%d"))
+    url = "{}&date={}".format(url,date_stamp)
     rids = params.requestids.split(',')
     filters = []
     if rids:
@@ -919,19 +923,17 @@ def get_sci_fits(params):
             # Allow 6 seconds for timeout
             try:
                 f = requests.get(url=sci_url, timeout=6)
-                xml = f.content
 
-                jpg = re.search('file-jpg type=\"url\">([^\<]*)<', xml)
-                fit = re.search('file-hfit type=\"url\">([^\<]*)<', xml)
-                if jpg or fit:
+                soup = BeautifulSoup(f.content,"lxml")
+                expid = soup.findAll('expid')
+                if expid:
+                    fz_url = data_url.format(telid, date_stamp[0:4],date_stamp,expid[0].string)
                     tmp = {'id': ids[rid], 'name': names[rid],
                            'fullname': filter_name(names[rid])}
-                    if jpg:
-                        tmp['img'] = jpg.group(1)
-                    if fit:
-                        tmp['fits'] = fit.group(1)
+                    tmp['fits'] = fz_url
                     filters.append(tmp)
-            except:
+            except Exception, e:
+                print(e)
                 filters.append({'img': '', 'fits': ''})
     return filters
 
