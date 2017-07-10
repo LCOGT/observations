@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(CURRENT_PATH)
 
 FORCE_SCRIPT_NAME = PREFIX if PRODUCTION else ''
 
-VERSION = '0.4'
+VERSION = '0.5'
 DEBUG = True if os.environ.get('DEBUG', None) else not PRODUCTION
 DOMAIN = 'lco.global'
 HOSTNAME = DOMAIN if PRODUCTION else 'localhost'
@@ -42,14 +42,6 @@ DATABASES = {
         "USER": os.environ.get('OBS_DB_USER', ''),
         "PASSWORD": os.environ.get('OBS_DB_PASSWD', ''),
         "HOST": os.environ.get('OBS_DB_HOST', ''),
-        "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
-        "ENGINE": "django.db.backends.mysql",
-    },
-    'rbauth': {
-        'NAME': os.environ.get('RBAUTH_DB_NAME', ''),
-        "USER": os.environ.get('RBAUTH_DB_USER', ''),
-        "PASSWORD": os.environ.get('RBAUTH_DB_PASSWD', ''),
-        "HOST": os.environ.get('RBAUTH_DB_HOST', ''),
         "OPTIONS": {'init_command': 'SET storage_engine=INNODB'} if PRODUCTION else {},
         "ENGINE": "django.db.backends.mysql",
     }
@@ -96,6 +88,12 @@ SESSION_COOKIE_NAME = "observations.sessionid"
 IMAGE_PATH = '/var/www/html/observations/'
 ARCHIVE_USER = os.environ.get('OBS_API_USER', '')
 ARCHIVE_PASSWORD = os.environ.get('OBS_API_PASSWD', '')
+
+PORTAL_API_URL = 'https://observe.lco.global/api/'
+PORTAL_REQUEST_API = PORTAL_API_URL + 'userrequests/'
+PORTAL_REQUEST_URL = 'https://observe.lco.global/userrequests/'
+PORTAL_TOKEN_URL = PORTAL_API_URL + 'api-token-auth/'
+PORTAL_TOKEN = os.environ.get('VALHALLA_TOKEN','')
 
 # List of callables that know how to import templates from various sources.
 STATICFILES_FINDERS = (

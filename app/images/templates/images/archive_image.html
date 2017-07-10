@@ -72,12 +72,6 @@ var img_url;
                     <td property='dc:title'>{{ obs.title }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Observer:</th>
-                    <td>
-                        <span property="UCD:obs.observer">{{ observer }}</span>
-                    </td>
-                </tr>
-                <tr>
                     <th scope="row">Date:</th>
                     <td>
                         <time property='UCD:time.creation'>{{ obs.DATE_OBS }}</time>
@@ -114,7 +108,7 @@ var img_url;
                     <td>
                         <div id="download-link">FITS data not currently available</div>
                         <p id="colour-version" style="display:none;">
-                          <i class="fa fa-magic" aria-hidden="true"></i> <a href="">Color JPEG (automatic)</a>
+                          <i class="fa fa-magic" aria-hidden="true"></i> <a href="">Color JPEG</a>
                         </p>
                         <div><i class="fa fa-info-circle" aria-hidden="true"></i>
  <a href="http://lco.global/education/observing/fpack/">Trouble with FITS files?</a></div>
@@ -135,11 +129,10 @@ var img_url;
                 <tr>
                     <th scope="row">Share:</th>
                     <td>
-                        <a href="http://twitter.com/home/?status={{ obs.OBJECT|urlencode }}+by+{{ obs.user|urlencode }}+{{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}+with+@lcogt">
+                        <a href="http://twitter.com/home/?status={{ obs.OBJECT|urlencode }}+@lco_global+{{site}}+node+http://{{ request.get_host }}{% url 'frame' frameid %}">
                             <i class="fa fa-twitter"></i>
                         </a>
-                        <a href="http://www.facebook.com/sharer.php?u={{ base }}{{ obs.telescope.site.code }}/{{ obs.telescope.code }}/{{ obs.imageid }}">
-                            <i class="fa fa-facebook"></i>
+                        <div class="fb-share-button" data-href="http://{{ request.get_host }}{% url 'frame' frameid %}" data-layout="button" data-size="small" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ request.get_host }}{% url 'frame' frameid %}%2F&amp;src=sdkpreparse">Share</a></div>
                         </a>
                     </td>
                 </tr>

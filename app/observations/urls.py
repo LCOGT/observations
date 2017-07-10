@@ -36,17 +36,17 @@ urlpatterns = [
 
     url(r'^recent/$', recent_observations_page, name='show_recent'),
 
-    url(r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)/$', view_object),
-    url(r'^object/$', index),
-    url(r'^o/(?P<object>[a-zA-Z \+\-\.0-9]+)/$', view_object),
-
-    url(r'^category/(?P<avm>[0-9\.]+)/$', view_avm,name='show_avm'),
-    url(r'^category/(?P<category>\w+)/$', view_category,name='category_show'),
-    url(r'^category/$', view_category_list,name='category_list'),
-    url(r'^c/(?P<avm>[0-9\.]+)/$', view_avm),
-    url(r'^c/(?P<category>\w+)/$', view_category),
-
-    url(r'^map/$', view_map),
+    # url(r'^object/(?P<object>[a-zA-Z \+\-\.0-9]+)/$', view_object),
+    # url(r'^object/$', index),
+    # url(r'^o/(?P<object>[a-zA-Z \+\-\.0-9]+)/$', view_object),
+    #
+    # url(r'^category/(?P<avm>[0-9\.]+)/$', view_avm,name='show_avm'),
+    # url(r'^category/(?P<category>\w+)/$', view_category,name='category_show'),
+    # url(r'^category/$', view_category_list,name='category_list'),
+    # url(r'^c/(?P<avm>[0-9\.]+)/$', view_avm),
+    # url(r'^c/(?P<category>\w+)/$', view_category),
+    #
+    # url(r'^map/$', view_map),
 
     url(r'^frame/(?P<frameid>[0-9]+)/$', frame_lookup, name='frame'),
     url(r'^image/(?P<pk>[0-9]+)/$', ImageDetail.as_view(), name='image-detail'),

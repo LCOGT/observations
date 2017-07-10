@@ -13,22 +13,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 '''
 from datetime import datetime
+
 from django.conf import settings
 import requests
+from urlparse import urljoin
 
 def tracknum_lookup(tracknum):
     if not tracknum.startswith('0') and len(tracknum) != 10:
         # Avoid sending junk to the API
         return False
+
+    headers = {'Authorization': 'Token {}'.format(settings.PORTAL_TOKEN)}
+    url = urljoin(settings.PORTAL_REQUEST_API, tracknum)
+
     try:
-        client = requests.session()
-        login_data = dict(username='dthomas+guest@lco.global', password='guest')
-        # Because we are sending log in details it has to go over SSL
-        data_url = 'https://lco.global/observe/service/request/get/userrequest/%s' % tracknum
-        resp = client.post(data_url, data=login_data, timeout=20)
+        resp = requests.get(url, headers=headers, timeout=20, verify=ssl_verify)
         data = resp.json()
-    except:
-        return False
+    except requests.exceptions.InvalidSchema, err:
+        data = None
+        logger.error("Request call to %s failed with: %s" % (url, err))
+    except ValueError, err:
+        logger.error("Request {} API did not return JSON: {}".format(url, resp.status_code))
+    except requests.exceptions.Timeout:
+        logger.error("Request API timed out")
     return data
 
 def l(txt, lnk):

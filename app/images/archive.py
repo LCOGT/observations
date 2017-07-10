@@ -122,6 +122,5 @@ def get_frame_header(frameid):
 def frame_lookup(request, frameid):
     frame = get_frame_header(frameid)
     user_id = frame.get('USERID','')
-    user = user_look_up([user_id])
     site = Site.objects.get(code=frame.get('SITEID',''))
-    return render(request, 'images/archive_image.html', {'obs': frame, 'observer':user.get(user_id,user_id), 'site':site,'frameid':frameid})
+    return render(request, 'images/archive_image.html', {'obs': frame, 'site':site, 'frameid':frameid})
