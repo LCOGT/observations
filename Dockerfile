@@ -1,5 +1,5 @@
 FROM centos:7
-MAINTAINER LCOGT <webmaster@lcogt.net>
+MAINTAINER LCO Webmaster <webmaster@lco.global>
 
 EXPOSE 80
 ENTRYPOINT [ "/init" ]
@@ -23,10 +23,7 @@ RUN pip install -r /var/www/apps/observations/requirements.pip \
         && rm -rf ~/.cache/pip
 
 # Copy configuration files
-COPY config/init /init
-COPY config/uwsgi.ini /etc/uwsgi.ini
-COPY config/nginx/* /etc/nginx/
-COPY config/processes.ini /etc/supervisord.d/processes.ini
+COPY docker/ /
 
 # Copy the LCOGT Mezzanine webapp files
 COPY app /var/www/apps/observations
